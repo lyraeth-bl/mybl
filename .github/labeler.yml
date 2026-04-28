@@ -1,0 +1,40 @@
+UI:
+  - changed-files:
+      - any-glob-to-any-file: 'lib/features/**/{presentation/screens/**,presentation/widgets/**}'
+
+presentation:
+  - changed-files:
+      - any-glob-to-any-file: 'lib/features/**/presentation/bloc/**'
+
+domain:
+  - changed-files:
+      - any-glob-to-any-file: 'lib/features/**/domain/entities/**'
+      - any-glob-to-any-file: 'lib/features/**/domain/repositories/**'
+      - any-glob-to-any-file: 'lib/features/**/domain/usecases/**'
+
+data:
+  - changed-files:
+      - any-glob-to-any-file: 'lib/features/**/data/datasources/**'
+      - any-glob-to-any-file: 'lib/features/**/data/models/**'
+      - any-glob-to-any-file: 'lib/features/**/data/repositories/**'
+
+dependencies:
+  - changed-files:
+      - any-glob-to-any-file: 'pubspec.yaml'
+      - any-glob-to-any-file: 'pubspec.lock'
+
+CI/CD:
+  - changed-files:
+      - any-glob-to-any-file: '.github/**'
+
+tests:
+  - changed-files:
+      - any-glob-to-any-file: 'test/**'
+
+android:
+  - changed-files:
+      - any-glob-to-any-file: 'android/**'
+
+ios:
+  - changed-files:
+      - any-glob-to-any-file: 'ios/**'
