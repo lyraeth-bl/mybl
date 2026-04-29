@@ -4,13 +4,15 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:my_bl/core/storage/secure_storage/secure_storage_di.dart';
 
 import '../api_client/api_client_di.dart';
 import '../app_router/app_router_di.dart';
 import '../dio_factory/network_di.dart';
 import '../storage/hive_storage/hive_storage_di.dart';
+import '../storage/secure_storage/secure_storage_di.dart';
+import 'app_bloc_observer.dart';
 
 Future<void> initializeApp() async {
   await dotenv.load(fileName: ".env");
@@ -29,4 +31,6 @@ Future<void> initializeApp() async {
   initSecureStorageDI();
   initApiClientDI();
   initNetworkDI();
+
+  Bloc.observer = const AppBlocObserver();
 }
