@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import '../api_client/api_client_di.dart';
+import '../app_router/app_router_di.dart';
 import '../dio_factory/network_di.dart';
 
 Future<void> initializeApp() async {
@@ -22,5 +23,6 @@ Future<void> initializeApp() async {
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   initApiClientDI();
+  initAppRouterDI();
   initNetworkDI();
 }
