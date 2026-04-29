@@ -18,31 +18,66 @@ final String _databaseUrl = "$_baseSanctum/api";
 final String _databaseInternalUrl = "$_baseInternal/api";
 
 class ApiEndpoints {
-  /// --- SPO --- ///
-  static final String login = "$_databaseUrl/login";
+  /// Getter baseUrl khusus untuk oleh [initNetworkDI] untuk
+  /// inisialisasi baseUrl pada Dio.
+  ///
+  /// Jadi pada remote data source cukup :
+  ///
+  /// ```dart
+  /// final response = await _apiClient.get(ApiEndpoints.login);
+  /// ```
+  ///
+  /// Selain dari penggunaan di [initNetworkDI], getter ini tidak berguna.
+  static String get baseUrl => _databaseUrl;
 
-  static final String logout = "$_databaseUrl/logout";
+  // --- SPO --- //
+  static final String login = "/login";
 
-  static final String me = "$_databaseUrl/me";
+  static final String logout = "/logout";
 
-  static final String attendance = "$_databaseUrl/absensi-harian";
+  static final String me = "/me";
 
-  static final String deviceTokens = "$_databaseUrl/device-tokens";
+  static final String attendance = "/absensi-harian";
 
-  static final String academicCalendar = "$_databaseUrl/kalender-akademik";
+  static final String deviceTokens = "/device-tokens";
 
-  static final String feedback = "$_databaseUrl/feedback";
+  static final String academicCalendar = "/kalender-akademik";
 
-  static final String appConfig = "$_databaseUrl/app-config";
+  static final String feedback = "/feedback";
 
-  static final String merit = "$_databaseUrl/merit";
+  static final String appConfig = "/app-config";
 
-  static final String demerit = "$_databaseUrl/demerit";
+  static final String merit = "/merit";
 
-  static final String extracurricular = "$_databaseUrl/ekskul";
+  static final String demerit = "/demerit";
 
-  static final String result = "$_databaseUrl/nilai";
+  static final String extracurricular = "/ekskul";
 
-  /// --- Internal --- ///
+  static final String result = "/nilai";
+
+  // --- Internal --- //
+
+  /// Khusus untuk url [timeTable], dikarenakan api ini mengambil data dari
+  /// api internal, jadi format isinya sedikit berbeda dari api SPO.
+  ///
+  /// Dan ini sebenernya tidak apa apa di Dio, karena [_databaseInternalUrl]
+  /// merupakan full path URL, Dio otomatis akan mengoverride [baseUrl]
+  /// sebelumnya.
+  ///
+  /// Jadi url Dio tidak ada seperti ini:
+  /// ```dart
+  /// https://baseurl.com/apihttps://internalurl.com/api/jadwal
+  /// ```
+  ///
+  /// Tapi, akan di override seperti ini:
+  ///
+  /// ```dart
+  /// https://internalurl.com/api/jadwal
+  /// ```
+  ///
+  /// Contoh:
+  /// ```dart
+  /// final response = await _apiClient.get(ApiEndpoints.timeTable);
+  /// ```
   static final String timeTable = "$_databaseInternalUrl/jadwal";
 }
