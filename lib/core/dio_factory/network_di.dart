@@ -4,8 +4,8 @@
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:my_bl/core/api_client/api_client.dart';
 
+import '../api_client/api_client.dart';
 import '../di/get_it_constant.dart';
 import 'dio_factory.dart';
 

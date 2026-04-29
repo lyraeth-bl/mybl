@@ -17,17 +17,19 @@ final String _databaseUrl = "$_baseSanctum/api";
 
 final String _databaseInternalUrl = "$_baseInternal/api";
 
+/// Kumpulan semua endpoint API yang digunakan di aplikasi ini.
+///
+/// Cara pakainya simpel, tinggal panggil langsung di remote data source:
+/// ```dart
+/// final response = await _apiClient.get(ApiEndpoints.me);
+/// final response = await _apiClient.post(ApiEndpoints.login, data: {...});
+/// ```
 class ApiEndpoints {
-  /// Getter baseUrl khusus untuk oleh [initNetworkDI] untuk
-  /// inisialisasi baseUrl pada Dio.
+  /// Base URL yang dipakai Dio saat inisialisasi di [initNetworkDI].
   ///
-  /// Jadi pada remote data source cukup :
-  ///
-  /// ```dart
-  /// final response = await _apiClient.get(ApiEndpoints.login);
-  /// ```
-  ///
-  /// Selain dari penggunaan di [initNetworkDI], getter ini tidak berguna.
+  /// Getter ini **tidak perlu dipanggil langsung** di remote data source.
+  /// Cukup pakai endpoint-nya saja (contoh: [login], [me], dst.),
+  /// Dio akan otomatis menggabungkan base URL + path endpoint.
   static String get baseUrl => _databaseUrl;
 
   // --- SPO --- //
@@ -57,25 +59,21 @@ class ApiEndpoints {
 
   // --- Internal --- //
 
-  /// Khusus untuk url [timeTable], dikarenakan api ini mengambil data dari
-  /// api internal, jadi format isinya sedikit berbeda dari api SPO.
+  /// Endpoint ini berbeda dari yang lain karena menggunakan base URL internal
+  /// (bukan SPO), sehingga nilainya berupa full URL.
   ///
-  /// Dan ini sebenernya tidak apa apa di Dio, karena [_databaseInternalUrl]
-  /// merupakan full path URL, Dio otomatis akan mengoverride [baseUrl]
-  /// sebelumnya.
-  ///
-  /// Jadi url Dio tidak ada seperti ini:
-  /// ```dart
-  /// https://baseurl.com/apihttps://internalurl.com/api/jadwal
+  /// Tenang saja, Dio sudah handle ini — kalau path-nya full URL,
+  /// Dio otomatis mengabaikan [baseUrl] dan langsung hit URL tersebut.
+  /// Jadi tidak akan ada double URL seperti ini:
+  /// ```
+  /// https://spo.com/api/https://internal.com/api/jadwal
+  /// ```
+  /// Melainkan langsung:
+  /// ```
+  /// https://internal.com/api/jadwal
   /// ```
   ///
-  /// Tapi, akan di override seperti ini:
-  ///
-  /// ```dart
-  /// https://internalurl.com/api/jadwal
-  /// ```
-  ///
-  /// Contoh:
+  /// Cara pakainya sama seperti endpoint lain:
   /// ```dart
   /// final response = await _apiClient.get(ApiEndpoints.timeTable);
   /// ```
