@@ -17,22 +17,3 @@ import '../../failure/failure.dart';
 /// Future<Result<List<Product>>> getProducts();
 /// ```
 typedef Result<T> = Either<Failure, T>;
-
-/// Alias untuk return type HTTP request.
-///
-/// Spesialisasi dari [Result] untuk response API yang belum di-parse —
-/// [Right] selalu berisi `Map<String, dynamic>` (raw JSON object),
-/// [Left] berisi [Failure] jika request gagal.
-///
-/// Gunakan di layer [HTTPRequest], bukan di repository atau use case.
-/// Di repository, parse dulu ke model lalu kembalikan sebagai [Result].
-///
-/// ```dart
-/// // Di ApiClient
-/// Future<HTTPResult> get(String url);
-///
-/// // Di repository — parse HTTPResult ke Result<User>
-/// final result = await _client.get('/users/1');
-/// return result.flatMap((json) => Result.right(User.fromJson(json)));
-/// ```
-typedef HTTPResult = Either<Failure, Map<String, dynamic>>;
