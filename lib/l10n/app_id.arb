@@ -1,0 +1,13 @@
+{
+  "@@locale": "id",
+  "dioNetworkError": "Internet kamu kurang bagus nih, coba cek koneksi dulu ya.",
+  "dioServerError": "Server error, tetap tenang, coba lagi nanti ya.",
+  "dioUnauthorizedError": "Oops siapa kamu?, coba login lagi ya, biar kita kenal.",
+  "dioForbiddenError": "Oops siapa nih?, kamu ga punya akses kesini.",
+  "dioBadRequestError": "Input yang kamu kirim ada yang salah, check lagi sebelum kirim ya.",
+  "dioSerializationError": "Kita gagal proses data dari server, bukan salah kamu kok.",
+  "dioCancelledError": "Request nya dibatalin, tenang aja ya.",
+  "dioRateLimitedError": "Kamu udah kebanyakan permintaan nih, santai dulu ga sih.",
+  "dioTimeoutError": "Response dari servernya kelamaan, coba ulang lagi ya.",
+  "dioUnexpectedError": "Ada yang aneh, coba ulang lagi ya."
+}

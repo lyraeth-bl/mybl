@@ -3,7 +3,7 @@
 // that can be found in the LICENSE file.
 
 class HiveStorageBoxNames {
-  static const String userBoxKey = "userBox";
+  static const String userLocalizationsBoxKey = "userLocalizationsBox";
 }
 
 /// Penyimpanan lokal menggunakan [Hive].
@@ -13,5 +13,5 @@ class HiveStorageBoxNames {
 ///
 /// Untuk data sensitif seperti token autentikasi, gunakan [SecureStorageNames].
 class HiveStorageNames {
-  static const String userDetailsKey = "userDetails";
+  static const String userLocalizationsCodeKey = "userLocalizationsCode";
 }

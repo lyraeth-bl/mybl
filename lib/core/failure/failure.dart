@@ -1,7 +1,13 @@
+// Copyright (c) 2026 Mahsa Nurfarhan Hidayat / Yayasan Pakarti Luhur. All rights reserved.
+// Use of this source code is governed by a MIT License
+// that can be found in the LICENSE file.
+
 import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+
+import '../../l10n/app_localizations.dart';
 
 part 'failure.freezed.dart';
 
@@ -98,6 +104,34 @@ sealed class Failure with _$Failure {
     rateLimited: (_) => 'rateLimited',
     timeout: (_) => 'timeout',
     unexpected: (_) => 'unexpected',
+  );
+
+  /// Mengembalikan pesan kesalahan yang telah dilokalisasi.
+  ///
+  /// Memetakan setiap tipe [Failure] ke string yang sesuai dari [AppLocalizations].
+  ///
+  /// Contoh penggunaan:
+  /// ```dart
+  /// @override
+  /// Widget build(BuildContext context) {
+  ///   final l10n = AppLocalizations.of(context);
+  ///
+  ///   return failure.maybeWhen(
+  ///     orElse: () => Text(failure.localizedMessage(l10n)),
+  ///   );
+  /// }
+  /// ```
+  String localizedMessage(AppLocalizations l10n) => map(
+    network: (_) => l10n.dioNetworkError,
+    server: (_) => l10n.dioServerError,
+    unauthorized: (_) => l10n.dioUnauthorizedError,
+    forbidden: (_) => l10n.dioForbiddenError,
+    badRequest: (_) => l10n.dioBadRequestError,
+    serialization: (_) => l10n.dioSerializationError,
+    cancelled: (_) => l10n.dioCancelledError,
+    rateLimited: (_) => l10n.dioRateLimitedError,
+    timeout: (_) => l10n.dioTimeoutError,
+    unexpected: (_) => l10n.dioUnexpectedError,
   );
 
   static Failure fromDio(Object error, [StackTrace? stackTrace]) {

@@ -24,7 +24,7 @@ abstract interface class ItemFetcher<T> {
   ///
   /// Returns [Right] berisi data jika berhasil,
   /// atau [Left] berisi [Failure] jika terjadi error.
-  Result<T> fetch([bool forceRefresh = false]);
+  Future<Result<T>> fetch([bool forceRefresh = false]);
 }
 
 /// Kontrak untuk mengambil koleksi item dari sumber data.
@@ -38,7 +38,7 @@ abstract interface class ListFetcher<T> {
   ///
   /// Returns [Right] berisi `List<T>` jika berhasil,
   /// atau [Left] berisi [Failure] jika terjadi error.
-  Result<List<T>> fetchAll([bool forceRefresh = false]);
+  Future<Result<List<T>>> fetchAll([bool forceRefresh = false]);
 }
 
 /// Kontrak untuk menyimpan dan membaca data dari local storage.
@@ -60,7 +60,7 @@ abstract interface class CacheStorage<T> {
   ///
   /// Returns [Right] berisi [Unit] jika berhasil,
   /// atau [Left] berisi [CacheFailure] jika gagal.
-  Result<Unit> save(T data);
+  Future<Unit> save(T data);
 
   /// Membaca data dari local storage.
   ///

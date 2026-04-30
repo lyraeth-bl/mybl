@@ -1,0 +1,13 @@
+{
+  "@@locale": "en",
+  "dioNetworkError": "No internet connection. Check your network and try again.",
+  "dioServerError": "Server error. Please try again later.",
+  "dioUnauthorizedError": "Unauthorized access. Please log in again.",
+  "dioForbiddenError": "Access denied. You don’t have permission.",
+  "dioBadRequestError": "Invalid request. Please check your input.",
+  "dioSerializationError": "Failed to process data from server.",
+  "dioCancelledError": "Request was cancelled.",
+  "dioRateLimitedError": "Too many requests. Please slow down.",
+  "dioTimeoutError": "Request timeout. Please try again.",
+  "dioUnexpectedError": "Something went wrong. Please try again."
+}

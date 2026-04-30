@@ -10,6 +10,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../api_client/api_client_di.dart';
 import '../app_router/app_router_di.dart';
 import '../dio_factory/network_di.dart';
+import '../localizations/localization_di.dart';
 import '../storage/hive_storage/hive_storage_di.dart';
 import '../storage/secure_storage/secure_storage_di.dart';
 import 'app_bloc_observer.dart';
@@ -29,6 +30,7 @@ Future<void> initializeApp() async {
   initAppRouterDI();
   await initHiveStorageDI();
   initSecureStorageDI();
+  initLocalizationDI();
   initApiClientDI();
   initNetworkDI();
 
