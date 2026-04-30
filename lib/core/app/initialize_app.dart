@@ -13,7 +13,9 @@ import '../dio_factory/network_di.dart';
 import '../localizations/localization_di.dart';
 import '../storage/hive_storage/hive_storage_di.dart';
 import '../storage/secure_storage/secure_storage_di.dart';
+import '../theme/theme_storage_di.dart';
 import 'app_bloc_observer.dart';
+import 'app_di.dart';
 
 Future<void> initializeApp() async {
   await dotenv.load(fileName: ".env");
@@ -31,6 +33,8 @@ Future<void> initializeApp() async {
   await initHiveStorageDI();
   initSecureStorageDI();
   initLocalizationDI();
+  initThemeDI();
+  initAppDI();
   initApiClientDI();
   initNetworkDI();
 

@@ -4,6 +4,7 @@
 
 class HiveStorageBoxNames {
   static const String userLocalizationsBoxKey = "userLocalizationsBox";
+  static const String userThemeBoxKey = "userThemeBox";
 }
 
 /// Penyimpanan lokal menggunakan [Hive].
@@ -14,4 +15,5 @@ class HiveStorageBoxNames {
 /// Untuk data sensitif seperti token autentikasi, gunakan [SecureStorageNames].
 class HiveStorageNames {
   static const String userLocalizationsCodeKey = "userLocalizationsCode";
+  static const String userThemeModeKey = "userThemeMode";
 }

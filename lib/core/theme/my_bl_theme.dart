@@ -1,10 +1,14 @@
+// Copyright (c) 2026 Mahsa Nurfarhan Hidayat / Yayasan Pakarti Luhur. All rights reserved.
+// Use of this source code is governed by a MIT License
+// that can be found in the LICENSE file.
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 /// Konfigurasi tema untuk aplikasi Budi Luhur.
 ///
 /// Ubah pengaturan seperti font, skema warna, dan tema widget lainnya di sini.
-class BLTheme {
+class MyBlTheme {
   /// Warna dasar (warna Biru) Budi Luhur.
   ///
   /// Nomor .fromARGB di sini didapat dari hasil ekstrak warna biru pada logo

@@ -49,7 +49,7 @@ abstract interface class ListFetcher<T> {
 /// ```dart
 /// class UserCacheStorage implements CacheStorage<User> {
 ///   @override
-///   Result<Unit> save(User data) { ... }
+///   Future<Unit> save(User data) { ... }
 ///
 ///   @override
 ///   User? read() { ... }
