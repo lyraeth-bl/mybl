@@ -10,7 +10,7 @@ import 'hive_storage_names.dart';
 Future<void> initHiveStorageDI() async {
   await Hive.initFlutter();
 
-  await Hive.openBox(HiveStorageBoxNames.userBoxKey);
+  await Hive.openBox(HiveStorageBoxNames.userLocalizationsBoxKey);
 
   di.registerLazySingleton<HiveInterface>(() => Hive);
 }
