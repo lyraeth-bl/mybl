@@ -5,6 +5,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/auth/presentation/screens/auth_student_screen.dart';
+
 part 'route_names.dart';
 
 /// Konfigurasi routing aplikasi menggunakan [GoRouter].
@@ -137,11 +139,16 @@ class AppRouter {
   late final GoRouter goRouter = GoRouter(
     initialLocation: RouteNames.splash,
 
-    routes: [
+    routes: <GoRoute>[
       GoRoute(
         path: RouteNames.splash,
         builder: (context, state) =>
             Scaffold(body: Center(child: Text("Splash Screen"))),
+      ),
+
+      GoRoute(
+        path: RouteNames.authStudent,
+        builder: (context, state) => const AuthStudentScreen(),
       ),
     ],
   );

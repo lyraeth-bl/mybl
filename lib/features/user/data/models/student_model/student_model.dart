@@ -1,13 +1,13 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../domain/entities/user_entity/user_entity.dart';
+import '../../../domain/entities/student_entity/student_entity.dart';
 
-part 'user_model.freezed.dart';
-part 'user_model.g.dart';
+part 'student_model.freezed.dart';
+part 'student_model.g.dart';
 
 @freezed
-abstract class UserModel with _$UserModel {
-  const factory UserModel({
+abstract class StudentModel with _$StudentModel {
+  const factory StudentModel({
     @JsonKey(name: "NoKodeSekolah") required String noKodeSekolah,
     @JsonKey(name: "NoKodeKecamatan") required String noKodeKecamatan,
     @JsonKey(name: "NoKodeKabKot") required String noKodeKabupatenKota,
@@ -141,14 +141,14 @@ abstract class UserModel with _$UserModel {
     @JsonKey(name: "StatUjian") String? statusUjian,
     @JsonKey(name: "foto") String? profileImageUrl,
     @JsonKey(name: "unit") String? unit,
-  }) = _UserModel;
+  }) = _StudentModel;
 
-  factory UserModel.fromJson(Map<String, dynamic> json) =>
-      _$UserModelFromJson(json);
+  factory StudentModel.fromJson(Map<String, dynamic> json) =>
+      _$StudentModelFromJson(json);
 }
 
-extension UserModelMapper on UserModel {
-  UserEntity toEntity() => UserEntity(
+extension StudentModelMapper on StudentModel {
+  StudentEntity toEntity() => StudentEntity(
     agama: agama,
     aktif: aktif,
     alamat: alamat,

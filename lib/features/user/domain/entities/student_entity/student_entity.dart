@@ -1,10 +1,10 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'user_entity.freezed.dart';
+part 'student_entity.freezed.dart';
 
 @freezed
-abstract class UserEntity with _$UserEntity {
-  const factory UserEntity({
+abstract class StudentEntity with _$StudentEntity {
+  const factory StudentEntity({
     required String noKodeSekolah,
     required String noKodeKecamatan,
     required String noKodeKabupatenKota,
@@ -105,5 +105,5 @@ abstract class UserEntity with _$UserEntity {
     String? statusUjian,
     String? profileImageUrl,
     String? unit,
-  }) = _UserEntity;
+  }) = _StudentEntity;
 }

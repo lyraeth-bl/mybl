@@ -5,8 +5,9 @@
 import 'package:dio/dio.dart';
 
 import '../di/get_it_constant.dart';
+import '../internal/src/interfaces/data_interfaces.dart';
 import 'api_client.dart';
 
 void initApiClientDI() {
-  di.registerLazySingleton<ApiClient>(() => ApiClient(di<Dio>()));
+  di.registerLazySingleton<HTTPRequest>(() => ApiClient(di<Dio>()));
 }
