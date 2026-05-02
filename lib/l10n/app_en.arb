@@ -9,5 +9,15 @@
   "dioCancelledError": "Request was cancelled.",
   "dioRateLimitedError": "Too many requests. Please slow down.",
   "dioTimeoutError": "Request timeout. Please try again.",
-  "dioUnexpectedError": "Something went wrong. Please try again."
+  "dioUnexpectedError": "Something went wrong. Please try again.",
+  "nis": "NIS",
+  "pleaseEnterNis": "The nis field is required.",
+  "password": "Password",
+  "pleaseEnterPassword": "The password field is required.",
+  "letsSignIn": "Let's Sign in",
+  "welcomeBack": "Welcome Back",
+  "youHaveBeenMissed": "You've been missed!",
+  "signIn": "Sign in",
+  "rememberMyNis": "Remember my NIS?",
+  "forgetPassword": "Forget your password?"
 }
