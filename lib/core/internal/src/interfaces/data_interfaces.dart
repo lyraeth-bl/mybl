@@ -146,3 +146,27 @@ abstract interface class RememberMeStorage {
   /// Returns [Unit] kalau proses nyimpennya udah beres.
   Future<Unit> saveNIS(String nis);
 }
+
+/// Brangkas rahasia buat nyimpen token akses biar user nggak usah login berkali-kali.
+///
+/// Ini tugasnya jagain [accessToken] yang kita dapet dari server. Jadi selama tokennya
+/// masih ada dan valid, user bisa bebas mondar-mandir di app tanpa diganggu satpam login.
+abstract interface class SessionsStorage {
+  /// Ngintip token yang lagi kita pegang sekarang.
+  ///
+  /// Returns [String] tokennya kalau ada, atau `null` kalau emang lagi nggak ada sesi
+  /// yang aktif (alias user lagi logout).
+  Future<String?> readAccessToken();
+
+  /// Titip [accessToken] baru ke brangkas pas user berhasil login.
+  ///
+  /// Begitu token ini disimpen, app bakal pake ini buat semua urusan yang butuh
+  /// izin khusus dari server.
+  Future<Unit> saveAccessToken(String accessToken);
+
+  /// Bakar atau buang token yang ada pas user milih buat logout.
+  ///
+  /// Ini penting banget buat keamanan biar nggak ada orang iseng yang bisa
+  /// masuk pake sesi lama yang udah nggak dipake.
+  Future<Unit> clearAccessToken();
+}
