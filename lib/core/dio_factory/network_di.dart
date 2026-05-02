@@ -4,11 +4,11 @@
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:my_bl/core/token_provider/token_provider.dart';
 
 import '../../features/sessions/presentation/bloc/session_bloc.dart';
 import '../api_client/api_client.dart';
 import '../di/get_it_constant.dart';
+import '../token_provider/token_provider.dart';
 import 'dio_factory.dart';
 
 void _initNetworkDI({
