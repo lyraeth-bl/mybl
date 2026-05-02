@@ -19,6 +19,7 @@ import '../localizations/localization_di.dart';
 import '../storage/hive_storage/hive_storage_di.dart';
 import '../storage/secure_storage/secure_storage_di.dart';
 import '../theme/theme_storage_di.dart';
+import '../token_provider/token_provider_di.dart';
 import 'app_bloc_observer.dart';
 import 'app_di.dart';
 
@@ -42,6 +43,7 @@ Future<void> initializeApp() async {
   initLocalizationDI();
   initThemeDI();
   initAppDI();
+  initTokenProviderDI();
   initApiClientDI();
   initNetworkDI();
   initAuthDI();

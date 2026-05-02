@@ -5,6 +5,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../../../../core/di/get_it_constant.dart';
+import '../../../../core/token_provider/token_provider.dart';
 import '../../domain/usecases/clear_access_token_use_case.dart';
 import '../../domain/usecases/read_access_token_use_case.dart';
 import '../../domain/usecases/save_access_token_use_case.dart';
@@ -61,7 +63,7 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
 
     await _saveAccessTokenUseCase(event.accessToken);
 
-    // TODO : Tambah save token ke TokenProvider kalau sudah ada.
+    di<TokenProvider>().saveAccessToken(event.accessToken);
 
     emit(SessionState.authenticated(accessToken: event.accessToken));
   }
@@ -78,7 +80,7 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
 
     await _clearAccessTokenUseCase();
 
-    // TODO : Tambah clear token di TokenProvider kalau sudah ada.
+    di<TokenProvider>().clearAccessToken();
 
     emit(const SessionState.unauthenticated());
   }
