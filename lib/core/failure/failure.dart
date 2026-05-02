@@ -272,7 +272,6 @@ sealed class Failure with _$Failure {
       case 422:
         return Failure.badRequest(
           errorMessage: message,
-
           fieldErrors: payload?['errors'] is Map<String, dynamic>
               ? payload!['errors']
               : null,
@@ -283,7 +282,6 @@ sealed class Failure with _$Failure {
       case 401:
         return Failure.unauthorized(
           errorMessage: message,
-
           cause: e,
           stackTrace: st ?? e.stackTrace,
         );
@@ -291,7 +289,6 @@ sealed class Failure with _$Failure {
       case 403:
         return Failure.forbidden(
           errorMessage: message,
-
           cause: e,
           stackTrace: st ?? e.stackTrace,
         );
@@ -299,7 +296,6 @@ sealed class Failure with _$Failure {
       case 409:
         return Failure.server(
           errorMessage: message,
-
           statusCode: status,
           code: apiCode,
           data: payload,
@@ -311,7 +307,6 @@ sealed class Failure with _$Failure {
         if (status != null && status >= 500) {
           return Failure.server(
             errorMessage: message,
-
             statusCode: status,
             code: apiCode,
             data: payload,
@@ -322,7 +317,6 @@ sealed class Failure with _$Failure {
 
         return Failure.unexpected(
           errorMessage: message,
-
           cause: e,
           stackTrace: st ?? e.stackTrace,
         );

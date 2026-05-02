@@ -26,7 +26,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     emit(const AuthState.loading());
 
-    final params = event.loginParams;
+    final params = LoginParams(nis: event.nis, password: event.password);
 
     final result = await _loginUseCase(params);
 

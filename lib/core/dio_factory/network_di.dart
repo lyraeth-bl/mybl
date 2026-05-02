@@ -23,9 +23,10 @@ void _initNetworkDI({
           final token = await tokenProvider?.call();
           debugPrint("TOKEN USED: $token");
 
+          options.headers['Accept'] = "application/json";
+          options.headers['Content-Type'] = "application/json";
+
           if (token != null && token.isNotEmpty) {
-            options.headers['Accept'] = "application/json";
-            options.headers['Content-Type'] = "application/json";
             options.headers['Authorization'] = "Bearer $token";
           }
 

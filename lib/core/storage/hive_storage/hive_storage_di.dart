@@ -11,6 +11,7 @@ Future<void> initHiveStorageDI() async {
   await Hive.initFlutter();
 
   await Hive.openBox(HiveStorageBoxNames.userLocalizationsBoxKey);
+  await Hive.openBox(HiveStorageBoxNames.userThemeBoxKey);
 
   di.registerLazySingleton<HiveInterface>(() => Hive);
 }
