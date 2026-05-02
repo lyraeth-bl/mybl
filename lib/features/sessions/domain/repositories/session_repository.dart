@@ -11,6 +11,6 @@ import '../../../../core/internal/src/interfaces/data_interfaces.dart';
 /// sebenernya kontrak yang wajib diikutin kalau kita mau bikin implementasi
 /// storage buat sesi, misalnya mau pake Hive atau SharedPreferences.
 ///
-/// Karena dia dapet warisan dari [SessionsStorage], dia punya tugas buat
+/// Karena dia dapet warisan dari [TokenStorage], dia punya tugas buat
 /// baca, nyimpen, sampe ngebakar (hapus) access token pas user logout.
-abstract class SessionRepository implements SessionsStorage {}
+abstract class SessionRepository implements TokenStorage {}

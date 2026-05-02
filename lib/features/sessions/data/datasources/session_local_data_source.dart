@@ -12,7 +12,7 @@ import '../../../../core/storage/secure_storage/secure_storage_names.dart';
 ///
 /// [SessionLocalDataSource] ini cuma janji (interface) kalau siapapun yang
 /// mengimplementasikannya harus bisa baca, simpen, dan hapus token.
-abstract class SessionLocalDataSource implements SessionsStorage {}
+abstract class SessionLocalDataSource implements TokenStorage {}
 
 /// Eksekutor utama buat urusan simpen-menyimpan token di perangkat.
 ///
