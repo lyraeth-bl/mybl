@@ -1,5 +1,8 @@
+// Copyright (c) 2026 Mahsa Nurfarhan Hidayat / Yayasan Pakarti Luhur. All rights reserved.
+// Use of this source code is governed by a MIT License
+// that can be found in the LICENSE file.
+
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:my_bl/features/sessions/presentation/bloc/session_bloc.dart';
 
 import '../../core/di/get_it_constant.dart';
 import 'data/datasources/session_local_data_source.dart';
@@ -8,6 +11,7 @@ import 'domain/repositories/session_repository.dart';
 import 'domain/usecases/clear_access_token_use_case.dart';
 import 'domain/usecases/read_access_token_use_case.dart';
 import 'domain/usecases/save_access_token_use_case.dart';
+import 'presentation/bloc/session_bloc.dart';
 
 void initSessionsDI() {
   di.registerLazySingleton<SessionRepository>(
