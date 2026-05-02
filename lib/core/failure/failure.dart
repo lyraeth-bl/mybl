@@ -11,75 +11,111 @@ import '../../l10n/app_localizations.dart';
 
 part 'failure.freezed.dart';
 
+/// Class buat nampung semua masalah (error) yang mungkin kejadian di app.
+///
+/// Daripada app-nya crash atau bengong pas ada error, kita bungkus semuanya
+/// di sini biar kita bisa kasih tau user apa yang sebenernya terjadi secara rapi.
 @freezed
 sealed class Failure with _$Failure {
   const Failure._();
 
+  /// Pas internet lagi ampas atau mati total.
   const factory Failure.network({
+    /// Pesan error yang bisa dibaca manusia.
     String? errorMessage,
+
+    /// Objek error aslinya kalau mau di-debug.
     Object? cause,
+
+    /// Jejak error-nya di mana.
     StackTrace? stackTrace,
   }) = _Network;
 
+  /// Pas server-nya lagi tantrum atau nge-drop error 500-an.
   const factory Failure.server({
+    /// Pesan error dari server.
     String? errorMessage,
+
+    /// Kode status HTTP-nya (misal 500, 503).
     int? statusCode,
+
+    /// Kode error spesifik dari API (kalau ada).
     String? code,
+
+    /// Data tambahan dari server biar kita tau salahnya di mana.
     Map<String, dynamic>? data,
+
+    /// Error aslinya.
     Object? cause,
+
+    /// Stack trace buat debugging.
     StackTrace? stackTrace,
   }) = _Server;
 
+  /// Pas user lupa login atau session-nya udah expired.
   const factory Failure.unauthorized({
     String? errorMessage,
     Object? cause,
     StackTrace? stackTrace,
   }) = _Unauthorized;
 
+  /// Pas user nyoba akses fitur yang bukan jatahnya (Forbidden).
   const factory Failure.forbidden({
     String? errorMessage,
     Object? cause,
     StackTrace? stackTrace,
   }) = _Forbidden;
 
+  /// Pas input dari user ada yang ngaco atau nggak valid.
   const factory Failure.badRequest({
+    /// Pesan error umum.
     String? errorMessage,
+
+    /// List error per field (misal: email nggak valid).
     Map<String, dynamic>? fieldErrors,
     Object? cause,
     StackTrace? stackTrace,
   }) = _BadRequest;
 
+  /// Pas kita gagal ngebaca data dari server (Gagal JSON parsing).
   const factory Failure.serialization({
     String? errorMessage,
     Object? cause,
     StackTrace? stackTrace,
   }) = _Serialization;
 
+  /// Pas request-nya dibatalin sama kita sendiri (misal user pindah halaman).
   const factory Failure.cancelled({
     String? errorMessage,
     Object? cause,
     StackTrace? stackTrace,
   }) = _Cancelled;
 
+  /// Pas user nge-spam request kenceng banget sampai kena limit.
   const factory Failure.rateLimited({
     String? errorMessage,
+
+    /// Info kapan kita bisa coba lagi.
     Duration? retryAfter,
     Object? cause,
     StackTrace? stackTrace,
   }) = _RateLimited;
 
+  /// Pas server kelamaan ngejawab (Timeout).
   const factory Failure.timeout({
     String? errorMessage,
     Object? cause,
     StackTrace? stackTrace,
   }) = _Timeout;
 
+  /// Buat error yang aneh-aneh dan nggak masuk kategori di atas.
   const factory Failure.unexpected({
     String? errorMessage,
     Object? cause,
     StackTrace? stackTrace,
   }) = _Unexpected;
 
+  /// Ngambil key buat translate error-nya.
   String get messageKey => map(
     network: (_) => 'dioNetworkError',
     server: (_) => 'dioServerError',
@@ -93,6 +129,7 @@ sealed class Failure with _$Failure {
     unexpected: (_) => 'dioUnexpectedError',
   );
 
+  /// Label singkat buat tipe error-nya.
   String get labelError => map(
     network: (_) => 'network',
     server: (_) => 'server',
@@ -106,20 +143,14 @@ sealed class Failure with _$Failure {
     unexpected: (_) => 'unexpected',
   );
 
-  /// Mengembalikan pesan kesalahan yang telah dilokalisasi.
+  /// Ubah error jadi pesan yang bisa dibaca user sesuai bahasa yang dipilih.
   ///
-  /// Memetakan setiap tipe [Failure] ke string yang sesuai dari [AppLocalizations].
+  /// Butuh [l10n] buat nyari teks yang pas di file ARB.
   ///
-  /// Contoh penggunaan:
+  /// Contoh cara pakainya di UI:
   /// ```dart
-  /// @override
-  /// Widget build(BuildContext context) {
-  ///   final l10n = AppLocalizations.of(context);
-  ///
-  ///   return failure.maybeWhen(
-  ///     orElse: () => Text(failure.localizedMessage(l10n)),
-  ///   );
-  /// }
+  /// final l10n = AppLocalizations.of(context);
+  /// final text = failure.localizedMessage(l10n);
   /// ```
   String localizedMessage(AppLocalizations l10n) => map(
     network: (_) => l10n.dioNetworkError,
@@ -134,7 +165,11 @@ sealed class Failure with _$Failure {
     unexpected: (_) => l10n.dioUnexpectedError,
   );
 
-  static Failure fromDio(Object error, [StackTrace? stackTrace]) {
+  /// Fungsi sakti buat ngerubah error apapun (Dio, Socket, dll) jadi [Failure].
+  ///
+  /// Masukin [error] aslinya dan opsional [stackTrace]-nya.
+  /// Returns salah satu jenis [Failure] yang paling pas.
+  static Failure fromError(Object error, [StackTrace? stackTrace]) {
     if (error is DioException) {
       final e = error;
 
@@ -148,7 +183,7 @@ sealed class Failure with _$Failure {
           );
         case DioExceptionType.badCertificate:
           return Failure.network(
-            errorMessage: 'Bad certificate',
+            errorMessage: 'Sertifikat SSL/TLS bermasalah.',
             cause: e,
             stackTrace: stackTrace ?? e.stackTrace,
           );
@@ -192,6 +227,7 @@ sealed class Failure with _$Failure {
     return Failure.unexpected(cause: error, stackTrace: stackTrace);
   }
 
+  /// Private helper buat nge-map error koneksi.
   static Failure _mapConnectionError(
     DioException error,
     StackTrace? stackTrace,
@@ -216,6 +252,7 @@ sealed class Failure with _$Failure {
     );
   }
 
+  /// Private helper buat nge-bedain error berdasarkan status code HTTP.
   static Failure _mapBadResponse(DioException e, StackTrace? st) {
     final status = e.response?.statusCode;
     final data = e.response?.data;
@@ -235,7 +272,6 @@ sealed class Failure with _$Failure {
       case 422:
         return Failure.badRequest(
           errorMessage: message,
-
           fieldErrors: payload?['errors'] is Map<String, dynamic>
               ? payload!['errors']
               : null,
@@ -246,7 +282,6 @@ sealed class Failure with _$Failure {
       case 401:
         return Failure.unauthorized(
           errorMessage: message,
-
           cause: e,
           stackTrace: st ?? e.stackTrace,
         );
@@ -254,7 +289,6 @@ sealed class Failure with _$Failure {
       case 403:
         return Failure.forbidden(
           errorMessage: message,
-
           cause: e,
           stackTrace: st ?? e.stackTrace,
         );
@@ -262,7 +296,6 @@ sealed class Failure with _$Failure {
       case 409:
         return Failure.server(
           errorMessage: message,
-
           statusCode: status,
           code: apiCode,
           data: payload,
@@ -274,7 +307,6 @@ sealed class Failure with _$Failure {
         if (status != null && status >= 500) {
           return Failure.server(
             errorMessage: message,
-
             statusCode: status,
             code: apiCode,
             data: payload,
@@ -285,13 +317,13 @@ sealed class Failure with _$Failure {
 
         return Failure.unexpected(
           errorMessage: message,
-
           cause: e,
           stackTrace: st ?? e.stackTrace,
         );
     }
   }
 
+  /// Nyari String di dalam [map] berdasarkan list [keys] yang dikasih.
   static String? _extractString(Map<String, dynamic> map, List<String> keys) {
     for (final k in keys) {
       final v = map[k];

@@ -9,5 +9,15 @@
   "dioCancelledError": "Request nya dibatalin, tenang aja ya.",
   "dioRateLimitedError": "Kamu udah kebanyakan permintaan nih, santai dulu ga sih.",
   "dioTimeoutError": "Response dari servernya kelamaan, coba ulang lagi ya.",
-  "dioUnexpectedError": "Ada yang aneh, coba ulang lagi ya."
+  "dioUnexpectedError": "Ada yang aneh, coba ulang lagi ya.",
+  "nis": "NIS",
+  "pleaseEnterNis": "NIS tidak boleh kosong, isi dulu ya...",
+  "password": "Password",
+  "pleaseEnterPassword": "Password juga tidak boleh kosong ya...",
+  "letsSignIn": "Ayo Masuk",
+  "welcomeBack": "Selamat Datang Kembali",
+  "youHaveBeenMissed": "Kami merindukanmu!",
+  "signIn": "Masuk",
+  "rememberMyNis": "Ingat NIS saya?",
+  "forgetPassword": "Lupa password anda?"
 }

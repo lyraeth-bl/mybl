@@ -6,10 +6,12 @@ import 'package:fpdart/fpdart.dart';
 
 import '../types.dart';
 
-/// Kontrak untuk mengambil satu item dari sumber data (remote atau cache).
+/// Kontrak buat narik data sebiji doang dari mana aja (API atau cache lokal).
 ///
-/// Implementasi tipikal: repository yang wrap API call atau local storage.
+/// Biasanya dipake sama Repository buat bungkus urusan manggil API. Jadi
+/// siapapun yang pake class ini udah tau beres cara ambil datanya.
 ///
+/// Contohnya gini:
 /// ```dart
 /// class UserRepository implements ItemFetcher<User> {
 ///   @override
@@ -17,35 +19,34 @@ import '../types.dart';
 /// }
 /// ```
 abstract interface class ItemFetcher<T> {
-  /// Mengambil satu item bertipe [T].
+  /// Narik data sebiji bertipe [T].
   ///
-  /// Jika [forceRefresh] adalah `true`, implementasi harus bypass cache
-  /// dan mengambil data terbaru dari sumber utama (biasanya remote).
+  /// Kalau [forceRefresh] diset jadi `true`, kita bakal skip cache dan
+  /// langsung nodong data terbaru dari sumber utama (kayak API).
   ///
-  /// Returns [Right] berisi data jika berhasil,
-  /// atau [Left] berisi [Failure] jika terjadi error.
+  /// Returns [Result] isinya data kalau aman, atau [Failure] kalau lagi apes.
   Future<Result<T>> fetch([bool forceRefresh = false]);
 }
 
-/// Kontrak untuk mengambil koleksi item dari sumber data.
+/// Kontrak buat narik data se-gudang (List) dari mana aja.
 ///
-/// Gunakan ini untuk list/feed yang bisa di-cache atau di-refresh.
+/// Pas banget buat fitur yang ada list-nya, feed, atau koleksi data lainnya.
 abstract interface class ListFetcher<T> {
-  /// Mengambil semua item bertipe [T] sebagai [List].
+  /// Narik semua data bertipe [T] dalam bentuk [List].
   ///
-  /// Jika [forceRefresh] adalah `true`, implementasi harus bypass cache
-  /// dan mengambil data terbaru dari sumber utama.
+  /// Kalau [forceRefresh] diset jadi `true`, kita bakal skip data lokal
+  /// dan langsung tarik data seger dari pusat.
   ///
-  /// Returns [Right] berisi `List<T>` jika berhasil,
-  /// atau [Left] berisi [Failure] jika terjadi error.
+  /// Returns [Result] isinya daftar data kalau sukses, atau [Failure] kalau gagal.
   Future<Result<List<T>>> fetchAll([bool forceRefresh = false]);
 }
 
-/// Kontrak untuk menyimpan dan membaca data dari local storage.
+/// Kontrak buat titip data atau baca data di penyimpanan lokal (Cache).
 ///
-/// Dirancang untuk cache layer — biasanya diimplementasikan
-/// dengan Hive, SharedPreferences, atau in-memory store.
+/// Ini kayak gudang sementara biar kita nggak usah bolak-balik ke internet.
+/// Biasanya di-implement pake Hive, SharedPreferences, atau simpen di memory aja.
 ///
+/// Contoh cara pakenya:
 /// ```dart
 /// class UserCacheStorage implements CacheStorage<User> {
 ///   @override
@@ -56,71 +57,92 @@ abstract interface class ListFetcher<T> {
 /// }
 /// ```
 abstract interface class CacheStorage<T> {
-  /// Menyimpan [data] ke local storage.
+  /// Titip [data] ke penyimpanan lokal biar awet.
   ///
-  /// Returns [Right] berisi [Unit] jika berhasil,
-  /// atau [Left] berisi [CacheFailure] jika gagal.
+  /// Returns [Unit] kalau proses titipnya berhasil divalidasi lewat [Result].
   Future<Unit> save(T data);
 
-  /// Membaca data dari local storage.
+  /// Baca data yang udah pernah dititip sebelumnya.
   ///
-  /// Returns `null` jika data belum pernah disimpan atau sudah expired.
-  /// Tidak melempar exception — error handling ada di [save].
+  /// Returns `null` kalau datanya emang nggak ada atau udah basi (expired).
+  /// Di sini nggak bakal lempar error karena urusan error udah dihandle pas [save].
   T? read();
 }
 
-/// Kontrak untuk melakukan HTTP request.
+/// Alat tempur buat ngobrol sama server lewat protokol HTTP.
 ///
-/// Abstraksi di atas HTTP client (Dio, http, dll) agar
-/// implementasi bisa diganti tanpa mengubah layer di atasnya.
-///
-/// Semua method mengembalikan [HTTPResult] — alias dari
-/// `Either<Failure, Map<String, dynamic>>` — sehingga
-/// error handling konsisten tanpa try-catch di luar layer ini.
+/// Ini cuma bungkus (abstraksi) biar kalau kita mau ganti library (misal dari Dio
+/// ke http biasa), kode di atasnya nggak perlu ikutan pusing.
+/// Semua method di sini bisa lempar [Exception], jadi pastiin dihandle di Repository ya!
 abstract interface class HTTPRequest {
-  /// Melakukan HTTP GET ke [url].
+  /// Manggil API pake metode GET ke [url].
   ///
-  /// - [url] endpoint tujuan, relatif terhadap base URL.
-  /// - [queryParameters] query string opsional, misal `{'page': 1}`.
-  ///
-  /// Returns [Right] berisi response body jika status 2xx,
-  /// atau [Left] berisi [Failure] jika terjadi error.
-  Future<HTTPResult> get(String url, {Map<String, dynamic>? queryParameters});
+  /// Pake [url] yang dituju, dan bisa kasih [queryParameters] kalau mau filter data.
+  /// Returns isi responsenya dalam bentuk [Map] kalau status kodenya 2xx (aman).
+  Future<Map<String, dynamic>> get(
+    String url, {
+    Map<String, dynamic>? queryParameters,
+  });
 
-  /// Melakukan HTTP POST ke [url] dengan [data] sebagai request body.
+  /// Ngirim data baru pake metode POST ke [url] bareng [data].
   ///
-  /// - [url] endpoint tujuan.
-  /// - [data] body yang akan di-encode sebagai JSON.
-  /// - [queryParameters] query string opsional.
-  ///
-  /// Returns [Right] berisi response body jika status 2xx,
-  /// atau [Left] berisi [Failure] jika terjadi error.
-  Future<HTTPResult> post(
+  /// [data] bakal otomatis di-encode jadi JSON pas dikirim.
+  /// Returns isi response dari server kalau request kita berhasil diproses.
+  Future<Map<String, dynamic>> post(
     String url, {
     Map<String, dynamic>? queryParameters,
     required Map<String, dynamic> data,
   });
 
-  /// Melakukan HTTP PUT ke [url] dengan [data] sebagai request body.
+  /// Update data yang udah ada pake metode PUT ke [url] bareng [data].
   ///
-  /// Gunakan untuk update resource secara keseluruhan (full replace).
-  /// Untuk partial update, pertimbangkan menambahkan method `patch`.
-  ///
-  /// - [url] endpoint tujuan.
-  /// - [data] body yang akan di-encode sebagai JSON.
-  /// - [queryParameters] query string opsional.
-  ///
-  /// Returns [Right] berisi response body jika status 2xx,
-  /// atau [Left] berisi [Failure] jika terjadi error.
-  Future<HTTPResult> put(
+  /// Biasanya dipake buat gantiin semua data lama sama data baru yang ada di [data].
+  /// Returns hasil kembalian dari server kalau update-nya berhasil.
+  Future<Map<String, dynamic>> put(
     String url, {
     Map<String, dynamic>? queryParameters,
     required Map<String, dynamic> data,
   });
 
-  /// Melakukan HTTP DELETE ke [url].
+  /// Hapus data di [url] yang kita tuju.
   ///
-  /// Returns [Unit] jika berhasil.
-  /// Jika response non-2xx, implementasi harus melempar atau menangani error.
+  /// Returns [Unit] kalau server udah setuju datanya dihapus.
   Future<Unit> delete(String url);
+}
+
+/// Satpam pintu masuk buat urusan login & logout user.
+///
+/// Tugasnya jagain sesi user, mulai dari masuk pake kredensial sampai keluar
+/// buat bersihin data sesi.
+abstract interface class Authenticator<T> {
+  /// Proses masuk ke sistem pake [nis] sama [password].
+  ///
+  /// Bakal ngecek ke server apakah kredensial user valid atau nggak.
+  /// Returns [Result] isinya data user [T] kalau berhasil masuk.
+  Future<Result<T>> login({required String nis, required String password});
+
+  /// Proses keluar dan akhiri sesi user yang lagi aktif.
+  ///
+  /// Bakal beresin token atau data sesi di lokal dan server kalau perlu.
+  /// Returns [Unit] lewat [Result] kalau proses keluarnya udah beres.
+  Future<Result<Unit>> logout();
+}
+
+/// Jembatan buat nyimpen info "ingat saya" (biasanya nis) biar
+/// user nggak capek ngetik ulang tiap kali mau login.
+///
+/// Ini ngebantu banget buat user experience karena mereka tinggal isi password
+/// aja pas mau masuk lagi.
+abstract interface class RememberMeStorage {
+  /// Ngintip data nis yang udah pernah dititip sebelumnya.
+  ///
+  /// Kalau dapet, kita bisa langsung isiin ke field nis di halaman login.
+  /// Returns [String] kalau ada, atau `null` kalau emang lagi kosong.
+  Future<String?> readNIS();
+
+  /// Nitip [nis] ke storage biar besok-besok bisa langsung muncul.
+  ///
+  /// Biasanya dipanggil pas user berhasil login dan centang opsi "Remember Me".
+  /// Returns [Unit] kalau proses nyimpennya udah beres.
+  Future<Unit> saveNIS(String nis);
 }

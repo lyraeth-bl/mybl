@@ -9,4 +9,7 @@ class RouteNames {
 
   // Splash Route
   static const String splash = "/";
+
+  // Auth Student Screen
+  static const String authStudent = "/auth/student";
 }
