@@ -151,7 +151,7 @@ abstract interface class RememberMeStorage {
 ///
 /// Ini tugasnya jagain [accessToken] yang kita dapet dari server. Jadi selama tokennya
 /// masih ada dan valid, user bisa bebas mondar-mandir di app tanpa diganggu satpam login.
-abstract interface class SessionsStorage {
+abstract interface class TokenStorage {
   /// Ngintip token yang lagi kita pegang sekarang.
   ///
   /// Returns [String] tokennya kalau ada, atau `null` kalau emang lagi nggak ada sesi
