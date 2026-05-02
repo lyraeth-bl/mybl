@@ -127,3 +127,22 @@ abstract interface class Authenticator<T> {
   /// Returns [Unit] lewat [Result] kalau proses keluarnya udah beres.
   Future<Result<Unit>> logout();
 }
+
+/// Jembatan buat nyimpen info "ingat saya" (biasanya nis) biar
+/// user nggak capek ngetik ulang tiap kali mau login.
+///
+/// Ini ngebantu banget buat user experience karena mereka tinggal isi password
+/// aja pas mau masuk lagi.
+abstract interface class RememberMeStorage {
+  /// Ngintip data nis yang udah pernah dititip sebelumnya.
+  ///
+  /// Kalau dapet, kita bisa langsung isiin ke field nis di halaman login.
+  /// Returns [String] kalau ada, atau `null` kalau emang lagi kosong.
+  Future<String?> readNIS();
+
+  /// Nitip [nis] ke storage biar besok-besok bisa langsung muncul.
+  ///
+  /// Biasanya dipanggil pas user berhasil login dan centang opsi "Remember Me".
+  /// Returns [Unit] kalau proses nyimpennya udah beres.
+  Future<Unit> saveNIS(String nis);
+}

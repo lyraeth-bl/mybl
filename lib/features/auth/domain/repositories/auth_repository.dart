@@ -12,4 +12,5 @@ import '../entities/auth_response_entity/auth_response_entity.dart';
 ///
 /// See also:
 /// * [AuthRepositoryImpl], buat liat implementasi nyatanya.
-abstract class AuthRepository implements Authenticator<AuthResponseEntity> {}
+abstract class AuthRepository
+    implements Authenticator<AuthResponseEntity>, RememberMeStorage {}

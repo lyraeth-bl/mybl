@@ -7,20 +7,21 @@ import '../entities/auth_response_entity/auth_response_entity.dart';
 import '../entities/login_params/login_params.dart';
 import '../repositories/auth_repository.dart';
 
-/// UseCase khusus buat nanganin proses login.
+/// Si paling pintu masuk. Use case ini tugasnya nanganin proses login biar user
+/// bisa dapet akses ke fitur-fitur keren di aplikasi.
 ///
-/// Tugasnya simpel: nerima [LoginParams] dari UI, terus nyuruh [AuthRepository]
-/// buat eksekusi proses login-nya. Ini bagian dari Clean Architecture biar
-/// logic bisnis nggak kecampur aduk.
+/// [LoginUseCase] ini cuma butuh [LoginParams] (isinya NIS & password) terus
+/// dia bakal minta tolong ke [AuthRepository] buat verifikasi datanya.
 class LoginUseCase {
-  /// Bikin instance [LoginUseCase] bareng [_authRepository] andalannya.
+  /// Bikin instance [LoginUseCase] bareng [AuthRepository] andalan lo.
   LoginUseCase(this._authRepository);
 
   final AuthRepository _authRepository;
 
-  /// Jalanin aksi login pake [params] yang dikasih.
+  /// Jalanin aksi login pake data yang ada di [params].
   ///
-  /// Returns [Result] isinya data user kalau sukses, atau [Failure] kalau gagal.
+  /// Method [call] ini bakal ngembaliin [Result] yang isinya data user [AuthResponseEntity]
+  /// kalo berhasil, atau [Failure] kalo ternyata login-nya gagal (misal salah password).
   Future<Result<AuthResponseEntity>> call(LoginParams params) =>
       _authRepository.login(nis: params.nis, password: params.password);
 }
