@@ -27,7 +27,7 @@ class MyBlTheme {
       seedColor: _baseColor,
       brightness: Brightness.light,
     ),
-    textTheme: GoogleFonts.poppinsTextTheme(),
+    textTheme: GoogleFonts.comfortaaTextTheme(),
   );
 
   /// Definisi Tema Gelap (Dark Mode).
@@ -39,6 +39,6 @@ class MyBlTheme {
       seedColor: _baseColor,
       brightness: Brightness.dark,
     ),
-    textTheme: GoogleFonts.poppinsTextTheme(),
+    textTheme: GoogleFonts.comfortaaTextTheme(),
   );
 }
