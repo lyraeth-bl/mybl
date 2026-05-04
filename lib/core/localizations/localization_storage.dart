@@ -6,7 +6,7 @@ import 'package:fpdart/fpdart.dart';
 import 'package:hive_ce/hive_ce.dart';
 
 import '../internal/internal.dart';
-import '../storage/hive_storage/hive_storage_names.dart';
+import '../storage/storage_keys/hive_storage_names.dart';
 
 class LocalizationStorage implements CacheStorage<String> {
   LocalizationStorage(this._hive);
@@ -17,8 +17,8 @@ class LocalizationStorage implements CacheStorage<String> {
   String? read() {
     final languageCode =
         _hive
-                .box(HiveStorageBoxNames.userLocalizationsBoxKey)
-                .get(HiveStorageNames.userLocalizationsCodeKey)
+                .box(HiveStorageBoxNames.appBoxKey)
+                .get(HiveStorageNames.appLocalizationsCodeKey)
             as String?;
 
     if (languageCode == null) return null;
@@ -29,8 +29,8 @@ class LocalizationStorage implements CacheStorage<String> {
   @override
   Future<Unit> save(String data) async {
     await _hive
-        .box(HiveStorageBoxNames.userLocalizationsBoxKey)
-        .put(HiveStorageNames.userLocalizationsCodeKey, data);
+        .box(HiveStorageBoxNames.appBoxKey)
+        .put(HiveStorageNames.appLocalizationsCodeKey, data);
 
     return unit;
   }

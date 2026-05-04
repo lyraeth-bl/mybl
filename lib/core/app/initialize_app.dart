@@ -14,11 +14,12 @@ import '../../features/sessions/sessions_di.dart';
 import '../../features/user/user_di.dart';
 import '../api_client/api_client_di.dart';
 import '../app_router/app_router_di.dart';
+import '../di/get_it_constant.dart';
 import '../dio_factory/network_di.dart';
 import '../http_override/http_override.dart';
 import '../localizations/localization_di.dart';
-import '../storage/hive_storage/hive_storage_di.dart';
-import '../storage/secure_storage/secure_storage_di.dart';
+import '../storage/domain/usecases/open_all_boxes_use_case.dart';
+import '../storage/storage_di.dart';
 import '../theme/theme_storage_di.dart';
 import '../token_provider/token_provider_di.dart';
 import 'app_bloc_observer.dart';
@@ -39,8 +40,7 @@ Future<void> initializeApp() async {
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   initAppRouterDI();
-  await initHiveStorageDI();
-  initSecureStorageDI();
+  await initStorageDI();
   initLocalizationDI();
   initThemeDI();
   initAppDI();
@@ -50,6 +50,8 @@ Future<void> initializeApp() async {
   initAuthDI();
   initSessionsDI();
   initUserDI();
+
+  await di<OpenAllBoxesUseCase>().call();
 
   Bloc.observer = const AppBlocObserver();
 }
