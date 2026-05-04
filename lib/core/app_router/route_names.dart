@@ -12,4 +12,7 @@ class RouteNames {
 
   // Auth Student Screen
   static const String authStudent = "/auth/student";
+
+  // Dashboard
+  static const String dashboard = "/dashboard";
 }

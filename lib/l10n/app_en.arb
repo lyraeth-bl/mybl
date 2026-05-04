@@ -21,5 +21,8 @@
   "rememberMyNis": "Remember my NIS?",
   "forgetPassword": "Forget your password?",
   "schoolName": "Sekolah Budi Luhur",
-  "schoolSlogan": "Cerdas Berbudi Luhur"
+  "schoolSlogan": "Cerdas Berbudi Luhur",
+  "home": "Home",
+  "dashboard": "Dashboard",
+  "profile": "Profile"
 }
