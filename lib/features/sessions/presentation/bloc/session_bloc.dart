@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../../core/di/get_it_constant.dart';
+import '../../../../core/storage/domain/usecases/clear_all_boxes_use_case.dart';
 import '../../../../core/token_provider/token_provider.dart';
 import '../../domain/usecases/clear_access_token_use_case.dart';
 import '../../domain/usecases/read_access_token_use_case.dart';
@@ -25,6 +26,7 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
     this._saveAccessTokenUseCase,
     this._readAccessTokenUseCase,
     this._clearAccessTokenUseCase,
+    this._clearAllBoxesUseCase,
   ) : super(const SessionState.initial()) {
     on<_Started>(_onStarted);
     on<_LoggedIn>(_onLoggedIn);
@@ -34,6 +36,7 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
   final SaveAccessTokenUseCase _saveAccessTokenUseCase;
   final ReadAccessTokenUseCase _readAccessTokenUseCase;
   final ClearAccessTokenUseCase _clearAccessTokenUseCase;
+  final ClearAllBoxesUseCase _clearAllBoxesUseCase;
 
   /// Proses pengecekan awal pas app baru dibuka.
   ///
@@ -77,6 +80,8 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
     Emitter<SessionState> emit,
   ) async {
     emit(const SessionState.loading());
+
+    await _clearAllBoxesUseCase();
 
     await _clearAccessTokenUseCase();
 

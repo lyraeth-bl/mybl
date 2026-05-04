@@ -4,5 +4,5 @@
 
 library;
 
-export 'hive_storage/hive_storage_names.dart';
-export 'secure_storage/secure_storage_names.dart';
+export 'storage_keys/hive_storage_names.dart';
+export 'storage_keys/secure_storage_names.dart';

@@ -6,7 +6,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:fpdart/fpdart.dart';
 
 import '../../../../core/internal/src/interfaces/data_interfaces.dart';
-import '../../../../core/storage/secure_storage/secure_storage_names.dart';
+import '../../../../core/storage/storage_keys/secure_storage_names.dart';
 
 /// Kontrak buat datasource yang ngurusin sesi secara lokal.
 ///

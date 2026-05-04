@@ -6,7 +6,7 @@ import 'package:fpdart/fpdart.dart';
 import 'package:hive_ce/hive_ce.dart';
 
 import '../../../../core/internal/src/interfaces/data_interfaces.dart';
-import '../../../../core/storage/hive_storage/hive_storage_names.dart';
+import '../../../../core/storage/storage_keys/hive_storage_names.dart';
 
 /// Kontrak buat ngurusin data auth di level lokal.
 ///

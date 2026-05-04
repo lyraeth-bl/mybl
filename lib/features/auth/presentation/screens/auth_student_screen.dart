@@ -72,7 +72,11 @@ class _ErrorHandlingListener extends StatelessWidget {
         state.whenOrNull(
           failure: (failure) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(failure.localizedMessage(l10n))),
+              SnackBar(
+                content: Text(
+                  failure.errorMessage ?? failure.localizedMessage(l10n),
+                ),
+              ),
             );
           },
         );
