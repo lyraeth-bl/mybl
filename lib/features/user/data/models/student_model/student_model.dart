@@ -9,6 +9,11 @@ import '../../../domain/entities/student_entity/student_entity.dart';
 part 'student_model.freezed.dart';
 part 'student_model.g.dart';
 
+/// [StudentModel] itu wujud asli data pas baru dateng dari API atau Database.
+/// Karena server sering kasih nama field yang aneh-aneh (pake PascalCase lah,
+/// singkatan lah), kita pake [JsonKey] buat map ke nama yang lebih manusiawi.
+///
+/// Bedanya sama Entity? Model ini tau cara berubah jadi JSON dan sebaliknya.
 @freezed
 abstract class StudentModel with _$StudentModel {
   const factory StudentModel({
@@ -151,7 +156,11 @@ abstract class StudentModel with _$StudentModel {
       _$StudentModelFromJson(json);
 }
 
+/// [StudentModelMapper] adalah "Tukang Sortir" atau jembatan buat ngubah
+/// [StudentModel] (data mentah API) jadi [StudentEntity] (data bersih Domain).
+/// Penting banget biar kode di level UI/Domain gak pusing sama nama field API.
 extension StudentModelMapper on StudentModel {
+  /// Panggil [toEntity] buat dapet versi "bersih" dari data siswa ini.
   StudentEntity toEntity() => StudentEntity(
     agama: agama,
     aktif: aktif,

@@ -13,13 +13,23 @@ part 'user_bloc.freezed.dart';
 part 'user_event.dart';
 part 'user_state.dart';
 
+/// [UserBloc] itu "Pusat Kendali" buat semua hal yang berhubungan sama user di UI.
+/// Dia dengerin apa yang lo mau (via [UserEvent]) dan ngasih tau UI harus
+/// nampilin apa (via [UserState]).
+///
+/// Pokoknya UI gak boleh nembak Repository langsung, harus lewat jalur resmi
+/// yaitu lewat si [UserBloc] ini.
 class UserBloc extends Bloc<UserEvent, UserState> {
   UserBloc(this._fetchStudentUseCase) : super(const UserState.initial()) {
+    // Kalo ada yang minta fetch data siswa, kita jalanin fungsinya.
     on<_FetchStudentRequested>(_onFetchStudentRequested);
   }
 
   final FetchStudentUseCase _fetchStudentUseCase;
 
+  /// Ini pawang buat kejadian `_FetchStudentRequested`.
+  /// Alurnya: kasih tau UI lagi loading -> panggil kurir ([FetchStudentUseCase])
+  /// -> kasih tau UI hasilnya (berhasil atau gagal).
   Future<void> _onFetchStudentRequested(
     _FetchStudentRequested event,
     Emitter<UserState> emit,

@@ -6,6 +6,12 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'student_entity.freezed.dart';
 
+/// [StudentEntity] ini adalah "Si Paling Lengkap" soal data siswa.
+/// Semua informasi mulai dari biodata dasar, riwayat sekolah, data orang tua,
+/// sampe prestasi dan beasiswa ada di sini.
+///
+/// Class ini murni representasi data di level domain, jadi gak peduli data ini
+/// asalnya dari JSON atau database lokal, bentuknya bakal selalu kayak gini.
 @freezed
 abstract class StudentEntity with _$StudentEntity {
   const factory StudentEntity({

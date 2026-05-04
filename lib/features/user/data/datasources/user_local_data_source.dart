@@ -9,8 +9,13 @@ import '../../../../core/internal/src/interfaces/data_interfaces.dart';
 import '../../../../core/storage/hive_storage/hive_storage_names.dart';
 import '../models/student_model/student_model.dart';
 
+/// [UserLocalDataSource] itu kontrak buat urusan simpen-simpen data di hp.
+/// Isinya cuma dua: baca data lama atau simpen data baru.
 abstract class UserLocalDataSource implements CacheStorage<StudentModel> {}
 
+/// [UserLocalDataSourceImpl] adalah implementasi nyata pake [HiveInterface].
+/// Anggep aja dia ini "Gudang Kecil" di hp lo biar aplikasi gak usah dikit-dikit
+/// minta data ke internet.
 class UserLocalDataSourceImpl implements UserLocalDataSource {
   UserLocalDataSourceImpl(this._hiveInterface);
 
@@ -18,6 +23,7 @@ class UserLocalDataSourceImpl implements UserLocalDataSource {
 
   @override
   StudentModel? read() {
+    // Kita intip isi box Hive, kalo ada datanya ya kita balikin.
     final rawData =
         _hiveInterface
                 .box(HiveStorageBoxNames.userBoxKey)
@@ -31,6 +37,7 @@ class UserLocalDataSourceImpl implements UserLocalDataSource {
 
   @override
   Future<Unit> save(StudentModel data) async {
+    // Simpen datanya ke box Hive dalam bentuk JSON biar awet.
     await _hiveInterface
         .box(HiveStorageBoxNames.userBoxKey)
         .put(HiveStorageNames.studentDetailKey, data.toJson());
