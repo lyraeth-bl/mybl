@@ -30,7 +30,7 @@ class UserLocalDataSourceImpl implements UserLocalDataSource {
 
     if (rawData == null) return null;
 
-    return StudentModel.fromJson(rawData);
+    return StudentModel.fromJson(Map<String, dynamic>.from(rawData));
   }
 
   @override
