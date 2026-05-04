@@ -3,12 +3,8 @@
 // that can be found in the LICENSE file.
 
 class HiveStorageBoxNames {
-  // TODO 1 : Ganti variable name ke appBoxKey.
-  // TODO 2 : Hapus [userThemeBoxKey] dan jadikan 1 box untuk Bahasa dan Theme aplikasi.
-  // Storage punya `App`
-  // Bahasa aplikasi.
-  static const String userLocalizationsBoxKey = "userLocalizationsBox";
-  static const String userThemeBoxKey = "userThemeBox";
+  // Storage `App`
+  static const String appBoxKey = "appBox";
 
   // Storage spesifik punya `Auth`.
   static const String authBoxKey = "authBox";
@@ -24,13 +20,11 @@ class HiveStorageBoxNames {
 ///
 /// Untuk data sensitif seperti token autentikasi, gunakan [SecureStorageNames].
 class HiveStorageNames {
-  // TODO : Ganti variable name ke appLocalizationsCodeKey.
   // Bahasa aplikasi.
-  static const String userLocalizationsCodeKey = "userLocalizationsCode";
+  static const String appLocalizationsCodeKey = "appLocalizationsCode";
 
-  // TODO : Ganti variable name ke appThemeModeKey.
   // Tema aplikasi.
-  static const String userThemeModeKey = "userThemeMode";
+  static const String appThemeModeKey = "appThemeMode";
 
   // NIS user jika user mengaktifkan fitur [RememberMe].
   static const String authNISKey = "authNIS";

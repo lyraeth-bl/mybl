@@ -5,6 +5,7 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import '../../core/di/get_it_constant.dart';
+import '../../core/storage/domain/usecases/clear_all_boxes_use_case.dart';
 import 'data/datasources/session_local_data_source.dart';
 import 'data/repositories/session_repository_impl.dart';
 import 'domain/repositories/session_repository.dart';
@@ -37,6 +38,7 @@ void initSessionsDI() {
       di<SaveAccessTokenUseCase>(),
       di<ReadAccessTokenUseCase>(),
       di<ClearAccessTokenUseCase>(),
+      di<ClearAllBoxesUseCase>(),
     ),
   );
 }

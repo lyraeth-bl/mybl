@@ -170,6 +170,8 @@ sealed class Failure with _$Failure {
   /// Masukin [error] aslinya dan opsional [stackTrace]-nya.
   /// Returns salah satu jenis [Failure] yang paling pas.
   static Failure fromError(Object error, [StackTrace? stackTrace]) {
+    if (error is Failure) return error;
+
     if (error is DioException) {
       final e = error;
 

@@ -7,7 +7,7 @@ import 'package:fpdart/fpdart.dart';
 import 'package:hive_ce/hive_ce.dart';
 
 import '../internal/internal.dart';
-import '../storage/hive_storage/hive_storage_names.dart';
+import '../storage/storage_keys/hive_storage_names.dart';
 
 class ThemeStorage implements CacheStorage<ThemeMode> {
   ThemeStorage(this._hive);
@@ -18,8 +18,8 @@ class ThemeStorage implements CacheStorage<ThemeMode> {
   ThemeMode? read() {
     final rawData =
         _hive
-                .box(HiveStorageBoxNames.userThemeBoxKey)
-                .get(HiveStorageNames.userThemeModeKey)
+                .box(HiveStorageBoxNames.appBoxKey)
+                .get(HiveStorageNames.appThemeModeKey)
             as String?;
 
     return switch (rawData) {
@@ -39,8 +39,8 @@ class ThemeStorage implements CacheStorage<ThemeMode> {
     };
 
     await _hive
-        .box(HiveStorageBoxNames.userThemeBoxKey)
-        .put(HiveStorageNames.userThemeModeKey, themeMode);
+        .box(HiveStorageBoxNames.appBoxKey)
+        .put(HiveStorageNames.appThemeModeKey, themeMode);
 
     return unit;
   }

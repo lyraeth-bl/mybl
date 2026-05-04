@@ -7,7 +7,9 @@ import 'package:go_router/go_router.dart';
 import '../../features/auth/presentation/screens/auth_student_screen.dart';
 import '../../features/dashboard/presentation/screens/dashboard_screen.dart';
 import '../../features/dashboard/presentation/widgets/main_shell.dart';
+import '../../features/sessions/presentation/bloc/session_bloc.dart';
 import '../../features/splash/presentation/screens/splash_screen.dart';
+import 'go_router_refresh_stream.dart';
 
 part 'route_names.dart';
 
@@ -138,8 +140,44 @@ part 'route_names.dart';
 /// | `Get.arguments`             | `GoRouterState.of(context).extra`          |
 /// | `Get.parameters`            | `GoRouterState.of(context).pathParameters` |
 class AppRouter {
+  AppRouter(this._sessionBloc);
+
+  final SessionBloc _sessionBloc;
+
   late final GoRouter goRouter = GoRouter(
     initialLocation: RouteNames.splash,
+
+    refreshListenable: GoRouterRefreshStream(_sessionBloc.stream),
+
+    redirect: (context, state) {
+      final sessionState = _sessionBloc.state;
+
+      final isReady = sessionState.maybeWhen(
+        authenticated: (_) => true,
+        unauthenticated: () => true,
+        orElse: () => false,
+      );
+
+      if (!isReady) return null;
+
+      final isLoggedIn = sessionState.maybeWhen(
+        authenticated: (_) => true,
+        orElse: () => false,
+      );
+
+      final isOnSplashScreen = state.matchedLocation == RouteNames.splash;
+      final isOnLoginScreen = state.matchedLocation == RouteNames.authStudent;
+
+      if (isOnSplashScreen) return null;
+
+      if (!isLoggedIn && !isOnLoginScreen) {
+        return RouteNames.authStudent;
+      }
+
+      if (isLoggedIn && (isOnLoginScreen)) return RouteNames.dashboard;
+
+      return null;
+    },
 
     routes: [
       GoRoute(
