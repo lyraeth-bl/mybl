@@ -5,8 +5,10 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
+import '../../features/sessions/presentation/bloc/session_bloc.dart';
 import '../api_client/api_client.dart';
 import '../di/get_it_constant.dart';
+import '../token_provider/token_provider.dart';
 import 'dio_factory.dart';
 
 void _initNetworkDI({
@@ -21,7 +23,6 @@ void _initNetworkDI({
       InterceptorsWrapper(
         onRequest: (options, handler) async {
           final token = await tokenProvider?.call();
-          debugPrint("TOKEN USED: $token");
 
           options.headers['Accept'] = "application/json";
           options.headers['Content-Type'] = "application/json";
@@ -46,4 +47,11 @@ void _initNetworkDI({
   di.registerLazySingleton<Dio>(() => dio);
 }
 
-void initNetworkDI() => _initNetworkDI(baseUrl: ApiEndpoints.baseUrl);
+void initNetworkDI() => _initNetworkDI(
+  baseUrl: ApiEndpoints.baseUrl,
+  tokenProvider: () => di<TokenProvider>().readAccessToken(),
+  onUnauthorized: () async {
+    di<TokenProvider>().clearAccessToken();
+    di<SessionBloc>().add(const SessionEvent.loggedOut());
+  },
+);
