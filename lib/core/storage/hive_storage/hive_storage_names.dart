@@ -12,6 +12,9 @@ class HiveStorageBoxNames {
 
   // Storage spesifik punya `Auth`.
   static const String authBoxKey = "authBox";
+
+  // Storage spesifik punya `User`.
+  static const String userBoxKey = "userBox";
 }
 
 /// Penyimpanan lokal menggunakan [Hive].
@@ -31,4 +34,7 @@ class HiveStorageNames {
 
   // NIS user jika user mengaktifkan fitur [RememberMe].
   static const String authNISKey = "authNIS";
+
+  // Data student.
+  static const String studentDetailKey = "studentDetail";
 }

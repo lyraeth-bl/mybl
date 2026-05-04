@@ -11,6 +11,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import '../../features/auth/auth_di.dart';
 import '../../features/sessions/sessions_di.dart';
+import '../../features/user/user_di.dart';
 import '../api_client/api_client_di.dart';
 import '../app_router/app_router_di.dart';
 import '../dio_factory/network_di.dart';
@@ -48,6 +49,7 @@ Future<void> initializeApp() async {
   initNetworkDI();
   initAuthDI();
   initSessionsDI();
+  initUserDI();
 
   Bloc.observer = const AppBlocObserver();
 }
