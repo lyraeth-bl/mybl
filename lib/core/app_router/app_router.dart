@@ -5,6 +5,8 @@
 import 'package:go_router/go_router.dart';
 
 import '../../features/auth/presentation/screens/auth_student_screen.dart';
+import '../../features/dashboard/presentation/screens/dashboard_screen.dart';
+import '../../features/dashboard/presentation/widgets/main_shell.dart';
 import '../../features/splash/presentation/screens/splash_screen.dart';
 
 part 'route_names.dart';
@@ -139,7 +141,7 @@ class AppRouter {
   late final GoRouter goRouter = GoRouter(
     initialLocation: RouteNames.splash,
 
-    routes: <GoRoute>[
+    routes: [
       GoRoute(
         path: RouteNames.splash,
         builder: (context, state) => const SplashScreen(),
@@ -148,6 +150,21 @@ class AppRouter {
       GoRoute(
         path: RouteNames.authStudent,
         builder: (context, state) => const AuthStudentScreen(),
+      ),
+
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) =>
+            MainShell(navigationShell: navigationShell),
+        branches: <StatefulShellBranch>[
+          StatefulShellBranch(
+            routes: <GoRoute>[
+              GoRoute(
+                path: RouteNames.dashboard,
+                builder: (context, state) => const DashboardScreen(),
+              ),
+            ],
+          ),
+        ],
       ),
     ],
   );
