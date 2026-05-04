@@ -170,3 +170,26 @@ abstract interface class TokenStorage {
   /// masuk pake sesi lama yang udah nggak dipake.
   Future<Unit> clearAccessToken();
 }
+
+/// Si paling sibuk buat urusan manajemen gudang (database lokal).
+///
+/// Tugasnya simpel tapi krusial: mastiin semua pintu penyimpanan (boxes)
+/// siap dibuka pas app baru mulai, dibersihin pas user logout, atau digembok
+/// rapi pas app mau istirahat.
+abstract interface class LocalStorageManager {
+  /// Nyiapin dan buka semua pintu penyimpanan biar data siap dieksekusi.
+  ///
+  /// Biasanya dipanggil sekali pas proses inisialisasi awal app.
+  Future<void> openAllBoxes();
+
+  /// Sapu bersih semua data yang ada di dalem penyimpanan.
+  ///
+  /// Berguna banget buat jaga-jaga kalau user mau reset data atau pas logout
+  /// biar nggak ada sisa-sisa kenangan (data) yang ketinggalan.
+  Future<void> clearAllBoxes();
+
+  /// Gembok semua pintu penyimpanan pas udah selesai dipake.
+  ///
+  /// Ini penting biar database kita nggak korup dan tetep sehat walafiat.
+  Future<void> closeAllBoxes();
+}
