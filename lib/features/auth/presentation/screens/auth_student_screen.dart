@@ -8,6 +8,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/di/get_it_constant.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../sessions/presentation/bloc/session_bloc.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/remember_me/remember_me_cubit.dart';
 import '../widgets/auth_text_field.dart';
@@ -249,6 +250,10 @@ class _LoginFormState extends State<_LoginForm>
           successLogin: (accessToken, expiresAt) {
             context.read<RememberMeCubit>().onLoginSuccess(
               _nisController.text.trim(),
+            );
+
+            context.read<SessionBloc>().add(
+              SessionEvent.loggedIn(accessToken: accessToken),
             );
           },
         );

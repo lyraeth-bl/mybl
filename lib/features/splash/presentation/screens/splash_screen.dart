@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Mahsa Nurfarhan Hidayat / Yayasan Pakarti Luhur. All rights reserved.
+// Use of this source code is governed by a MIT License
+// that can be found in the LICENSE file.
+
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -65,7 +69,10 @@ class _SplashScreenViewState extends State<_SplashScreenView> {
           // Kalo ternyata lo belum login (unauthenticated), langsung kita
           // oper ke halaman login biar gak nyasar.
           unauthenticated: () => context.go(RouteNames.authStudent),
-          // TODO : Tambahin flow pas udah login (authenticated) kalo dashboard udah ready ya!
+
+          // Kalo udah login, langsung di lempar ke dashboard, biar ga cape
+          // login lagi.
+          authenticated: (_) => context.go(RouteNames.dashboard),
         );
       },
       child: Scaffold(
