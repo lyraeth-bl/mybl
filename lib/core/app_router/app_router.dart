@@ -2,10 +2,10 @@
 // Use of this source code is governed by a MIT License
 // that can be found in the LICENSE file.
 
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/auth/presentation/screens/auth_student_screen.dart';
+import '../../features/splash/presentation/screens/splash_screen.dart';
 
 part 'route_names.dart';
 
@@ -142,8 +142,7 @@ class AppRouter {
     routes: <GoRoute>[
       GoRoute(
         path: RouteNames.splash,
-        builder: (context, state) =>
-            Scaffold(body: Center(child: Text("Splash Screen"))),
+        builder: (context, state) => const SplashScreen(),
       ),
 
       GoRoute(
