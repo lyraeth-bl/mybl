@@ -33,5 +33,8 @@
   "academicCalendar": "Academic Calendar",
   "academicResult": "Academic Result",
   "extracurricular": "Extracurricular",
-  "settings": "Settings"
+  "settings": "Settings",
+  "name": "Name",
+  "emptyName": "Who are you exactly?",
+  "classRoom": "Class"
 }

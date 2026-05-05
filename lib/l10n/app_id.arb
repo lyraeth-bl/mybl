@@ -33,5 +33,8 @@
   "academicCalendar": "Kalendar Akademik",
   "academicResult": "Hasil Akademik",
   "extracurricular": "Ekstrakulikuler",
-  "settings": "Pengaturan"
+  "settings": "Pengaturan",
+  "name": "Nama",
+  "emptyName": "Ini siapa ya?",
+  "classRoom": "Kelas"
 }
