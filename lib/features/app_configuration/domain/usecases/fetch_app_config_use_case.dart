@@ -3,7 +3,7 @@
 // that can be found in the LICENSE file.
 
 import '../../../../core/internal/src/types.dart';
-import '../entities/app_configuration.dart';
+import '../entities/app_configuration_entity/app_configuration_entity.dart';
 import '../repositories/app_configuration_repository.dart';
 
 class FetchAppConfigUseCase {
@@ -11,6 +11,6 @@ class FetchAppConfigUseCase {
 
   final AppConfigurationRepository _appConfigurationRepository;
 
-  Future<Result<AppConfiguration>> call([bool forceRefresh = false]) =>
+  Future<Result<AppConfigurationEntity>> call([bool forceRefresh = false]) =>
       _appConfigurationRepository.fetch(forceRefresh);
 }

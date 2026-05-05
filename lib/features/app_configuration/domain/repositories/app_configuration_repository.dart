@@ -3,7 +3,7 @@
 // that can be found in the LICENSE file.
 
 import '../../../../core/internal/src/interfaces/data_interfaces.dart';
-import '../entities/app_configuration.dart';
+import '../entities/app_configuration_entity/app_configuration_entity.dart';
 
 abstract class AppConfigurationRepository
-    implements ItemFetcher<AppConfiguration> {}
+    implements ItemFetcher<AppConfigurationEntity> {}
