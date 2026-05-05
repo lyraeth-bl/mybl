@@ -33,8 +33,6 @@ class _DashboardView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
     return CustomScrollView(
       physics: const BouncingScrollPhysics(),
       slivers: [SliverToBoxAdapter(child: DashboardHeader())],
