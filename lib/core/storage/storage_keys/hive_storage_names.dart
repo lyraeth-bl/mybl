@@ -26,6 +26,9 @@ class HiveStorageNames {
   // Tema aplikasi.
   static const String appThemeModeKey = "appThemeMode";
 
+  // Konfigurasi aplikasi.
+  static const String appConfigurationKey = "appConfiguration";
+
   // NIS user jika user mengaktifkan fitur [RememberMe].
   static const String authNISKey = "authNIS";
 
