@@ -13,6 +13,10 @@ import 'domain/repositories/app_configuration_repository.dart';
 import 'domain/usecases/fetch_app_config_use_case.dart';
 import 'presentation/bloc/app_configuration_bloc.dart';
 
+/// Si paling sibuk buat ngurusin Dependency Injection (DI) khusus fitur konfigurasi app.
+///
+/// Di sini kita daftarin semua "alat tempur" mulai dari [AppConfigurationLocalDataSource],
+/// [AppConfigurationRemoteDataSource], sampe [AppConfigurationBloc] biar bisa dipake di mana aja.
 void initAppConfigurationDI() {
   di.registerLazySingleton<AppConfigurationLocalDataSource>(
     () => AppConfigurationLocalDataSourceImpl(di<HiveInterface>()),

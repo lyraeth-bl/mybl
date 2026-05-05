@@ -5,5 +5,9 @@
 import '../../../../core/internal/src/interfaces/data_interfaces.dart';
 import '../entities/app_configuration_entity/app_configuration_entity.dart';
 
+/// Kontrak kerja buat ngambil data konfigurasi aplikasi.
+///
+/// Ini cuma interface doang, implementasi nyatanya ada di layer data.
+/// Dia bakal ngasih kita [AppConfigurationEntity] lewat [ItemFetcher].
 abstract class AppConfigurationRepository
     implements ItemFetcher<AppConfigurationEntity> {}

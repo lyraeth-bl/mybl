@@ -12,7 +12,13 @@ import '../datasources/app_configuration_local_data_source.dart';
 import '../datasources/app_configuration_remote_data_source.dart';
 import '../models/app_configuration_model/app_configuration_model.dart';
 
+/// Jembatan andalan buat urusan data konfigurasi aplikasi.
+///
+/// [AppConfigurationRepositoryImpl] ini yang nentuin kapan kita harus ambil
+/// data dari memori HP ([_localDataSource]) dan kapan harus narik dari
+/// server ([_remoteDataSource]). Pokoknya dia yang ngatur alur datanya.
 class AppConfigurationRepositoryImpl implements AppConfigurationRepository {
+  /// Butuh tim lokal dan remote biar kerjanya maksimal.
   AppConfigurationRepositoryImpl(this._localDataSource, this._remoteDataSource);
 
   final AppConfigurationLocalDataSource _localDataSource;
@@ -22,15 +28,18 @@ class AppConfigurationRepositoryImpl implements AppConfigurationRepository {
   Future<Result<AppConfigurationEntity>> fetch([
     bool forceRefresh = false,
   ]) async {
+    // Kalau nggak dipaksa refresh, coba intip dulu di lokal ada nggak.
     if (!forceRefresh) {
       final storedData = _localDataSource.read();
 
       if (storedData != null) return right(storedData.toEntity());
     }
 
+    // Kalau di lokal nggak ada atau emang mau refresh, gas ambil ke server.
     try {
       final response = await _remoteDataSource.fetch();
 
+      // Jangan lupa dititipin di lokal biar besok-besok nggak perlu narik lagi.
       await _localDataSource.save(response.appConfiguration.first);
 
       return right(response.appConfiguration.first.toEntity());
