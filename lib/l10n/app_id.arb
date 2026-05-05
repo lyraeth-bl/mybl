@@ -23,6 +23,18 @@
   "schoolName": "Sekolah Budi Luhur",
   "schoolSlogan": "Cerdas Berbudi Luhur",
   "home": "Beranda",
-  "dashboard": "Menu",
-  "profile": "Profil"
+  "menu": "Menu",
+  "emptyMenu": "Menu belum tersedia.",
+  "profile": "Profil",
+  "dailyAttendance": "Absensi Harian",
+  "timeTable": "Jadwal Pelajaran",
+  "guardianDetails": "Detail Orang Tua",
+  "meritAndDemerit": "Merit & Demerit",
+  "academicCalendar": "Kalendar Akademik",
+  "academicResult": "Hasil Akademik",
+  "extracurricular": "Ekstrakulikuler",
+  "settings": "Pengaturan",
+  "name": "Nama",
+  "emptyName": "Ini siapa ya?",
+  "classRoom": "Kelas"
 }
