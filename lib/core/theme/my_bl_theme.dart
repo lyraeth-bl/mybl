@@ -28,6 +28,7 @@ class MyBlTheme {
       brightness: Brightness.light,
     ),
     textTheme: GoogleFonts.comfortaaTextTheme(),
+    useMaterial3: true,
   );
 
   /// Definisi Tema Gelap (Dark Mode).
@@ -40,5 +41,6 @@ class MyBlTheme {
       brightness: Brightness.dark,
     ),
     textTheme: GoogleFonts.comfortaaTextTheme(),
+    useMaterial3: true,
   );
 }

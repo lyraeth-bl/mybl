@@ -23,6 +23,15 @@
   "schoolName": "Sekolah Budi Luhur",
   "schoolSlogan": "Cerdas Berbudi Luhur",
   "home": "Home",
-  "dashboard": "Dashboard",
-  "profile": "Profile"
+  "menu": "Menu",
+  "emptyMenu": "Menu not available yet.",
+  "profile": "Profile",
+  "dailyAttendance": "Daily Attendance",
+  "timeTable": "Timetable",
+  "guardianDetails": "Guardian Details",
+  "meritAndDemerit": "Merit & Demerit",
+  "academicCalendar": "Academic Calendar",
+  "academicResult": "Academic Result",
+  "extracurricular": "Extracurricular",
+  "settings": "Settings"
 }
