@@ -193,3 +193,62 @@ abstract interface class LocalStorageManager {
   /// Ini penting biar database kita nggak korup dan tetep sehat walafiat.
   Future<void> closeAllBoxes();
 }
+
+/// Spesialis urusan tarik-menarik data absensi.
+///
+/// Interface ini jadi andalan buat ambil info kehadiran, baik itu buat hari ini
+/// atau buat ngintip rekap sebulan penuh.
+abstract interface class AttendanceFetcher<T> {
+  /// Ngintip status kehadiran buat hari ini doang bertipe [T].
+  ///
+  /// Kalau [forceRefresh] diset jadi `true`, kita bakal todong data paling
+  /// gress langsung dari server (bye-bye cache).
+  ///
+  /// Returns [Result] isinya data hari ini kalau lancar jaya.
+  Future<Result<T>> fetchDailyAttendance([bool forceRefresh = false]);
+
+  /// Narik semua data kehadiran dalam satu bulan tertentu.
+  ///
+  /// Butuh input [month] sama [year] biar nggak salah ambil bulan tetangga.
+  /// Sama kayak sodaranya, [forceRefresh] bakal maksa ambil data terbaru dari pusat.
+  ///
+  /// Returns [Result] isinya list data [T] buat bulan yang diminta.
+  Future<Result<List<T>>> fetchMonthlyAttendance({
+    required int month,
+    required int year,
+    bool forceRefresh = false,
+  });
+}
+
+/// Spesialis urusan titip-menitip data absensi ke memori lokal.
+///
+/// Ini adalah asisten setia buat [AttendanceFetcher]. Kalau [AttendanceFetcher] tugasnya
+/// nodong data ke server, [AttendanceLocalManager] tugasnya jagain data itu biar
+/// tetep aman di dalem box (storage) lokal. Jadi pas user buka app lagi,
+/// datanya udah siap tampil tanpa perlu nunggu loading internet.
+abstract interface class AttendanceLocalManager<T> {
+  /// Nyimpen data rekap absensi bulanan ke dalam brangkas lokal.
+  ///
+  /// Panggil ini pas kita udah dapet data seger dari API biar kalau besok-besok
+  /// HP lagi offline, kita tetep bisa pamer data absensi bulanannya.
+  Future<Unit> saveMonthlyAttendance();
+
+  /// Ngamanin data absensi hari ini biar nggak ilang.
+  ///
+  /// Mirip kayak sodaranya, ini fokus buat simpen status kehadiran yang paling
+  /// baru (hari ini) ke penyimpanan lokal.
+  Future<Unit> saveDailyAttendance();
+
+  /// Ngambil data rekap bulanan yang udah pernah kita simpen sebelumnya.
+  ///
+  /// Kita kasih [listData] sebagai referensi, terus fungsi ini bakal balikin
+  /// data yang emang udah ada di lokal. Kalau kosong, ya berarti emang belum
+  /// pernah mampir datanya.
+  List<T>? readMonthlyAttendance(List<T> listData);
+
+  /// Nyari data absensi harian yang udah tersimpan di lokal.
+  ///
+  /// Pake [data] buat nyocokin, terus kita liat apakah di "gudang" kita ada
+  /// data yang pas atau nggak. Returns `null` kalau emang nggak nemu.
+  T? readDailyAttendance(T data);
+}
