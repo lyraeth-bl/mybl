@@ -61,19 +61,34 @@ class AppUnderMaintenanceContainer extends StatelessWidget {
 
           const SizedBox(height: 40),
 
-          FilledButton.icon(
-            onPressed: () {
-              context.read<AppConfigurationBloc>().add(
-                const AppConfigurationEvent.appConfigurationRequested(
-                  forceRefresh: true,
+          BlocBuilder<AppConfigurationBloc, AppConfigurationState>(
+            builder: (context, state) {
+              final isLoading = state.maybeWhen(
+                loading: () => true,
+                orElse: () => false,
+              );
+
+              return FilledButton(
+                onPressed: isLoading
+                    ? null
+                    : () {
+                        context.read<AppConfigurationBloc>().add(
+                          const AppConfigurationEvent.appConfigurationRequested(
+                            forceRefresh: true,
+                          ),
+                        );
+                      },
+                style: FilledButton.styleFrom(
+                  minimumSize: const Size.fromHeight(48),
                 ),
+                child: isLoading
+                    ? const SizedBox.square(
+                        dimension: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2.5),
+                      )
+                    : Text(l10n.tryAgain),
               );
             },
-            style: FilledButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-            ),
-            icon: const Icon(Icons.refresh_rounded),
-            label: Text(l10n.tryAgain),
           ),
         ],
       ),
