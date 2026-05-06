@@ -204,8 +204,9 @@ abstract interface class AttendanceFetcher<T> {
   /// Kalau [forceRefresh] diset jadi `true`, kita bakal todong data paling
   /// gress langsung dari server (bye-bye cache).
   ///
-  /// Returns [Result] isinya data hari ini kalau lancar jaya.
-  Future<Result<T>> fetchDailyAttendance([bool forceRefresh = false]);
+  /// Returns [Result] isinya data hari ini kalau lancar jaya,
+  /// atau `null` kalau user belum absen hari ini.
+  Future<Result<T?>> fetchDailyAttendance([bool forceRefresh = false]);
 
   /// Narik semua data kehadiran dalam satu bulan tertentu.
   ///
