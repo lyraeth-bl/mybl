@@ -248,7 +248,7 @@ abstract interface class AttendanceLocalManager<T> {
   /// Kita kasih [listData] sebagai referensi, terus fungsi ini bakal balikin
   /// data yang emang udah ada di lokal. Kalau kosong, ya berarti emang belum
   /// pernah mampir datanya.
-  List<T>? readMonthlyAttendance();
+  List<T>? readMonthlyAttendance({required int month, required int year});
 
   /// Nyari data absensi harian yang udah tersimpan di lokal.
   ///
