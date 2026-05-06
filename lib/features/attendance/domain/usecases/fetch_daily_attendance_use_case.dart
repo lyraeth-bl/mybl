@@ -11,6 +11,6 @@ class FetchDailyAttendanceUseCase {
 
   final AttendanceRepository _attendanceRepository;
 
-  Future<Result<AttendanceEntity>> call([bool forceRefresh = false]) =>
+  Future<Result<AttendanceEntity?>> call([bool forceRefresh = false]) =>
       _attendanceRepository.fetchDailyAttendance(forceRefresh);
 }

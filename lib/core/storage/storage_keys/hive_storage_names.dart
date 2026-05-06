@@ -34,4 +34,10 @@ class HiveStorageNames {
 
   // Data student.
   static const String studentDetailKey = "studentDetail";
+
+  // Data absensi bulanan.
+  static const String userMonthlyAttendanceKey = "userMonthlyAttendance";
+
+  // Data absensi harian.
+  static const String userDailyAttendanceKey = "userDailyAttendance";
 }
