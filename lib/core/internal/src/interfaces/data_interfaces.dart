@@ -231,24 +231,24 @@ abstract interface class AttendanceLocalManager<T> {
   ///
   /// Panggil ini pas kita udah dapet data seger dari API biar kalau besok-besok
   /// HP lagi offline, kita tetep bisa pamer data absensi bulanannya.
-  Future<Unit> saveMonthlyAttendance();
+  Future<Unit> saveMonthlyAttendance(List<T> listData);
 
   /// Ngamanin data absensi hari ini biar nggak ilang.
   ///
   /// Mirip kayak sodaranya, ini fokus buat simpen status kehadiran yang paling
   /// baru (hari ini) ke penyimpanan lokal.
-  Future<Unit> saveDailyAttendance();
+  Future<Unit> saveDailyAttendance(T data);
 
   /// Ngambil data rekap bulanan yang udah pernah kita simpen sebelumnya.
   ///
   /// Kita kasih [listData] sebagai referensi, terus fungsi ini bakal balikin
   /// data yang emang udah ada di lokal. Kalau kosong, ya berarti emang belum
   /// pernah mampir datanya.
-  List<T>? readMonthlyAttendance(List<T> listData);
+  List<T>? readMonthlyAttendance();
 
   /// Nyari data absensi harian yang udah tersimpan di lokal.
   ///
   /// Pake [data] buat nyocokin, terus kita liat apakah di "gudang" kita ada
   /// data yang pas atau nggak. Returns `null` kalau emang nggak nemu.
-  T? readDailyAttendance(T data);
+  T? readDailyAttendance();
 }
