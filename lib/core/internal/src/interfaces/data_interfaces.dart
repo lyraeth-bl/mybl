@@ -234,7 +234,7 @@ abstract interface class AttendanceLocalManager<T> {
   Future<Unit> saveMonthlyAttendance({
     required int month,
     required int year,
-    List<T> listData,
+    required List<T> listData,
   });
 
   /// Ngamanin data absensi hari ini biar nggak ilang.
