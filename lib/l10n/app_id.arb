@@ -36,5 +36,8 @@
   "settings": "Pengaturan",
   "name": "Nama",
   "emptyName": "Ini siapa ya?",
-  "classRoom": "Kelas"
+  "classRoom": "Kelas",
+  "underMaintenance": "Aplikasi lagi di update",
+  "underMaintenanceDesc": "Kami lagi upgrade sistem biar pengalaman kamu makin oke. Tunggu sebentar, ya!",
+  "tryAgain": "Coba lagi"
 }
