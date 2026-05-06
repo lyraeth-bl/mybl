@@ -3,9 +3,13 @@
 // that can be found in the LICENSE file.
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/di/get_it_constant.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../app_configuration/presentation/bloc/app_configuration_bloc.dart';
+import 'app_under_maintenance_container.dart';
 import 'menu_sheet_item.dart';
 
 class MainShell extends StatelessWidget {
@@ -15,9 +19,40 @@ class MainShell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: navigationShell,
-      bottomNavigationBar: _MenuNavigationBar(navigationShell: navigationShell),
+    return BlocProvider<AppConfigurationBloc>(
+      create: (context) =>
+          di<AppConfigurationBloc>()
+            ..add(const AppConfigurationEvent.appConfigurationRequested()),
+      child: _MainShellView(navigationShell: navigationShell),
+    );
+  }
+}
+
+class _MainShellView extends StatelessWidget {
+  const _MainShellView({required this.navigationShell});
+
+  final StatefulNavigationShell navigationShell;
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<AppConfigurationBloc, AppConfigurationState>(
+      buildWhen: (previous, current) =>
+          current.maybeWhen(loading: () => false, orElse: () => true),
+      builder: (context, state) {
+        final isUnderMaintenance = state.maybeWhen(
+          success: (appConfiguration) => appConfiguration.appMaintenance,
+          orElse: () => false,
+        );
+
+        return Scaffold(
+          body: isUnderMaintenance
+              ? const AppUnderMaintenanceContainer()
+              : navigationShell,
+          bottomNavigationBar: isUnderMaintenance
+              ? null
+              : _MenuNavigationBar(navigationShell: navigationShell),
+        );
+      },
     );
   }
 }

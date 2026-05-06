@@ -36,5 +36,8 @@
   "settings": "Settings",
   "name": "Name",
   "emptyName": "Who are you exactly?",
-  "classRoom": "Class"
+  "classRoom": "Class",
+  "underMaintenance": "Upgrading in Progress",
+  "underMaintenanceDesc": "We’re improving the system for a better experience. Hang tight and try again soon!",
+  "tryAgain": "Try again"
 }
