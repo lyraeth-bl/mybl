@@ -39,5 +39,12 @@
   "classRoom": "Class",
   "underMaintenance": "Upgrading in Progress",
   "underMaintenanceDesc": "We’re improving the system for a better experience. Hang tight and try again soon!",
-  "tryAgain": "Try again"
+  "tryAgain": "Try again",
+  "nextMonth": "Next month",
+  "previousMonth": "Previous month",
+  "present": "Present",
+  "late": "Late",
+  "excused": "Excused",
+  "absent": "Absent",
+  "thisMonthlyAttendance": "Attendance this month"
 }

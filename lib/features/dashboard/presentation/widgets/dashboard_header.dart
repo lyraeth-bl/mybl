@@ -24,7 +24,7 @@ class DashboardHeader extends StatelessWidget {
       ),
       child: ClipRRect(
         borderRadius: const BorderRadius.vertical(bottom: Radius.circular(32)),
-        child: SizedBox(height: 175, child: const _DashboardHeaderContent()),
+        child: SizedBox(height: 165, child: const _DashboardHeaderContent()),
       ),
     );
   }

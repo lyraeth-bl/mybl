@@ -33,8 +33,11 @@ class AttendanceRemoteDataSourceImpl implements AttendanceRemoteDataSource {
     required int month,
     required int year,
   }) async {
+    final Map<String, dynamic> query = {'month': month, 'year': year};
+
     final response = await _httpRequest.get(
-      "${ApiEndpoints.attendance}/$month/$year",
+      ApiEndpoints.attendance,
+      queryParameters: query,
     );
 
     return MonthlyAttendanceResponse.fromJson(response);

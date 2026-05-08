@@ -4,6 +4,7 @@
 
 import 'package:go_router/go_router.dart';
 
+import '../../features/attendance/presentation/screens/attendance_screen.dart';
 import '../../features/auth/presentation/screens/auth_student_screen.dart';
 import '../../features/dashboard/presentation/screens/dashboard_screen.dart';
 import '../../features/dashboard/presentation/widgets/main_shell.dart';
@@ -188,6 +189,11 @@ class AppRouter {
       GoRoute(
         path: RouteNames.authStudent,
         builder: (context, state) => const AuthStudentScreen(),
+      ),
+
+      GoRoute(
+        path: RouteNames.attendance,
+        builder: (context, state) => const AttendanceScreen(),
       ),
 
       StatefulShellRoute.indexedStack(

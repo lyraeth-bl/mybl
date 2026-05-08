@@ -33,7 +33,10 @@ class DailyAttendanceBloc
     return result.match(
       (failure) => emit(DailyAttendanceState.failure(failure)),
       (data) {
-        if (data == null) emit(const DailyAttendanceState.emptyAttendance());
+        if (data == null) {
+          emit(const DailyAttendanceState.emptyAttendance());
+          return;
+        }
 
         emit(DailyAttendanceState.success(dailyAttendance: data));
       },

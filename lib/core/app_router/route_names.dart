@@ -15,4 +15,7 @@ class RouteNames {
 
   // Dashboard
   static const String dashboard = "/dashboard";
+
+  // Attendance
+  static const String attendance = "/attendance";
 }

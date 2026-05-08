@@ -35,15 +35,12 @@ class _MainShellView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AppConfigurationBloc, AppConfigurationState>(
-      buildWhen: (previous, current) =>
-          current.maybeWhen(loading: () => false, orElse: () => true),
-      builder: (context, state) {
-        final isUnderMaintenance = state.maybeWhen(
-          success: (appConfiguration) => appConfiguration.appMaintenance,
-          orElse: () => false,
-        );
-
+    return BlocSelector<AppConfigurationBloc, AppConfigurationState, bool>(
+      selector: (state) => state.maybeWhen(
+        success: (config) => config.appMaintenance,
+        orElse: () => false,
+      ),
+      builder: (context, isUnderMaintenance) {
         return Scaffold(
           body: isUnderMaintenance
               ? const AppUnderMaintenanceContainer()
