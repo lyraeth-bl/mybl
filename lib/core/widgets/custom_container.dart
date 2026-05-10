@@ -36,10 +36,10 @@ class CustomContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
-    final defaultBgColor = backgroundColor ?? colorScheme.surfaceContainerLow;
+    final defaultBgColor = backgroundColor ?? colorScheme.surface;
 
     final defaultShadowColor =
-        shadowColor ?? colorScheme.outline.withValues(alpha: 0.5);
+        shadowColor ?? colorScheme.surfaceContainerHighest;
 
     return Container(
       width: width,
@@ -55,12 +55,11 @@ class CustomContainer extends StatelessWidget {
             : [
                 BoxShadow(
                   color: defaultShadowColor,
-                  offset: shadowsOffset ?? const Offset(3, 3),
+                  offset: shadowsOffset ?? const Offset(4, 4),
                 ),
               ],
 
-        border:
-            border ?? Border.all(color: colorScheme.outlineVariant, width: 1),
+        border: border,
       ),
       child: child,
     );

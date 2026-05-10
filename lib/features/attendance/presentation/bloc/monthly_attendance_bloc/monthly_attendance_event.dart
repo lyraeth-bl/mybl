@@ -7,4 +7,10 @@ sealed class MonthlyAttendanceEvent with _$MonthlyAttendanceEvent {
     required int year,
     @Default(false) bool forceRefresh,
   }) = _MonthChangeRequested;
+
+  const factory MonthlyAttendanceEvent.previousMonthRequested() =
+      _PreviousMonthRequested;
+
+  const factory MonthlyAttendanceEvent.nextMonthRequested() =
+      _NextMonthRequested;
 }

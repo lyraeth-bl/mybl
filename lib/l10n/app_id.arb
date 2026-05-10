@@ -46,5 +46,8 @@
   "late": "Terlambat",
   "excused": "Izin",
   "absent": "Absen",
-  "thisMonthlyAttendance": "Absensi bulan ini"
+  "thisMonthlyAttendance": "Absensi bulan ini",
+  "noAttendanceData": "Tidak ada data absensi.",
+  "days": "Hari",
+  "noData": "Tidak ada data."
 }

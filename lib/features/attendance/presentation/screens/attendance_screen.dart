@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 
 import '../../../../core/di/get_it_constant.dart';
+import '../../../../core/internal/src/extensions/extensions.dart';
 import '../../../../core/widgets/custom_container.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../domain/entities/attendance_status/attendance_status.dart';
+import '../../domain/entities/attendance_summary/attendance_summary.dart';
 import '../bloc/monthly_attendance_bloc/monthly_attendance_bloc.dart';
 import '../widgets/calendar.dart';
 import '../widgets/chart.dart';
@@ -28,12 +32,21 @@ class _AttendanceScreenView extends StatefulWidget {
 }
 
 class _AttendanceScreenViewState extends State<_AttendanceScreenView> {
-  final DateTime now = DateTime.now();
+  late final List<Widget> _animatedChildren;
 
   @override
   void initState() {
     super.initState();
+    _animatedChildren = [
+      const _AttendanceNavigationButton(),
+      const _AttendanceSummaryContainer(),
+      const _AttendanceMonthlyProgress(),
+      const _AttendanceCalendarContainer(),
+      const _AttendanceLegends(),
+      const _AttendanceChart(),
+    ].makeListAnimate();
 
+    final now = DateTime.now();
     WidgetsBinding.instance.addPostFrameCallback(
       (_) => context.read<MonthlyAttendanceBloc>().add(
         MonthlyAttendanceEvent.monthChangeRequested(
@@ -46,17 +59,15 @@ class _AttendanceScreenViewState extends State<_AttendanceScreenView> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
+      backgroundColor: colorScheme.surfaceContainer,
       body: CustomScrollView(
         physics: const BouncingScrollPhysics(),
         slivers: [
           const _AttendanceScreenHeader(),
-          const _AttendanceNavigationButton(),
-          const _AttendanceSummaryContainer(),
-          const _AttendanceMonthlyProgress(),
-          const _AttendanceCalendarContainer(),
-          const _AttendanceLegends(),
-          const _AttendanceChart(),
+          SliverList.list(children: _animatedChildren),
         ],
       ),
     );
@@ -69,9 +80,15 @@ class _AttendanceScreenHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final colorScheme = Theme.of(context).colorScheme;
 
     return SliverAppBar.medium(
-      title: Text(l10n.dailyAttendance),
+      title: Text(
+        l10n.dailyAttendance,
+        style: const TextStyle(fontWeight: FontWeight(700)),
+      ),
+      backgroundColor: colorScheme.surfaceContainer,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
       centerTitle: true,
       floating: false,
       pinned: true,
@@ -82,43 +99,108 @@ class _AttendanceScreenHeader extends StatelessWidget {
 class _AttendanceNavigationButton extends StatelessWidget {
   const _AttendanceNavigationButton();
 
+  String _monthLabel(int month, int year, String locale) =>
+      DateFormat('MMMM yyyy', locale).format(DateTime(year, month));
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    final locale = Localizations.localeOf(context).toString();
 
-    return SliverToBoxAdapter(
-      child: CustomContainer(
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              IconButton.filledTonal(
-                onPressed: () {},
-                icon: const Icon(Icons.chevron_left),
-                tooltip: l10n.previousMonth,
-              ),
+    return BlocBuilder<MonthlyAttendanceBloc, MonthlyAttendanceState>(
+      buildWhen: (prev, curr) {
+        final isSupported = curr.maybeWhen(
+          loading: (_, _) => true,
+          success: (_, _, _, _, _) => true,
+          initial: () => true,
+          orElse: () => false,
+        );
+        if (!isSupported) return false;
 
-              Text(
-                "Mei 2026",
-                style: textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: colorScheme.onSurface,
-                ),
-              ),
-
-              IconButton.filledTonal(
-                onPressed: () {},
-                icon: const Icon(Icons.chevron_right),
-                tooltip: l10n.nextMonth,
-              ),
-            ],
+        final prevData = (
+          month: prev.maybeWhen(
+            success: (m, _, _, _, _) => m,
+            loading: (m, _) => m,
+            orElse: () => 0,
           ),
-        ),
-      ),
+          year: prev.maybeWhen(
+            success: (_, y, _, _, _) => y,
+            loading: (_, y) => y,
+            orElse: () => 0,
+          ),
+          isLoading: prev.maybeWhen(
+            loading: (_, _) => true,
+            orElse: () => false,
+          ),
+        );
+        final currData = (
+          month: curr.maybeWhen(
+            success: (m, _, _, _, _) => m,
+            loading: (m, _) => m,
+            orElse: () => 0,
+          ),
+          year: curr.maybeWhen(
+            success: (_, y, _, _, _) => y,
+            loading: (_, y) => y,
+            orElse: () => 0,
+          ),
+          isLoading: curr.maybeWhen(
+            loading: (_, _) => true,
+            orElse: () => false,
+          ),
+        );
+        return prevData != currData;
+      },
+      builder: (context, state) {
+        final (month, year) = state.maybeWhen(
+          success: (month, year, _, _, _) => (month, year),
+          loading: (month, year) => (month, year),
+          orElse: () => (DateTime.now().month, DateTime.now().year),
+        );
+        final isLoading = state.maybeWhen(
+          loading: (_, _) => true,
+          orElse: () => false,
+        );
+
+        return CustomContainer(
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                IconButton.filledTonal(
+                  onPressed: isLoading
+                      ? null
+                      : () => context.read<MonthlyAttendanceBloc>().add(
+                          const MonthlyAttendanceEvent.previousMonthRequested(),
+                        ),
+                  icon: const Icon(Icons.chevron_left),
+                  tooltip: l10n.previousMonth,
+                ),
+                Text(
+                  _monthLabel(month, year, locale),
+                  style: textTheme.titleMedium?.copyWith(
+                    color: colorScheme.onSurface,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                IconButton.filledTonal(
+                  onPressed: isLoading
+                      ? null
+                      : () => context.read<MonthlyAttendanceBloc>().add(
+                          const MonthlyAttendanceEvent.nextMonthRequested(),
+                        ),
+                  icon: const Icon(Icons.chevron_right),
+                  tooltip: l10n.nextMonth,
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }
@@ -130,39 +212,79 @@ class _AttendanceSummaryContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    final summaryData = [
-      (label: l10n.present, value: '19'),
-      (label: l10n.late, value: '5'),
-      (label: l10n.excused, value: '2'),
-      (label: l10n.absent, value: '0'),
-    ];
+    return BlocBuilder<MonthlyAttendanceBloc, MonthlyAttendanceState>(
+      buildWhen: (prev, curr) {
+        final prevData = (
+          isLoading: prev.maybeWhen(
+            loading: (_, _) => true,
+            orElse: () => false,
+          ),
+          summary: prev.maybeWhen(
+            success: (_, _, _, _, s) => s,
+            orElse: () => const AttendanceSummary(),
+          ),
+        );
+        final currData = (
+          isLoading: curr.maybeWhen(
+            loading: (_, _) => true,
+            orElse: () => false,
+          ),
+          summary: curr.maybeWhen(
+            success: (_, _, _, _, s) => s,
+            orElse: () => const AttendanceSummary(),
+          ),
+        );
+        return prevData != currData;
+      },
+      builder: (context, state) {
+        final summary = state.maybeWhen(
+          success: (_, _, _, _, summary) => summary,
+          orElse: () => const AttendanceSummary(),
+        );
+        final isLoading = state.maybeWhen(
+          loading: (_, _) => true,
+          orElse: () => false,
+        );
 
-    return SliverToBoxAdapter(
-      child: Padding(
-        padding: const EdgeInsets.only(left: 16, right: 16, top: 12),
-        child: Row(
-          children: [
-            for (int i = 0; i < summaryData.length; i++) ...[
-              Expanded(
-                child: _SummaryCard(
-                  label: summaryData[i].label,
-                  value: summaryData[i].value,
+        final cards = [
+          (label: l10n.present, value: summary.present),
+          (label: l10n.late, value: summary.late),
+          (label: l10n.excused, value: summary.excused),
+          (label: l10n.absent, value: summary.absent),
+        ];
+
+        return Padding(
+          padding: const EdgeInsets.only(left: 16, right: 16, top: 16),
+          child: Row(
+            children: [
+              for (int i = 0; i < cards.length; i++) ...[
+                Expanded(
+                  child: _SummaryCard(
+                    label: cards[i].label,
+                    value: cards[i].value.toString(),
+                    isLoading: isLoading,
+                  ),
                 ),
-              ),
-              if (i != summaryData.length - 1) const SizedBox(width: 12),
+                if (i != cards.length - 1) const SizedBox(width: 8),
+              ],
             ],
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }
 
 class _SummaryCard extends StatelessWidget {
+  const _SummaryCard({
+    required this.label,
+    required this.value,
+    required this.isLoading,
+  });
+
   final String label;
   final String value;
-
-  const _SummaryCard({required this.label, required this.value});
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
@@ -170,23 +292,35 @@ class _SummaryCard extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     return CustomContainer(
-      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 14),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(
-            value,
-            style: textTheme.titleLarge?.copyWith(
-              color: colorScheme.onSurface,
-              fontWeight: FontWeight.bold,
-            ),
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 200),
+            child:
+                Text(
+                  value,
+
+                  style: textTheme.titleLarge?.copyWith(
+                    color: colorScheme.onSurface,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ).toShimmer(
+                  context,
+                  alignment: Alignment.center,
+                  width: 24,
+                  height: 28,
+                  isLoading: isLoading,
+                ),
           ),
           const SizedBox(height: 4),
           Text(
             label,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: textTheme.labelMedium?.copyWith(
+
+            style: textTheme.labelSmall?.copyWith(
               color: colorScheme.onSurfaceVariant,
             ),
           ),
@@ -205,35 +339,62 @@ class _AttendanceMonthlyProgress extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
 
-    return SliverToBoxAdapter(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  l10n.thisMonthlyAttendance,
-                  style: textTheme.bodyMedium!.copyWith(
-                    color: colorScheme.onSurface,
-                  ),
-                ),
+    return BlocBuilder<MonthlyAttendanceBloc, MonthlyAttendanceState>(
+      buildWhen: (prev, curr) {
+        final prevRate = prev.maybeWhen(
+          success: (_, _, _, _, s) => s.attendanceRate,
+          orElse: () => 0.0,
+        );
+        final currRate = curr.maybeWhen(
+          success: (_, _, _, _, s) => s.attendanceRate,
+          orElse: () => 0.0,
+        );
+        return prevRate != currRate;
+      },
+      builder: (context, state) {
+        final summary = state.maybeWhen(
+          success: (_, _, _, _, summary) => summary,
+          orElse: () => const AttendanceSummary(),
+        );
 
-                Text(
-                  "15%",
-                  style: textTheme.bodyMedium!.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
+        final rate = summary.attendanceRate;
+        final percent = '${(rate * 100).toStringAsFixed(0)}%';
 
-            const LinearProgressIndicator(),
-          ],
-        ),
-      ),
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(24, 20, 24, 4),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    l10n.thisMonthlyAttendance,
+                    style: textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onSurface,
+                    ),
+                  ),
+                  Text(
+                    percent,
+
+                    style: textTheme.labelMedium?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              TweenAnimationBuilder<double>(
+                tween: Tween(begin: 0, end: rate),
+                duration: const Duration(milliseconds: 400),
+                curve: Curves.easeOut,
+                builder: (_, value, _) => LinearProgressIndicator(value: value),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
@@ -243,14 +404,64 @@ class _AttendanceCalendarContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final DateTime now = DateTime.now();
+    return BlocBuilder<MonthlyAttendanceBloc, MonthlyAttendanceState>(
+      buildWhen: (prev, curr) {
+        final prevData = (
+          month: prev.maybeWhen(
+            success: (m, _, _, _, _) => m,
+            loading: (m, _) => m,
+            orElse: () => 0,
+          ),
+          year: prev.maybeWhen(
+            success: (_, y, _, _, _) => y,
+            loading: (_, y) => y,
+            orElse: () => 0,
+          ),
+          map: prev.maybeWhen(
+            success: (_, _, _, am, _) => am,
+            orElse: () => null,
+          ),
+        );
+        final currData = (
+          month: curr.maybeWhen(
+            success: (m, _, _, _, _) => m,
+            loading: (m, _) => m,
+            orElse: () => 0,
+          ),
+          year: curr.maybeWhen(
+            success: (_, y, _, _, _) => y,
+            loading: (_, y) => y,
+            orElse: () => 0,
+          ),
+          map: curr.maybeWhen(
+            success: (_, _, _, am, _) => am,
+            orElse: () => null,
+          ),
+        );
+        return prevData != currData;
+      },
+      builder: (context, state) {
+        final focusedDay = state.maybeWhen(
+          success: (month, year, _, _, _) => DateTime(year, month),
+          loading: (month, year) => DateTime(year, month),
+          orElse: () => DateTime.now(),
+        );
+        final attendanceMap = state.maybeWhen(
+          success: (_, _, _, attendanceMap, _) => attendanceMap,
+          orElse: () => const <DateTime, AttendanceStatus>{},
+        );
 
-    return SliverToBoxAdapter(
-      child: CustomContainer(
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        padding: const EdgeInsets.all(16),
-        child: Calendar(focusedDay: now),
-      ),
+        return RepaintBoundary(
+          child: CustomContainer(
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: const EdgeInsets.all(16),
+            child: Calendar(
+              focusedDay: focusedDay,
+              attendanceData: attendanceMap,
+            ),
+          ),
+        );
+      },
     );
   }
 }
@@ -263,26 +474,25 @@ class _AttendanceLegends extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
 
-    return SliverToBoxAdapter(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-        child: Wrap(
-          spacing: 12,
-          runSpacing: 8,
-          children: [
-            _LegendsRow(dotColor: Colors.green, label: l10n.present),
-            _LegendsRow(dotColor: colorScheme.primary, label: l10n.late),
-            _LegendsRow(dotColor: Colors.amber, label: l10n.excused),
-            _LegendsRow(dotColor: colorScheme.error, label: l10n.absent),
-          ],
-        ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+      child: Wrap(
+        spacing: 16,
+        runSpacing: 6,
+        alignment: WrapAlignment.spaceEvenly,
+        children: [
+          _LegendItem(dotColor: Colors.green, label: l10n.present),
+          _LegendItem(dotColor: colorScheme.primary, label: l10n.late),
+          _LegendItem(dotColor: Colors.amber, label: l10n.excused),
+          _LegendItem(dotColor: colorScheme.error, label: l10n.absent),
+        ],
       ),
     );
   }
 }
 
-class _LegendsRow extends StatelessWidget {
-  const _LegendsRow({required this.dotColor, required this.label});
+class _LegendItem extends StatelessWidget {
+  const _LegendItem({required this.dotColor, required this.label});
 
   final Color dotColor;
   final String label;
@@ -300,10 +510,11 @@ class _LegendsRow extends StatelessWidget {
           height: 8,
           decoration: BoxDecoration(shape: BoxShape.circle, color: dotColor),
         ),
-        const SizedBox(width: 4),
+        const SizedBox(width: 6),
         Text(
           label,
-          style: textTheme.labelSmall!.copyWith(
+
+          style: textTheme.labelSmall?.copyWith(
             color: colorScheme.onSurfaceVariant,
           ),
         ),
@@ -317,13 +528,32 @@ class _AttendanceChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SliverToBoxAdapter(
-      child: CustomContainer(
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+    return BlocBuilder<MonthlyAttendanceBloc, MonthlyAttendanceState>(
+      buildWhen: (prev, curr) {
+        final prevSummary = prev.maybeWhen(
+          success: (_, _, _, _, s) => s,
+          orElse: () => const AttendanceSummary(),
+        );
+        final currSummary = curr.maybeWhen(
+          success: (_, _, _, _, s) => s,
+          orElse: () => const AttendanceSummary(),
+        );
+        return prevSummary != currSummary;
+      },
+      builder: (context, state) {
+        final summary = state.maybeWhen(
+          success: (_, _, _, _, s) => s,
+          orElse: () => const AttendanceSummary(),
+        );
 
-        child: const SizedBox(height: 250, child: Chart()),
-      ),
+        return RepaintBoundary(
+          child: CustomContainer(
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+            child: SizedBox(height: 250, child: Chart(summary: summary)),
+          ),
+        );
+      },
     );
   }
 }

@@ -52,6 +52,11 @@ class Calendar extends StatelessWidget {
         ),
       ),
 
+      daysOfWeekHeight: 48,
+      startingDayOfWeek: StartingDayOfWeek.monday,
+      rowHeight: 60,
+      availableGestures: AvailableGestures.none,
+
       calendarBuilders: CalendarBuilders(
         defaultBuilder: (context, day, focusedDay) {
           final status = attendanceData[DateTime(day.year, day.month, day.day)];
