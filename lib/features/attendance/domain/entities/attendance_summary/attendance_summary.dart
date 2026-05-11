@@ -13,11 +13,15 @@ abstract class AttendanceSummary with _$AttendanceSummary {
     @Default(0) int late,
     @Default(0) int excused,
     @Default(0) int absent,
+    @Default(0) int workingDaysElapsed,
   }) = _AttendanceSummary;
 
   const AttendanceSummary._();
 
   int get total => present + late + excused + absent;
 
-  double get attendanceRate => total == 0 ? 0.0 : (present + late) / total;
+  double get attendanceRate {
+    if (workingDaysElapsed == 0) return 0.0;
+    return (present + late) / workingDaysElapsed;
+  }
 }

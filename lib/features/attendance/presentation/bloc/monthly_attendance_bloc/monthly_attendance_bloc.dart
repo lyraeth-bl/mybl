@@ -2,6 +2,7 @@
 // Use of this source code is governed by a MIT License
 // that can be found in the LICENSE file.
 
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -15,6 +16,11 @@ part 'monthly_attendance_bloc.freezed.dart';
 part 'monthly_attendance_event.dart';
 part 'monthly_attendance_state.dart';
 
+/// Si paling sibuk ngurusin data absen bulanan.
+///
+/// BLoC ini tugasnya jadi jembatan antara UI sama [FetchMonthlyAttendanceUseCase].
+/// Dia yang tanggung jawab buat narik data, ngitung rangkuman (summary), sampe
+/// ngerapiin data biar siap dipake sama widget Kalender atau Chart.
 class MonthlyAttendanceBloc
     extends Bloc<MonthlyAttendanceEvent, MonthlyAttendanceState> {
   MonthlyAttendanceBloc(this._monthlyAttendanceUseCase)
@@ -26,8 +32,8 @@ class MonthlyAttendanceBloc
 
   final FetchMonthlyAttendanceUseCase _monthlyAttendanceUseCase;
 
-  /// Returns the current (month, year) tracked by the state.
-  /// Falls back to now if still in the initial state.
+  /// Helper buat nyari tau bulan ama tahun berapa yang lagi aktif di-track sama state.
+  /// Kalo masih di initial state (awal banget), dia bakal balik ke bulan & tahun sekarang.
   (int month, int year) get _currentMonthYear {
     final s = state;
     return switch (s) {
@@ -37,6 +43,11 @@ class MonthlyAttendanceBloc
     };
   }
 
+  /// Handler utama pas user mau ganti bulan.
+  ///
+  /// Dia bakal masang state loading dulu, terus manggil use case. Kalo berhasil,
+  /// datanya nggak cuma disimpen mentah-mentah, tapi langsung diolah jadi Map buat Kalender
+  /// ama object [AttendanceSummary] buat rangkuman angkanya.
   Future<void> _onMonthChangeRequested(
     _MonthChangeRequested event,
     Emitter<MonthlyAttendanceState> emit,
@@ -53,18 +64,22 @@ class MonthlyAttendanceBloc
       data,
     ) {
       final attendanceMap = _toAttendanceMap(data);
+      final entityMap = _toEntityMap(data);
       emit(
         MonthlyAttendanceState.success(
           month: event.month,
           year: event.year,
           monthlyAttendance: data,
           attendanceMap: attendanceMap,
-          summary: _toSummary(attendanceMap),
+          entityMap: entityMap,
+          summary: _toSummary(attendanceMap, event.month, event.year),
         ),
       );
     });
   }
 
+  /// Shortcut buat mundurin kalender ke bulan sebelumnya.
+  /// Dia bakal ngitung sendiri transisi tahun kalo lagi di bulan Januari.
   Future<void> _onPreviousMonthRequested(
     _PreviousMonthRequested event,
     Emitter<MonthlyAttendanceState> emit,
@@ -80,6 +95,8 @@ class MonthlyAttendanceBloc
     );
   }
 
+  /// Shortcut buat majuin kalender ke bulan berikutnya.
+  /// Pinter juga buat handle ganti tahun pas lagi di bulan Desember.
   Future<void> _onNextMonthRequested(
     _NextMonthRequested event,
     Emitter<MonthlyAttendanceState> emit,
@@ -95,13 +112,14 @@ class MonthlyAttendanceBloc
     );
   }
 
-  /// Converts a list of [AttendanceEntity] into a map keyed by normalized date.
+  /// Tukang sortir data. Ngubah list [AttendanceEntity] jadi Map biar gampang
+  /// dicari berdasarkan tanggal pas mau ditampilin di Kalender.
   ///
-  /// API status values:
-  ///   "Hadir"         → [AttendanceStatus.present]
-  ///   "Terlambat"     → [AttendanceStatus.late]
-  ///   "Belum Check-In"→ [AttendanceStatus.absent]
-  ///   anything else   → [AttendanceStatus.excused]
+  /// Mapping status dari API:
+  /// - "Hadir" -> [AttendanceStatus.present]
+  /// - "Terlambat" -> [AttendanceStatus.late]
+  /// - "Belum Check-In" -> [AttendanceStatus.absent]
+  /// - Sisanya anggep aja Izin/Excused.
   static Map<DateTime, AttendanceStatus> _toAttendanceMap(
     List<AttendanceEntity> list,
   ) {
@@ -120,8 +138,32 @@ class MonthlyAttendanceBloc
     };
   }
 
+  /// Helper buat ngitung berapa banyak hari kerja (Senin-Jumat) yang udah lewat.
+  /// Kalo bulan yang diliat itu bulan sekarang, dia cuma ngitung sampe hari ini.
+  /// Kalo bulan lama, ya dihitung semua hari kerjanya.
+  static int _countWorkingDaysElapsed(int month, int year) {
+    final now = DateTime.now();
+    final isCurrentMonth = month == now.month && year == now.year;
+    final lastDay = isCurrentMonth
+        ? now.day
+        : DateUtils.getDaysInMonth(year, month);
+
+    int count = 0;
+    for (int day = 1; day <= lastDay; day++) {
+      final weekday = DateTime(year, month, day).weekday;
+      if (weekday != DateTime.saturday && weekday != DateTime.sunday) {
+        count++;
+      }
+    }
+    return count;
+  }
+
+  /// Tukang rekap. Ngitung total hadir, telat, izin, ama alpa dari Map absen,
+  /// terus dibungkus jadi [AttendanceSummary].
   static AttendanceSummary _toSummary(
     Map<DateTime, AttendanceStatus> attendanceMap,
+    int month,
+    int year,
   ) {
     int present = 0, late = 0, excused = 0, absent = 0;
 
@@ -143,6 +185,18 @@ class MonthlyAttendanceBloc
       late: late,
       excused: excused,
       absent: absent,
+      workingDaysElapsed: _countWorkingDaysElapsed(month, year),
     );
+  }
+
+  /// Nyimpen data entity utuh ke dalem Map biar pas user klik tanggal di kalender,
+  /// kita bisa langsung tarik detail datanya tanpa cari-cari lagi di list.
+  static Map<DateTime, AttendanceEntity> _toEntityMap(
+    List<AttendanceEntity> list,
+  ) {
+    return {
+      for (final e in list)
+        DateTime(e.tanggal.year, e.tanggal.month, e.tanggal.day): e,
+    };
   }
 }

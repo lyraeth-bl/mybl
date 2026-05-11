@@ -48,6 +48,13 @@
   "absent": "Absen",
   "thisMonthlyAttendance": "Absensi bulan ini",
   "noAttendanceData": "Tidak ada data absensi.",
+  "noAttendanceDetailData": "Tidak ada detail absensi.",
   "days": "Hari",
-  "noData": "Tidak ada data."
+  "noData": "Tidak ada data.",
+  "schoolYear": "Tajaran",
+  "semester": "Semester",
+  "unit": "Unit",
+  "checkIn": "Jam masuk",
+  "checkOut": "Jam keluar",
+  "reason": "Alasan"
 }

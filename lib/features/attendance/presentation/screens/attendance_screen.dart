@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Mahsa Nurfarhan Hidayat / Yayasan Pakarti Luhur. All rights reserved.
+// Use of this source code is governed by a MIT License
+// that can be found in the LICENSE file.
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -5,13 +9,20 @@ import 'package:intl/intl.dart';
 import '../../../../core/di/get_it_constant.dart';
 import '../../../../core/internal/src/extensions/extensions.dart';
 import '../../../../core/widgets/custom_container.dart';
+import '../../../../core/widgets/refresh_wrapper.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../domain/entities/attendance_entity/attendance_entity.dart';
 import '../../domain/entities/attendance_status/attendance_status.dart';
 import '../../domain/entities/attendance_summary/attendance_summary.dart';
 import '../bloc/monthly_attendance_bloc/monthly_attendance_bloc.dart';
 import '../widgets/calendar.dart';
 import '../widgets/chart.dart';
 
+/// Layar utama buat mantau absen bulanan lo.
+///
+/// Di sini user bisa liat rangkuman absen (masuk, telat, bolos), liat kalender absen,
+/// sampe liat grafik progres-nya. Screen ini juga dibungkus [BlocProvider] biar
+/// [MonthlyAttendanceBloc] siap tempur di dalemnya.
 class AttendanceScreen extends StatelessWidget {
   const AttendanceScreen({super.key});
 
@@ -24,6 +35,10 @@ class AttendanceScreen extends StatelessWidget {
   }
 }
 
+/// "Dapur" utama dari [AttendanceScreen].
+///
+/// Widget ini yang ngatur inisialisasi data pas pertama kali dibuka (lewat `initState`)
+/// dan nyusun layout pake [CustomScrollView] biar tampilannya kece dan smooth pas di-scroll.
 class _AttendanceScreenView extends StatefulWidget {
   const _AttendanceScreenView();
 
@@ -37,15 +52,16 @@ class _AttendanceScreenViewState extends State<_AttendanceScreenView> {
   @override
   void initState() {
     super.initState();
+    // Nyiapin list widget yang bakal muncul pake animasi biar nggak kaku.
     _animatedChildren = [
       const _AttendanceNavigationButton(),
       const _AttendanceSummaryContainer(),
       const _AttendanceMonthlyProgress(),
       const _AttendanceCalendarContainer(),
-      const _AttendanceLegends(),
       const _AttendanceChart(),
     ].makeListAnimate();
 
+    // Langsung request data absen bulan sekarang pas screen baru nongol.
     final now = DateTime.now();
     WidgetsBinding.instance.addPostFrameCallback(
       (_) => context.read<MonthlyAttendanceBloc>().add(
@@ -59,35 +75,86 @@ class _AttendanceScreenViewState extends State<_AttendanceScreenView> {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
     return Scaffold(
-      backgroundColor: colorScheme.surfaceContainer,
-      body: CustomScrollView(
-        physics: const BouncingScrollPhysics(),
-        slivers: [
-          const _AttendanceScreenHeader(),
-          SliverList.list(children: _animatedChildren),
-        ],
+      body: _AttendanceRefreshWrapper(
+        child: CustomScrollView(
+          physics: const BouncingScrollPhysics(),
+          slivers: [
+            const _AttendanceScreenHeader(),
+            SliverList.list(children: _animatedChildren),
+          ],
+        ),
       ),
     );
   }
 }
 
+/// Bungkus andalan buat fitur pull-to-refresh di halaman absen.
+///
+/// Pas ditarik ke bawah, dia bakal minta [MonthlyAttendanceBloc] buat ambil data
+/// terbaru (force refresh) sesuai bulan yang lagi aktif diliat sama user.
+class _AttendanceRefreshWrapper extends StatelessWidget {
+  const _AttendanceRefreshWrapper({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return RefreshWrapper(
+      onRefresh: () {
+        final state = context.read<MonthlyAttendanceBloc>().state;
+
+        // Cari tau lagi liat bulan & tahun berapa, kalo nggak ada ya balik ke sekarang.
+        final month = state.maybeWhen(
+          success: (m, _, _, _, _, _) => m,
+          loading: (m, _) => m,
+          orElse: () => DateTime.now().month,
+        );
+        final year = state.maybeWhen(
+          success: (_, y, _, _, _, _) => y,
+          loading: (_, y) => y,
+          orElse: () => DateTime.now().year,
+        );
+
+        return blocRefresh<
+          MonthlyAttendanceBloc,
+          MonthlyAttendanceEvent,
+          MonthlyAttendanceState
+        >(
+          context: context,
+          event: MonthlyAttendanceEvent.monthChangeRequested(
+            month: month,
+            year: year,
+            forceRefresh: true,
+          ),
+          isDone: (state) => state.maybeWhen(
+            success: (_, _, _, _, _, _) => true,
+            failure: (_) => true,
+            orElse: () => false,
+          ),
+        );
+      },
+      child: child,
+    );
+  }
+}
+
+/// Header kece buat screen absen.
+///
+/// Pake [SliverAppBar.medium] biar tampilannya kekinian dan bisa ngumpet pas di-scroll,
+/// tapi tetep "pinned" biar user nggak lupa lagi buka menu apa.
 class _AttendanceScreenHeader extends StatelessWidget {
   const _AttendanceScreenHeader();
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final colorScheme = Theme.of(context).colorScheme;
 
     return SliverAppBar.medium(
       title: Text(
         l10n.dailyAttendance,
-        style: const TextStyle(fontWeight: FontWeight(700)),
+        style: const TextStyle(fontWeight: FontWeight.bold),
       ),
-      backgroundColor: colorScheme.surfaceContainer,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
       centerTitle: true,
       floating: false,
@@ -96,6 +163,11 @@ class _AttendanceScreenHeader extends StatelessWidget {
   }
 }
 
+/// Tombol navigasi buat geser-geser bulan.
+///
+/// Si paling ngatur waktu. User bisa klik panah kiri/kanan buat liat histori absen
+/// bulan sebelumnya atau sesudahnya. Pas lagi loading, tombolnya bakal auto-disable
+/// biar user nggak nge-spam klik.
 class _AttendanceNavigationButton extends StatelessWidget {
   const _AttendanceNavigationButton();
 
@@ -111,9 +183,10 @@ class _AttendanceNavigationButton extends StatelessWidget {
 
     return BlocBuilder<MonthlyAttendanceBloc, MonthlyAttendanceState>(
       buildWhen: (prev, curr) {
+        // Cuma nge-rebuild kalo info bulan/tahun atau status loading-nya berubah.
         final isSupported = curr.maybeWhen(
           loading: (_, _) => true,
-          success: (_, _, _, _, _) => true,
+          success: (_, _, _, _, _, _) => true,
           initial: () => true,
           orElse: () => false,
         );
@@ -121,12 +194,12 @@ class _AttendanceNavigationButton extends StatelessWidget {
 
         final prevData = (
           month: prev.maybeWhen(
-            success: (m, _, _, _, _) => m,
+            success: (m, _, _, _, _, _) => m,
             loading: (m, _) => m,
             orElse: () => 0,
           ),
           year: prev.maybeWhen(
-            success: (_, y, _, _, _) => y,
+            success: (_, y, _, _, _, _) => y,
             loading: (_, y) => y,
             orElse: () => 0,
           ),
@@ -137,12 +210,12 @@ class _AttendanceNavigationButton extends StatelessWidget {
         );
         final currData = (
           month: curr.maybeWhen(
-            success: (m, _, _, _, _) => m,
+            success: (m, _, _, _, _, _) => m,
             loading: (m, _) => m,
             orElse: () => 0,
           ),
           year: curr.maybeWhen(
-            success: (_, y, _, _, _) => y,
+            success: (_, y, _, _, _, _) => y,
             loading: (_, y) => y,
             orElse: () => 0,
           ),
@@ -155,10 +228,11 @@ class _AttendanceNavigationButton extends StatelessWidget {
       },
       builder: (context, state) {
         final (month, year) = state.maybeWhen(
-          success: (month, year, _, _, _) => (month, year),
+          success: (month, year, _, _, _, _) => (month, year),
           loading: (month, year) => (month, year),
           orElse: () => (DateTime.now().month, DateTime.now().year),
         );
+
         final isLoading = state.maybeWhen(
           loading: (_, _) => true,
           orElse: () => false,
@@ -205,6 +279,10 @@ class _AttendanceNavigationButton extends StatelessWidget {
   }
 }
 
+/// Container buat kartu-kartu rangkuman absen.
+///
+/// Isinya ada total Masuk, Telat, Izin, ama Alpa. Semuanya ditampilin pake
+/// [ListView] horizontal biar enak diliat dan responsif.
 class _AttendanceSummaryContainer extends StatelessWidget {
   const _AttendanceSummaryContainer();
 
@@ -220,7 +298,7 @@ class _AttendanceSummaryContainer extends StatelessWidget {
             orElse: () => false,
           ),
           summary: prev.maybeWhen(
-            success: (_, _, _, _, s) => s,
+            success: (_, _, _, _, _, s) => s,
             orElse: () => const AttendanceSummary(),
           ),
         );
@@ -230,7 +308,7 @@ class _AttendanceSummaryContainer extends StatelessWidget {
             orElse: () => false,
           ),
           summary: curr.maybeWhen(
-            success: (_, _, _, _, s) => s,
+            success: (_, _, _, _, _, s) => s,
             orElse: () => const AttendanceSummary(),
           ),
         );
@@ -238,7 +316,7 @@ class _AttendanceSummaryContainer extends StatelessWidget {
       },
       builder: (context, state) {
         final summary = state.maybeWhen(
-          success: (_, _, _, _, summary) => summary,
+          success: (_, _, _, _, _, summary) => summary,
           orElse: () => const AttendanceSummary(),
         );
         final isLoading = state.maybeWhen(
@@ -254,20 +332,29 @@ class _AttendanceSummaryContainer extends StatelessWidget {
         ];
 
         return Padding(
-          padding: const EdgeInsets.only(left: 16, right: 16, top: 16),
-          child: Row(
-            children: [
-              for (int i = 0; i < cards.length; i++) ...[
-                Expanded(
+          padding: const EdgeInsets.only(top: 16),
+          child: SizedBox(
+            height: 80,
+            width: double.infinity,
+            child: ListView.builder(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              scrollDirection: Axis.horizontal,
+              itemCount: cards.length,
+              itemBuilder: (context, index) {
+                final card = cards[index];
+                final shape = index.makeHorizontalGoogleShape(cards.length - 1);
+
+                return SizedBox(
+                  width: MediaQuery.sizeOf(context).width / cards.length,
                   child: _SummaryCard(
-                    label: cards[i].label,
-                    value: cards[i].value.toString(),
+                    label: card.label,
+                    value: card.value.toString(),
+                    shapeBorder: shape,
                     isLoading: isLoading,
                   ),
-                ),
-                if (i != cards.length - 1) const SizedBox(width: 8),
-              ],
-            ],
+                );
+              },
+            ),
           ),
         );
       },
@@ -275,24 +362,32 @@ class _AttendanceSummaryContainer extends StatelessWidget {
   }
 }
 
+/// Si kartu kecil sakti buat nampilin angka rangkuman.
+///
+/// Kalo datanya masih ditarik (loading), dia otomatis bakal nunjukin animasi shimmer
+/// biar user nggak bengong liatin layar kosong.
 class _SummaryCard extends StatelessWidget {
   const _SummaryCard({
     required this.label,
     required this.value,
     required this.isLoading,
+    this.shapeBorder,
   });
 
   final String label;
   final String value;
   final bool isLoading;
+  final ShapeBorder? shapeBorder;
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
-    return CustomContainer(
-      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 14),
+    return Card.filled(
+      color: colorScheme.surfaceContainer,
+      margin: const EdgeInsets.all(2),
+      shape: shapeBorder,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -301,7 +396,6 @@ class _SummaryCard extends StatelessWidget {
             child:
                 Text(
                   value,
-
                   style: textTheme.titleLarge?.copyWith(
                     color: colorScheme.onSurface,
                     fontWeight: FontWeight.w600,
@@ -319,7 +413,6 @@ class _SummaryCard extends StatelessWidget {
             label,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-
             style: textTheme.labelSmall?.copyWith(
               color: colorScheme.onSurfaceVariant,
             ),
@@ -330,6 +423,10 @@ class _SummaryCard extends StatelessWidget {
   }
 }
 
+/// Widget buat nampilin persentase kehadiran bulan ini.
+///
+/// Pake [LinearProgressIndicator] yang dianimasiin biar keliatan makin asik.
+/// Jadi user bisa tau seberapa rajin mereka bulan ini.
 class _AttendanceMonthlyProgress extends StatelessWidget {
   const _AttendanceMonthlyProgress();
 
@@ -342,18 +439,18 @@ class _AttendanceMonthlyProgress extends StatelessWidget {
     return BlocBuilder<MonthlyAttendanceBloc, MonthlyAttendanceState>(
       buildWhen: (prev, curr) {
         final prevRate = prev.maybeWhen(
-          success: (_, _, _, _, s) => s.attendanceRate,
+          success: (_, _, _, _, _, s) => s.attendanceRate,
           orElse: () => 0.0,
         );
         final currRate = curr.maybeWhen(
-          success: (_, _, _, _, s) => s.attendanceRate,
+          success: (_, _, _, _, _, s) => s.attendanceRate,
           orElse: () => 0.0,
         );
         return prevRate != currRate;
       },
       builder: (context, state) {
         final summary = state.maybeWhen(
-          success: (_, _, _, _, summary) => summary,
+          success: (_, _, _, _, _, summary) => summary,
           orElse: () => const AttendanceSummary(),
         );
 
@@ -361,7 +458,7 @@ class _AttendanceMonthlyProgress extends StatelessWidget {
         final percent = '${(rate * 100).toStringAsFixed(0)}%';
 
         return Padding(
-          padding: const EdgeInsets.fromLTRB(24, 20, 24, 4),
+          padding: const EdgeInsets.all(24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -399,6 +496,10 @@ class _AttendanceMonthlyProgress extends StatelessWidget {
   }
 }
 
+/// Jembatan buat nampilin kalender absen beserta keterangannya.
+///
+/// Widget ini ngebungkus [Calendar] biar sinkron sama data dari [MonthlyAttendanceBloc].
+/// Dia ngatur kapan harus nampilin data titik-titik warna di kalender.
 class _AttendanceCalendarContainer extends StatelessWidget {
   const _AttendanceCalendarContainer();
 
@@ -408,33 +509,33 @@ class _AttendanceCalendarContainer extends StatelessWidget {
       buildWhen: (prev, curr) {
         final prevData = (
           month: prev.maybeWhen(
-            success: (m, _, _, _, _) => m,
+            success: (m, _, _, _, _, _) => m,
             loading: (m, _) => m,
             orElse: () => 0,
           ),
           year: prev.maybeWhen(
-            success: (_, y, _, _, _) => y,
+            success: (_, y, _, _, _, _) => y,
             loading: (_, y) => y,
             orElse: () => 0,
           ),
           map: prev.maybeWhen(
-            success: (_, _, _, am, _) => am,
+            success: (_, _, _, am, _, _) => am,
             orElse: () => null,
           ),
         );
         final currData = (
           month: curr.maybeWhen(
-            success: (m, _, _, _, _) => m,
+            success: (m, _, _, _, _, _) => m,
             loading: (m, _) => m,
             orElse: () => 0,
           ),
           year: curr.maybeWhen(
-            success: (_, y, _, _, _) => y,
+            success: (_, y, _, _, _, _) => y,
             loading: (_, y) => y,
             orElse: () => 0,
           ),
           map: curr.maybeWhen(
-            success: (_, _, _, am, _) => am,
+            success: (_, _, _, am, _, _) => am,
             orElse: () => null,
           ),
         );
@@ -442,22 +543,33 @@ class _AttendanceCalendarContainer extends StatelessWidget {
       },
       builder: (context, state) {
         final focusedDay = state.maybeWhen(
-          success: (month, year, _, _, _) => DateTime(year, month),
+          success: (month, year, _, _, _, _) => DateTime(year, month),
           loading: (month, year) => DateTime(year, month),
           orElse: () => DateTime.now(),
         );
         final attendanceMap = state.maybeWhen(
-          success: (_, _, _, attendanceMap, _) => attendanceMap,
+          success: (_, _, _, attendanceMap, _, _) => attendanceMap,
           orElse: () => const <DateTime, AttendanceStatus>{},
+        );
+        final entityMap = state.maybeWhen(
+          success: (_, _, _, _, entityMap, _) => entityMap,
+          orElse: () => const <DateTime, AttendanceEntity>{},
         );
 
         return RepaintBoundary(
           child: CustomContainer(
             margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             padding: const EdgeInsets.all(16),
-            child: Calendar(
-              focusedDay: focusedDay,
-              attendanceData: attendanceMap,
+            child: Column(
+              children: [
+                Calendar(
+                  focusedDay: focusedDay,
+                  attendanceData: attendanceMap,
+                  entityData: entityMap,
+                ),
+                const SizedBox(height: 16),
+                const _AttendanceLegends(),
+              ],
             ),
           ),
         );
@@ -466,6 +578,10 @@ class _AttendanceCalendarContainer extends StatelessWidget {
   }
 }
 
+/// Tukang jelasin arti titik warna di kalender.
+///
+/// Biar user nggak bingung, ini list legenda-nya: Hijau buat Masuk, Primary buat Telat,
+/// Kuning buat Izin, ama Merah buat Alpa.
 class _AttendanceLegends extends StatelessWidget {
   const _AttendanceLegends();
 
@@ -491,6 +607,7 @@ class _AttendanceLegends extends StatelessWidget {
   }
 }
 
+/// Item kecil buat satu baris legenda (titik + teks).
 class _LegendItem extends StatelessWidget {
   const _LegendItem({required this.dotColor, required this.label});
 
@@ -523,6 +640,10 @@ class _LegendItem extends StatelessWidget {
   }
 }
 
+/// Visualisasi data absen lewat chart yang interaktif.
+///
+/// Biar data rangkuman tadi nggak cuma teks, kita kasih [Chart] biar user
+/// bisa liat perbandingannya secara visual.
 class _AttendanceChart extends StatelessWidget {
   const _AttendanceChart();
 
@@ -531,18 +652,18 @@ class _AttendanceChart extends StatelessWidget {
     return BlocBuilder<MonthlyAttendanceBloc, MonthlyAttendanceState>(
       buildWhen: (prev, curr) {
         final prevSummary = prev.maybeWhen(
-          success: (_, _, _, _, s) => s,
+          success: (_, _, _, _, _, s) => s,
           orElse: () => const AttendanceSummary(),
         );
         final currSummary = curr.maybeWhen(
-          success: (_, _, _, _, s) => s,
+          success: (_, _, _, _, _, s) => s,
           orElse: () => const AttendanceSummary(),
         );
         return prevSummary != currSummary;
       },
       builder: (context, state) {
         final summary = state.maybeWhen(
-          success: (_, _, _, _, s) => s,
+          success: (_, _, _, _, _, s) => s,
           orElse: () => const AttendanceSummary(),
         );
 

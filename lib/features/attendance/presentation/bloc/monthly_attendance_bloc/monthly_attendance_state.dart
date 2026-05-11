@@ -14,6 +14,7 @@ sealed class MonthlyAttendanceState with _$MonthlyAttendanceState {
     required int year,
     required List<AttendanceEntity> monthlyAttendance,
     required Map<DateTime, AttendanceStatus> attendanceMap,
+    required Map<DateTime, AttendanceEntity> entityMap,
     required AttendanceSummary summary,
   }) = _Success;
 

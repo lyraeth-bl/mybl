@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Mahsa Nurfarhan Hidayat / Yayasan Pakarti Luhur. All rights reserved.
+// Use of this source code is governed by a MIT License
+// that can be found in the LICENSE file.
+
 import 'package:flutter/material.dart';
 
 import '../constants/constant.dart';
@@ -36,17 +40,20 @@ class CustomContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
-    final defaultBgColor = backgroundColor ?? colorScheme.surface;
+    final defaultBgColor = backgroundColor ?? colorScheme.surfaceContainer;
 
     final defaultShadowColor =
         shadowColor ?? colorScheme.surfaceContainerHighest;
+
+    final defaultPadding =
+        padding ?? const EdgeInsets.symmetric(horizontal: 8, vertical: 4);
 
     return Container(
       width: width,
       height: height,
       alignment: alignment,
       margin: margin,
-      padding: padding,
+      padding: defaultPadding,
       decoration: BoxDecoration(
         color: defaultBgColor,
         borderRadius: borderRadius ?? customRadius,

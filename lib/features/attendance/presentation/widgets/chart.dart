@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Mahsa Nurfarhan Hidayat / Yayasan Pakarti Luhur. All rights reserved.
+// Use of this source code is governed by a MIT License
+// that can be found in the LICENSE file.
+
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
@@ -16,27 +20,61 @@ class Chart extends StatelessWidget {
 
     final sections = _buildSections(colorScheme);
 
-    return Stack(
-      alignment: Alignment.center,
+    final legendItems = [
+      (label: l10n.present, value: summary.present, color: Colors.green),
+      (label: l10n.late, value: summary.late, color: colorScheme.primary),
+      (label: l10n.excused, value: summary.excused, color: Colors.amber),
+      (label: l10n.absent, value: summary.absent, color: colorScheme.error),
+    ];
+
+    return Column(
       children: [
-        PieChart(
-          PieChartData(
-            sectionsSpace: 4,
-            centerSpaceRadius: 72,
-            sections: sections.isNotEmpty
-                ? sections
-                : [
-                    // Empty state: single muted ring
-                    PieChartSectionData(
-                      color: colorScheme.surfaceContainerHighest,
-                      value: 1,
-                      title: '',
-                      radius: 28,
-                    ),
-                  ],
+        Expanded(
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              PieChart(
+                PieChartData(
+                  sectionsSpace: 4,
+                  centerSpaceRadius: 72,
+                  sections: sections.isNotEmpty
+                      ? sections
+                      : [
+                          PieChartSectionData(
+                            color: colorScheme.surfaceContainerHighest,
+                            value: 1,
+                            title: '',
+                            radius: 28,
+                          ),
+                        ],
+                ),
+              ),
+              _CenterLabel(summary: summary, l10n: l10n),
+            ],
           ),
         ),
-        _CenterLabel(summary: summary, l10n: l10n),
+        const SizedBox(height: 16),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _LegendTile(item: legendItems[0]),
+                const SizedBox(height: 8),
+                _LegendTile(item: legendItems[2]),
+              ],
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _LegendTile(item: legendItems[1]),
+                const SizedBox(height: 8),
+                _LegendTile(item: legendItems[3]),
+              ],
+            ),
+          ],
+        ),
       ],
     );
   }
@@ -94,6 +132,44 @@ class _CenterLabel extends StatelessWidget {
           totalLabel,
           style: textTheme.labelSmall?.copyWith(
             color: colorScheme.onSurfaceVariant,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _LegendTile extends StatelessWidget {
+  const _LegendTile({required this.item});
+
+  final ({String label, int value, Color color}) item;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 10,
+          height: 10,
+          decoration: BoxDecoration(shape: BoxShape.circle, color: item.color),
+        ),
+        const SizedBox(width: 6),
+        Text(
+          item.label,
+          style: textTheme.labelSmall?.copyWith(
+            color: colorScheme.onSurfaceVariant,
+          ),
+        ),
+        const SizedBox(width: 4),
+        Text(
+          '${item.value}',
+          style: textTheme.labelSmall?.copyWith(
+            color: colorScheme.onSurface,
+            fontWeight: FontWeight.w600,
           ),
         ),
       ],
