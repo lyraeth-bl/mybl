@@ -39,5 +39,22 @@
   "classRoom": "Class",
   "underMaintenance": "Upgrading in Progress",
   "underMaintenanceDesc": "We’re improving the system for a better experience. Hang tight and try again soon!",
-  "tryAgain": "Try again"
+  "tryAgain": "Try again",
+  "nextMonth": "Next month",
+  "previousMonth": "Previous month",
+  "present": "Present",
+  "late": "Late",
+  "excused": "Excused",
+  "absent": "Absent",
+  "thisMonthlyAttendance": "Attendance this month",
+  "noAttendanceData": "No attendance yet.",
+  "noAttendanceDetailData": "No detail attendance yet.",
+  "days": "Days",
+  "noData": "No data.",
+  "schoolYear": "School year",
+  "semester": "Semester",
+  "unit": "Unit",
+  "checkIn": "Check in",
+  "checkOut": "Check out",
+  "reason": "Reason"
 }

@@ -204,8 +204,9 @@ abstract interface class AttendanceFetcher<T> {
   /// Kalau [forceRefresh] diset jadi `true`, kita bakal todong data paling
   /// gress langsung dari server (bye-bye cache).
   ///
-  /// Returns [Result] isinya data hari ini kalau lancar jaya.
-  Future<Result<T>> fetchDailyAttendance([bool forceRefresh = false]);
+  /// Returns [Result] isinya data hari ini kalau lancar jaya,
+  /// atau `null` kalau user belum absen hari ini.
+  Future<Result<T?>> fetchDailyAttendance([bool forceRefresh = false]);
 
   /// Narik semua data kehadiran dalam satu bulan tertentu.
   ///
@@ -231,24 +232,28 @@ abstract interface class AttendanceLocalManager<T> {
   ///
   /// Panggil ini pas kita udah dapet data seger dari API biar kalau besok-besok
   /// HP lagi offline, kita tetep bisa pamer data absensi bulanannya.
-  Future<Unit> saveMonthlyAttendance();
+  Future<Unit> saveMonthlyAttendance({
+    required int month,
+    required int year,
+    required List<T> listData,
+  });
 
   /// Ngamanin data absensi hari ini biar nggak ilang.
   ///
   /// Mirip kayak sodaranya, ini fokus buat simpen status kehadiran yang paling
   /// baru (hari ini) ke penyimpanan lokal.
-  Future<Unit> saveDailyAttendance();
+  Future<Unit> saveDailyAttendance(T data);
 
   /// Ngambil data rekap bulanan yang udah pernah kita simpen sebelumnya.
   ///
   /// Kita kasih [listData] sebagai referensi, terus fungsi ini bakal balikin
   /// data yang emang udah ada di lokal. Kalau kosong, ya berarti emang belum
   /// pernah mampir datanya.
-  List<T>? readMonthlyAttendance(List<T> listData);
+  List<T>? readMonthlyAttendance({required int month, required int year});
 
   /// Nyari data absensi harian yang udah tersimpan di lokal.
   ///
   /// Pake [data] buat nyocokin, terus kita liat apakah di "gudang" kita ada
   /// data yang pas atau nggak. Returns `null` kalau emang nggak nemu.
-  T? readDailyAttendance(T data);
+  T? readDailyAttendance();
 }

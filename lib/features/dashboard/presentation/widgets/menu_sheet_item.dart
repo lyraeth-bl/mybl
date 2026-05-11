@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/app_router/app_router.dart';
 import '../../../../l10n/app_localizations.dart';
 
 class MenuSheetItem {
@@ -13,11 +14,11 @@ class MenuSheetItem {
   final String label;
   final String routePath;
 
-  static const List<MenuSheetItem> menuItems = [
+  static List<MenuSheetItem> menuItems = [
     MenuSheetItem(
       icon: Icons.checklist_rounded,
       label: 'dailyAttendance',
-      routePath: '/attendance',
+      routePath: RouteNames.attendance,
     ),
     MenuSheetItem(
       icon: Icons.calendar_view_week_rounded,

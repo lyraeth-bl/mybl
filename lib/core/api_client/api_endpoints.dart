@@ -41,6 +41,8 @@ class ApiEndpoints {
 
   static final String attendance = "/absensi-harian";
 
+  static final String todayAttendance = "/absensi-harian/today";
+
   static final String deviceTokens = "/device-tokens";
 
   static final String academicCalendar = "/kalender-akademik";

@@ -39,5 +39,22 @@
   "classRoom": "Kelas",
   "underMaintenance": "Aplikasi lagi di update",
   "underMaintenanceDesc": "Kami lagi upgrade sistem biar pengalaman kamu makin oke. Tunggu sebentar, ya!",
-  "tryAgain": "Coba lagi"
+  "tryAgain": "Coba lagi",
+  "nextMonth": "Bulan selanjutnya",
+  "previousMonth": "Bulan sebelumnya",
+  "present": "Hadir",
+  "late": "Terlambat",
+  "excused": "Izin",
+  "absent": "Absen",
+  "thisMonthlyAttendance": "Absensi bulan ini",
+  "noAttendanceData": "Tidak ada data absensi.",
+  "noAttendanceDetailData": "Tidak ada detail absensi.",
+  "days": "Hari",
+  "noData": "Tidak ada data.",
+  "schoolYear": "Tajaran",
+  "semester": "Semester",
+  "unit": "Unit",
+  "checkIn": "Jam masuk",
+  "checkOut": "Jam keluar",
+  "reason": "Alasan"
 }

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/di/get_it_constant.dart';
+import '../../../attendance/presentation/bloc/daily_attendance_bloc/daily_attendance_bloc.dart';
 import '../../../user/presentation/bloc/user_bloc.dart';
 import '../widgets/dashboard_header.dart';
 
@@ -14,16 +15,37 @@ class DashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<UserBloc>(
-      create: (context) =>
-          di<UserBloc>()..add(const UserEvent.fetchStudentRequested()),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<UserBloc>(create: (context) => di<UserBloc>()),
+        BlocProvider<DailyAttendanceBloc>(
+          create: (context) => di<DailyAttendanceBloc>(),
+        ),
+      ],
       child: const _DashboardView(),
     );
   }
 }
 
-class _DashboardView extends StatelessWidget {
+class _DashboardView extends StatefulWidget {
   const _DashboardView();
+
+  @override
+  State<_DashboardView> createState() => _DashboardViewState();
+}
+
+class _DashboardViewState extends State<_DashboardView> {
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<UserBloc>().add(const UserEvent.fetchStudentRequested());
+      context.read<DailyAttendanceBloc>().add(
+        const DailyAttendanceEvent.dailyAttendanceRequested(),
+      );
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
