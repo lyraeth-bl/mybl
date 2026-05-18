@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Mahsa Nurfarhan Hidayat / Yayasan Pakarti Luhur. All rights reserved.
+// Use of this source code is governed by a MIT License
+// that can be found in the LICENSE file.
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -13,6 +17,11 @@ import '../../../user/domain/entities/student_entity/student_entity.dart';
 import '../../../user/presentation/bloc/user_bloc.dart';
 import '../widgets/profile_card_menu.dart';
 
+/// Layar utama buat pamer profil user.
+///
+/// Di sini user bisa liat info singkat mereka kayak nama, NIS, sampe foto profil.
+/// Screen ini juga jadi gerbang buat masuk ke detail profil atau buat logout.
+/// Kita ngebungkus ini pake [AuthBloc] biar urusan logout-nya lancar jaya.
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
@@ -25,6 +34,10 @@ class ProfileScreen extends StatelessWidget {
   }
 }
 
+/// Tampilan utama dari [ProfileScreen].
+///
+/// Widget ini pake [CustomScrollView] biar ada efek scroll yang asik (pake [BouncingScrollPhysics]).
+/// Dia dengerin [UserBloc] buat mastiin data [StudentEntity] selalu yang paling update.
 class _ProfileScreenView extends StatelessWidget {
   const _ProfileScreenView();
 
@@ -39,12 +52,16 @@ class _ProfileScreenView extends StatelessWidget {
             orElse: () => null,
           );
 
+          // Kalo data student-nya belum ada (mungkin lagi loading atau error),
+          // kita kasih space kosong dulu biar nggak crash.
+          if (student == null) return const SizedBox.shrink();
+
           return CustomScrollView(
             physics: const BouncingScrollPhysics(),
             slivers: [
-              _ProfileAppBar(student: student!),
+              _ProfileAppBar(student: student),
               _ProfileInfo(student: student),
-              _ProfileMenu(),
+              const _ProfileMenu(),
             ],
           );
         },
@@ -53,6 +70,10 @@ class _ProfileScreenView extends StatelessWidget {
   }
 }
 
+/// AppBar yang "nge-shoutout" identitas user.
+///
+/// Pake [SliverAppBar.medium] biar tampilannya modern dan tetep keliatan
+/// nama user-nya meskipun di-scroll.
 class _ProfileAppBar extends StatelessWidget {
   const _ProfileAppBar({required this.student});
 
@@ -64,47 +85,44 @@ class _ProfileAppBar extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
     final l10n = AppLocalizations.of(context)!;
 
-    return BlocBuilder<UserBloc, UserState>(
-      builder: (context, state) {
-        return SliverAppBar.medium(
-          backgroundColor: colorScheme.primaryContainer,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadiusGeometry.vertical(
-              bottom: Radius.circular(32),
-            ),
-          ),
-          elevation: 0,
-          title: Row(
+    return SliverAppBar.medium(
+      backgroundColor: colorScheme.primaryContainer,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(bottom: Radius.circular(32)),
+      ),
+      elevation: 0,
+      title: Row(
+        children: [
+          const SizedBox(width: 8),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const SizedBox(width: 8),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    student.nama ?? l10n.emptyName,
-                    style: textTheme.titleMedium!.copyWith(
-                      color: colorScheme.onSurface,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    "${student.nis} / ${student.nisn}",
-                    style: textTheme.bodySmall!.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ],
+              Text(
+                student.nama ?? l10n.emptyName,
+                style: textTheme.titleMedium!.copyWith(
+                  color: colorScheme.onSurface,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                "${student.nis} / ${student.nisn}",
+                style: textTheme.bodySmall!.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
               ),
             ],
           ),
-        );
-      },
+        ],
+      ),
     );
   }
 }
 
+/// Bagian yang khusus nampilin foto profil.
+///
+/// Dibikin terpisah biar rapi dan gampang kalo mau di-style macem-macem.
 class _ProfileInfo extends StatelessWidget {
   const _ProfileInfo({required this.student});
 
@@ -130,6 +148,10 @@ class _ProfileInfo extends StatelessWidget {
   }
 }
 
+/// Daftar menu yang ada di profil.
+///
+/// Isinya ada link ke detail personal info sama tombol logout.
+/// Dia dengerin [AuthBloc] buat handle pindah screen pas user sukses logout.
 class _ProfileMenu extends StatelessWidget {
   const _ProfileMenu();
 

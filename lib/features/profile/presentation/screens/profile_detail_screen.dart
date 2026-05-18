@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Mahsa Nurfarhan Hidayat / Yayasan Pakarti Luhur. All rights reserved.
+// Use of this source code is governed by a MIT License
+// that can be found in the LICENSE file.
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -7,6 +11,10 @@ import '../../../user/domain/entities/student_entity/student_entity.dart';
 import '../../../user/presentation/bloc/user_bloc.dart';
 import '../widgets/profile_card_menu.dart';
 
+/// Screen buat liat "jeroan" alias info lengkap data diri user.
+///
+/// Isinya detail banget, mulai dari NIS, NISN, tanggal lahir, sampe nama orang tua.
+/// Biar nggak bosen bacanya, list-nya kita kasih animasi biar munculnya satu-satu.
 class ProfileDetailScreen extends StatefulWidget {
   const ProfileDetailScreen({super.key});
 
@@ -15,8 +23,15 @@ class ProfileDetailScreen extends StatefulWidget {
 }
 
 class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
+  /// Tempat nyimpen list widget yang udah dikasih animasi.
+  /// Disimpen biar nggak nge-rebuild animasi terus pas scroll.
   List<Widget>? _animatedChildren;
 
+  /// Fungsi buat nyusun list detail profil.
+  ///
+  /// Di sini kita nge-map data dari [StudentEntity] jadi deretan [ProfileCardMenu].
+  /// Kita juga pake extension [makeVerticalGoogleShape] biar bentuk kartunya
+  /// makin kece ala-ala Google.
   void _buildAnimatedChildren(StudentEntity student, AppLocalizations l10n) {
     if (_animatedChildren != null) return;
 
@@ -149,6 +164,7 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
 
           final l10n = AppLocalizations.of(context)!;
 
+          // Kita build widget animasinya setelah frame pertama beres digambar.
           WidgetsBinding.instance.addPostFrameCallback(
             (_) => _buildAnimatedChildren(student, l10n),
           );
@@ -164,7 +180,7 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
                 ),
                 elevation: 0,
               ),
-              SliverToBoxAdapter(child: SizedBox(height: 24)),
+              const SliverToBoxAdapter(child: SizedBox(height: 24)),
               SliverList.list(children: _animatedChildren ?? []),
               SliverToBoxAdapter(
                 child: Padding(
@@ -188,6 +204,7 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
   }
 }
 
+/// Helper class internal buat nyimpen data detail profil sebelum di-map jadi widget.
 class _ProfileDetailEntity {
   const _ProfileDetailEntity({
     required this.title,
