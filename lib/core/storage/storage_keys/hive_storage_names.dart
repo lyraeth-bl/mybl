@@ -40,4 +40,7 @@ class HiveStorageNames {
 
   // Data absensi harian.
   static const String userDailyAttendanceKey = "userDailyAttendance";
+
+  // Data Jadwal pelajaran.
+  static const String userTimeTableKey = "userTimeTable";
 }

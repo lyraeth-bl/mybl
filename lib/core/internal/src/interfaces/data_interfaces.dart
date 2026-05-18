@@ -257,3 +257,21 @@ abstract interface class AttendanceLocalManager<T> {
   /// data yang pas atau nggak. Returns `null` kalau emang nggak nemu.
   T? readDailyAttendance();
 }
+
+/// Spesialis urusan titip-menitip jadwal pelajaran ke penyimpanan lokal.
+///
+/// Interface ini bertugas buat jagain data jadwal pelajaran (TimeTable) biar
+/// tetep bisa diintip meskipun HP lagi nggak ada sinyal. Mirip kayak gudang
+/// buat nyimpen peta perjalanan biar nggak nyasar pas offline.
+abstract interface class TimeTableLocalManager<T> {
+  /// Titip daftar jadwal pelajaran [listData] ke dalem storage lokal.
+  ///
+  /// Panggil ini pas kita baru aja dapet jadwal paling fresh dari internet.
+  Future<Unit> saveListTimeTable({required List<T> listData});
+
+  /// Ngambil daftar jadwal pelajaran yang udah pernah kita titip sebelumnya.
+  ///
+  /// Returns list data [T] kalo ada isinya, atau `null` kalo emang gudangnya
+  /// lagi kosong melompong.
+  List<T>? readListTimeTable();
+}
