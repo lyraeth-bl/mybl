@@ -13,6 +13,7 @@ import '../../features/app_configuration/app_configuration_di.dart';
 import '../../features/attendance/attendance_di.dart';
 import '../../features/auth/auth_di.dart';
 import '../../features/sessions/sessions_di.dart';
+import '../../features/time_table/di.dart';
 import '../../features/user/user_di.dart';
 import '../api_client/api_client_di.dart';
 import '../app_router/app_router_di.dart';
@@ -54,6 +55,7 @@ Future<void> initializeApp() async {
   initAppConfigurationDI();
   initUserDI();
   initAttendanceDI();
+  initTimeTableDI();
 
   await di<OpenAllBoxesUseCase>().call();
 
