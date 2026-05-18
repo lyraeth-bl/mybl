@@ -9,24 +9,33 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../features/user/presentation/bloc/user_bloc.dart';
 
 class ProfilePicture extends StatelessWidget {
-  const ProfilePicture({super.key, required this.profileImageUrl});
+  const ProfilePicture({
+    super.key,
+    required this.profileImageUrl,
+    this.radius,
+    this.backgroundColor,
+    this.foregroundColor,
+  });
 
   final String profileImageUrl;
+  final double? radius;
+  final Color? backgroundColor;
+  final Color? foregroundColor;
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
     return CircleAvatar(
-      backgroundColor: colorScheme.surfaceContainer,
-      foregroundColor: colorScheme.onSurface,
-      radius: 28,
+      backgroundColor: backgroundColor ?? colorScheme.surfaceContainer,
+      foregroundColor: foregroundColor ?? colorScheme.onSurface,
+      radius: radius != null ? radius! : 28,
       child: profileImageUrl.isEmpty
           ? _buildInitial(context)
           : ClipOval(
               child: CachedNetworkImage(
-                width: 56,
-                height: 56,
+                width: radius != null ? (radius! * 2) : 56,
+                height: radius != null ? (radius! * 2) : 56,
                 imageUrl: profileImageUrl,
                 errorWidget: (context, url, error) => _buildInitial(context),
               ),

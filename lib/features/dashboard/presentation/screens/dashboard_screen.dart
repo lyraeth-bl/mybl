@@ -15,13 +15,8 @@ class DashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider<UserBloc>(create: (context) => di<UserBloc>()),
-        BlocProvider<DailyAttendanceBloc>(
-          create: (context) => di<DailyAttendanceBloc>(),
-        ),
-      ],
+    return BlocProvider<DailyAttendanceBloc>(
+      create: (context) => di<DailyAttendanceBloc>(),
       child: const _DashboardView(),
     );
   }

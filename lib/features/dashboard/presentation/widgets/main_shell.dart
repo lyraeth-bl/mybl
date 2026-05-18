@@ -42,6 +42,7 @@ class _MainShellView extends StatelessWidget {
       ),
       builder: (context, isUnderMaintenance) {
         return Scaffold(
+          backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
           body: isUnderMaintenance
               ? const AppUnderMaintenanceContainer()
               : navigationShell,
@@ -114,6 +115,7 @@ class _MenuNavigationBarState extends State<_MenuNavigationBar> {
         : widget.navigationShell.currentIndex;
 
     return NavigationBar(
+      backgroundColor: colorScheme.surface,
       height: 85,
       elevation: 0,
       indicatorColor: colorScheme.secondaryContainer,

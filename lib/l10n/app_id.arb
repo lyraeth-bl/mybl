@@ -15,6 +15,7 @@
   "password": "Password",
   "pleaseEnterPassword": "Password juga tidak boleh kosong ya...",
   "letsSignIn": "Ayo Masuk",
+  "logout": "Keluar",
   "welcomeBack": "Selamat Datang Kembali",
   "youHaveBeenMissed": "Kami merindukanmu!",
   "signIn": "Masuk",
@@ -56,5 +57,18 @@
   "unit": "Unit",
   "checkIn": "Jam masuk",
   "checkOut": "Jam keluar",
-  "reason": "Alasan"
+  "reason": "Alasan",
+  "personalInfo": "Informasi pribadi",
+  "personalInfoDesc": "Nama, email, nomor, alamat",
+  "dateOfBirth": "Tanggal lahir",
+  "gender": "Jenis kelamin",
+  "religion": "Agama",
+  "classNumber": "Nomor kelas",
+  "address": "Alamat",
+  "phoneNumber": "Nomor telepon",
+  "fatherName": "Nama ayah",
+  "motherName": "Nama ibu",
+  "admissionDate": "Tanggal masuk",
+  "status": "Status",
+  "detailProfileNotes": "Jika terdapat ketidaksesuaian data, segera laporkan ke TU unit masing-masing untuk dilakukan perbaikan."
 }

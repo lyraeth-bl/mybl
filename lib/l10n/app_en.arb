@@ -18,6 +18,7 @@
   "welcomeBack": "Welcome Back",
   "youHaveBeenMissed": "You've been missed!",
   "signIn": "Sign in",
+  "logout": "Logout",
   "rememberMyNis": "Remember my NIS?",
   "forgetPassword": "Forget your password?",
   "schoolName": "Sekolah Budi Luhur",
@@ -56,5 +57,18 @@
   "unit": "Unit",
   "checkIn": "Check in",
   "checkOut": "Check out",
-  "reason": "Reason"
+  "reason": "Reason",
+  "personalInfo": "Personal info",
+  "personalInfoDesc": "Name, email, phone, address",
+  "dateOfBirth": "Date of birth",
+  "gender": "Gender",
+  "religion": "Religion",
+  "classNumber": "Class number",
+  "address": "Address",
+  "phoneNumber": "Phone number",
+  "fatherName": "Father name",
+  "motherName": "Mother name",
+  "admissionDate": "Admission date",
+  "status": "Status",
+  "detailProfileNotes": "If you find any incorrect information, please report it to your respective administration office for correction."
 }
