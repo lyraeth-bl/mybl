@@ -37,19 +37,19 @@ jobs:
       #      - name: Run tests
       #        run: flutter test
 
-      - name: Build APK (debug)
-        run: flutter build apk --debug
+#      - name: Build APK (debug)
+#        run: flutter build apk --debug
 
-      - name: Delete old artifacts
-        uses: geekyeggo/delete-artifact@v6
-        with:
-          name: debug-apk
-          failOnError: false
+#      - name: Delete old artifacts
+#        uses: geekyeggo/delete-artifact@v6
+#        with:
+#          name: debug-apk
+#          failOnError: false
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v7
-        with:
-          name: debug-apk
-          path: build/app/outputs/flutter-apk/app-debug.apk
-          retention-days: 1
-          overwrite: true
+#      - name: Upload artifact
+#        uses: actions/upload-artifact@v7
+#        with:
+#          name: debug-apk
+#          path: build/app/outputs/flutter-apk/app-debug.apk
+#          retention-days: 1
+#          overwrite: true
