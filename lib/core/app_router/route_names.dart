@@ -30,4 +30,7 @@ class RouteNames {
 
   // TimeTable
   static const String timeTable = "/timeTable";
+
+  // Guardians details
+  static const String guardianDetails = "/guardianDetails";
 }
