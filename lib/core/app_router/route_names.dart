@@ -27,4 +27,7 @@ class RouteNames {
 
   // Profile
   static const String profileDetail = "/profileDetail";
+
+  // TimeTable
+  static const String timeTable = "/timeTable";
 }

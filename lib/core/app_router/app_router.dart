@@ -13,6 +13,7 @@ import '../../features/profile/presentation/screens/profile_detail_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/sessions/presentation/bloc/session_bloc.dart';
 import '../../features/splash/presentation/screens/splash_screen.dart';
+import '../../features/time_table/presentation/screens/time_table_screen.dart';
 import 'go_router_refresh_stream.dart';
 
 part 'route_names.dart';
@@ -202,6 +203,11 @@ class AppRouter {
       GoRoute(
         path: RouteNames.profileDetail,
         builder: (context, state) => const ProfileDetailScreen(),
+      ),
+
+      GoRoute(
+        path: RouteNames.timeTable,
+        builder: (context, state) => const TimeTableScreen(),
       ),
 
       StatefulShellRoute.indexedStack(

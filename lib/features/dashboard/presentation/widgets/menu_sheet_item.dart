@@ -23,7 +23,7 @@ class MenuSheetItem {
     MenuSheetItem(
       icon: Icons.calendar_view_week_rounded,
       label: 'timeTable',
-      routePath: '/attendance',
+      routePath: RouteNames.timeTable,
     ),
     MenuSheetItem(
       icon: Icons.family_restroom_rounded,
