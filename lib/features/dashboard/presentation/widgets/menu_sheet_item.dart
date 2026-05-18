@@ -28,7 +28,7 @@ class MenuSheetItem {
     MenuSheetItem(
       icon: Icons.family_restroom_rounded,
       label: 'guardianDetails',
-      routePath: '/attendance',
+      routePath: RouteNames.guardianDetails,
     ),
     MenuSheetItem(
       icon: Icons.stars_rounded,
