@@ -4,6 +4,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 
 /// Extension buat bikin widget lo jadi berkilau (shimmer) pas lagi loading.
@@ -109,4 +110,22 @@ extension GoogleListShape on int {
 
     return RoundedRectangleBorder(borderRadius: BorderRadius.circular(4));
   }
+}
+
+extension DateAndTimeFormatterExtension on DateTime {
+  String get toHourMinuteFormat => DateFormat("HH : mm").format(toLocal());
+
+  String get toHourMinuteSecondFormat =>
+      DateFormat("HH : mm : ss").format(toLocal());
+
+  String get toDayMonthYearFormat =>
+      DateFormat('dd - MM - yyyy').format(toLocal());
+
+  String get toDayDateMonthYearFormat =>
+      DateFormat("EEEE, d MMMM yyyy").format(toLocal());
+}
+
+extension StringExtension on String {
+  String get capitalize =>
+      "${this[0].toUpperCase()}${substring(1).toLowerCase()}";
 }

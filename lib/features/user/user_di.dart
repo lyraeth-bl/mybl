@@ -33,5 +33,5 @@ void initUserDI() {
     () => FetchStudentUseCase(di<UserRepository>()),
   );
 
-  di.registerFactory<UserBloc>(() => UserBloc(di<FetchStudentUseCase>()));
+  di.registerLazySingleton<UserBloc>(() => UserBloc(di<FetchStudentUseCase>()));
 }

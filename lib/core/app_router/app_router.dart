@@ -2,12 +2,15 @@
 // Use of this source code is governed by a MIT License
 // that can be found in the LICENSE file.
 
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/attendance/presentation/screens/attendance_screen.dart';
 import '../../features/auth/presentation/screens/auth_student_screen.dart';
 import '../../features/dashboard/presentation/screens/dashboard_screen.dart';
 import '../../features/dashboard/presentation/widgets/main_shell.dart';
+import '../../features/profile/presentation/screens/profile_detail_screen.dart';
+import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/sessions/presentation/bloc/session_bloc.dart';
 import '../../features/splash/presentation/screens/splash_screen.dart';
 import 'go_router_refresh_stream.dart';
@@ -196,6 +199,11 @@ class AppRouter {
         builder: (context, state) => const AttendanceScreen(),
       ),
 
+      GoRoute(
+        path: RouteNames.profileDetail,
+        builder: (context, state) => const ProfileDetailScreen(),
+      ),
+
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) =>
             MainShell(navigationShell: navigationShell),
@@ -205,6 +213,24 @@ class AppRouter {
               GoRoute(
                 path: RouteNames.dashboard,
                 builder: (context, state) => const DashboardScreen(),
+              ),
+            ],
+          ),
+
+          StatefulShellBranch(
+            routes: <GoRoute>[
+              GoRoute(
+                path: RouteNames.menu,
+                builder: (context, state) => const SizedBox.shrink(),
+              ),
+            ],
+          ),
+
+          StatefulShellBranch(
+            routes: <GoRoute>[
+              GoRoute(
+                path: RouteNames.profile,
+                builder: (context, state) => const ProfileScreen(),
               ),
             ],
           ),
