@@ -193,11 +193,9 @@ class _ProfileDetailEntity {
     required this.title,
     required this.subtitle,
     required this.icon,
-    this.shape,
   });
 
   final String title;
   final String subtitle;
   final IconData icon;
-  final ShapeBorder? shape;
 }
