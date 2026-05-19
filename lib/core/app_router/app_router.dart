@@ -9,6 +9,7 @@ import '../../features/attendance/presentation/screens/attendance_screen.dart';
 import '../../features/auth/presentation/screens/auth_student_screen.dart';
 import '../../features/dashboard/presentation/screens/dashboard_screen.dart';
 import '../../features/dashboard/presentation/widgets/main_shell.dart';
+import '../../features/extracurricular/presentation/screens/extracurricular_screen.dart';
 import '../../features/guardians_detail/presentation/screens/guardians_detail_screen.dart';
 import '../../features/profile/presentation/screens/profile_detail_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
@@ -214,6 +215,11 @@ class AppRouter {
       GoRoute(
         path: RouteNames.guardianDetails,
         builder: (context, state) => const GuardiansDetailScreen(),
+      ),
+
+      GoRoute(
+        path: RouteNames.extracurricular,
+        builder: (context, state) => const ExtracurricularScreen(),
       ),
 
       StatefulShellRoute.indexedStack(

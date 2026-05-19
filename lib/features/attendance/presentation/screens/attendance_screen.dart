@@ -155,6 +155,7 @@ class _AttendanceScreenHeader extends StatelessWidget {
         l10n.dailyAttendance,
         style: const TextStyle(fontWeight: FontWeight.bold),
       ),
+      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
       centerTitle: true,
       floating: false,

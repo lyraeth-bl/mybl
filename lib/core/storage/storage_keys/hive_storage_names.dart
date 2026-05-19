@@ -43,4 +43,7 @@ class HiveStorageNames {
 
   // Data Jadwal pelajaran.
   static const String userTimeTableKey = "userTimeTable";
+
+  // Data ekstrakulikuler.
+  static const String userExtracurricularKey = "userExtracurricular";
 }
