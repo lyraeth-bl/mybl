@@ -36,4 +36,7 @@ class RouteNames {
 
   // Extracurricular
   static const String extracurricular = "/extracurricular";
+
+  // Merit and Demerit.
+  static const String meritAndDemerit = "/meritAndDemerit";
 }

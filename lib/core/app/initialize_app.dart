@@ -12,6 +12,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../../features/app_configuration/app_configuration_di.dart';
 import '../../features/attendance/attendance_di.dart';
 import '../../features/auth/auth_di.dart';
+import '../../features/discipline/di.dart';
 import '../../features/extracurricular/di.dart';
 import '../../features/sessions/sessions_di.dart';
 import '../../features/time_table/di.dart';
@@ -58,6 +59,7 @@ Future<void> initializeApp() async {
   initAttendanceDI();
   initTimeTableDI();
   initExtracurricularDI();
+  initDisciplineDI();
 
   await di<OpenAllBoxesUseCase>().call();
 

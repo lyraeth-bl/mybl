@@ -46,4 +46,10 @@ class HiveStorageNames {
 
   // Data ekstrakulikuler.
   static const String userExtracurricularKey = "userExtracurricular";
+
+  // Data merit.
+  static const String userMeritKey = "userMerit";
+
+  // Data demerit.
+  static const String userDemeritKey = "userDemerit";
 }
