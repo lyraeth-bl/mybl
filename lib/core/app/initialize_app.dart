@@ -9,6 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
+import '../../features/academic_calendar/di.dart';
 import '../../features/app_configuration/app_configuration_di.dart';
 import '../../features/attendance/attendance_di.dart';
 import '../../features/auth/auth_di.dart';
@@ -60,6 +61,7 @@ Future<void> initializeApp() async {
   initTimeTableDI();
   initExtracurricularDI();
   initDisciplineDI();
+  initAcademicCalendarDI();
 
   await di<OpenAllBoxesUseCase>().call();
 
