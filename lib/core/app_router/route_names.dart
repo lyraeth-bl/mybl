@@ -42,4 +42,7 @@ class RouteNames {
 
   // Academic Calendar
   static const String academicCalendar = "/academicCalendar";
+
+  // Academic Result
+  static const String academicResult = "/academicResult";
 }

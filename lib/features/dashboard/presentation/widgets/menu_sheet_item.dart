@@ -47,7 +47,7 @@ class MenuSheetItem {
     MenuSheetItem(
       icon: Icons.school_rounded,
       label: 'academicResult',
-      routePath: '/attendance',
+      routePath: RouteNames.academicResult,
     ),
     MenuSheetItem(
       icon: Icons.emoji_events_rounded,

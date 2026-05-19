@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/academic_calendar/presentation/screens/academic_calendar_screen.dart';
+import '../../features/academic_result/presentation/screens/academic_result_screen.dart';
 import '../../features/attendance/presentation/screens/attendance_screen.dart';
 import '../../features/auth/presentation/screens/auth_student_screen.dart';
 import '../../features/dashboard/presentation/screens/dashboard_screen.dart';
@@ -232,6 +233,11 @@ class AppRouter {
       GoRoute(
         path: RouteNames.academicCalendar,
         builder: (context, state) => const AcademicCalendarScreen(),
+      ),
+
+      GoRoute(
+        path: RouteNames.academicResult,
+        builder: (context, state) => const AcademicResultScreen(),
       ),
 
       StatefulShellRoute.indexedStack(
