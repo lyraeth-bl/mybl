@@ -52,4 +52,7 @@ class HiveStorageNames {
 
   // Data demerit.
   static const String userDemeritKey = "userDemerit";
+
+  // Data academic calendar.
+  static const String userAcademicCalendarKey = "userAcademicCalendar";
 }
