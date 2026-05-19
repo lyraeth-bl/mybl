@@ -291,3 +291,50 @@ abstract interface class TimeTableLocalManager<T> {
   /// lagi kosong melompong.
   List<T>? readListTimeTable();
 }
+
+/// Spesialis buat narik data poin prestasi (Merit) dan pelanggaran (Demerit).
+///
+/// Interface ini bakal bantuin kita buat ngambil riwayat poin siswa berdasarkan
+/// tahun ajaran [schoolSession] dan [semester] tertentu.
+abstract interface class MeritDemeritFetcher<M, D> {
+  /// Narik daftar poin prestasi (Merit) bertipe [M].
+  ///
+  /// Pake [schoolSession] dan [semester] buat nentuin periode datanya.
+  /// Kalau [forceRefresh] true, kita langsung nodong server buat data terbaru.
+  Future<Result<List<M>?>> fetchMerit({
+    String? schoolSession,
+    String? semester,
+    bool forceRefresh = false,
+  });
+
+  /// Narik daftar poin pelanggaran (Demerit) bertipe [D].
+  ///
+  /// Mirip kayak merit, ini butuh [schoolSession] dan [semester] juga.
+  /// Returns [Result] isinya list pelanggaran kalau sukses.
+  Future<Result<List<D>?>> fetchDemerit({
+    String? schoolSession,
+    String? semester,
+    bool forceRefresh = false,
+  });
+}
+
+/// Tukang jaga data poin prestasi dan pelanggaran di penyimpanan lokal.
+///
+/// Ini asistennya [MeritDemeritFetcher] buat urusan simpen-menyimpan data ke box
+/// lokal biar kalau lagi offline, siswa tetep bisa liat dosanya (pelanggaran)
+/// atau prestasinya.
+abstract interface class MeritDemeritLocalManager<M, D> {
+  /// Simpen daftar poin prestasi [listMerit] ke storage.
+  Future<Unit> saveListMerit(List<M> listData);
+
+  /// Simpen daftar poin pelanggaran [listDemerit] ke storage.
+  Future<Unit> saveListDemerit(List<D> listData);
+
+  /// Baca daftar poin prestasi yang udah disimpen.
+  /// Returns `null` kalau emang belum ada datanya.
+  List<M>? readListMerit();
+
+  /// Baca daftar poin pelanggaran yang udah disimpen.
+  /// Returns `null` kalau emang lagi kosong.
+  List<D>? readListDemerit();
+}
