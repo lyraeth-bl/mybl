@@ -42,7 +42,7 @@ class MenuSheetItem {
     MenuSheetItem(
       icon: Icons.event_rounded,
       label: 'academicCalendar',
-      routePath: '/attendance',
+      routePath: RouteNames.academicCalendar,
     ),
     MenuSheetItem(
       icon: Icons.school_rounded,

@@ -39,4 +39,7 @@ class RouteNames {
 
   // Merit and Demerit.
   static const String meritAndDemerit = "/meritAndDemerit";
+
+  // Academic Calendar
+  static const String academicCalendar = "/academicCalendar";
 }

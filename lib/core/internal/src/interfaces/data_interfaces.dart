@@ -338,3 +338,38 @@ abstract interface class MeritDemeritLocalManager<M, D> {
   /// Returns `null` kalau emang lagi kosong.
   List<D>? readListDemerit();
 }
+
+/// Spesialis urusan narik data kalender akademik.
+///
+/// Interface ini dipake buat ambil jadwal kegiatan sekolah dalam satu bulan
+/// tertentu buat [unit] pendidikan yang spesifik (misal SD, SMP, atau SMA).
+abstract interface class AcademicCalendarFetcher<T> {
+  /// Narik daftar kegiatan kalender akademik bertipe [T].
+  ///
+  /// Butuh [year] dan [month] buat nentuin periode, serta [unit] buat
+  /// tau kalender sekolah mana yang mau diambil.
+  /// Returns [Result] isinya list kegiatan kalau sukses.
+  Future<Result<List<T>?>> fetchAcademicCalendar({
+    required int year,
+    required int month,
+    required String unit,
+    bool forceRefresh = false,
+  });
+}
+
+/// Penjaga data kalender akademik di penyimpanan lokal.
+///
+/// Ini ngebantu biar user tetep bisa ngecek jadwal kegiatan sekolah pas
+/// lagi nggak ada internet (offline).
+abstract interface class AcademicCalendarLocalManager<T> {
+  /// Simpen daftar kegiatan [listData] buat bulan dan tahun tertentu.
+  Future<Unit> saveMonthlyAcademicCalendar({
+    required int month,
+    required int year,
+    required List<T> listData,
+  });
+
+  /// Ngintip data kalender bulanan yang udah pernah disimpen di lokal.
+  /// Returns `null` kalau emang di gudang lokal belum ada datanya.
+  List<T>? readMonthlyAcademicCalendar({required int month, required int year});
+}
