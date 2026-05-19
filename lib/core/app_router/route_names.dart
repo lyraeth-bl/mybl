@@ -33,4 +33,7 @@ class RouteNames {
 
   // Guardians details
   static const String guardianDetails = "/guardianDetails";
+
+  // Extracurricular
+  static const String extracurricular = "/extracurricular";
 }

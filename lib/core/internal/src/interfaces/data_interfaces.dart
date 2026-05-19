@@ -69,6 +69,22 @@ abstract interface class CacheStorage<T> {
   T? read();
 }
 
+/// Kontrak buat titip data atau baca data se-gudang (List) di penyimpanan lokal.
+///
+/// Fungsinya mirip [CacheStorage], tapi khusus buat nanganin sekumpulan data [T].
+/// Berguna banget buat nyimpen hasil fetch list dari API biar bisa dibaca offline.
+abstract interface class ListCacheStorage<T> {
+  /// Titip daftar data [listData] ke penyimpanan lokal.
+  ///
+  /// Returns [Unit] kalau proses nyimpennya udah beres.
+  Future<Unit> save(List<T> listData);
+
+  /// Baca daftar data yang udah pernah dititip sebelumnya.
+  ///
+  /// Returns `null` kalau datanya emang nggak ada atau box-nya masih kosong.
+  List<T>? read();
+}
+
 /// Alat tempur buat ngobrol sama server lewat protokol HTTP.
 ///
 /// Ini cuma bungkus (abstraksi) biar kalau kita mau ganti library (misal dari Dio

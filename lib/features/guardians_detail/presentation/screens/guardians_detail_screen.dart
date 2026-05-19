@@ -115,7 +115,8 @@ class _GuardianCard extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
     final l10n = AppLocalizations.of(context)!;
 
-    return Card(
+    return Card.filled(
+      color: colorScheme.surfaceContainerLowest,
       elevation: 0,
       margin: EdgeInsets.zero,
       child: Padding(
@@ -162,7 +163,8 @@ class _ContactDetailCard extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
     final l10n = AppLocalizations.of(context)!;
 
-    return Card(
+    return Card.filled(
+      color: colorScheme.surfaceContainerLowest,
       elevation: 0,
       margin: EdgeInsets.zero,
       child: Padding(

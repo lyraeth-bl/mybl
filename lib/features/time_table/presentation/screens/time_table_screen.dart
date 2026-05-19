@@ -261,7 +261,8 @@ class _TimeTableCard extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-      child: Card(
+      child: Card.filled(
+        color: colorScheme.surfaceContainerLowest,
         elevation: 0,
         margin: EdgeInsets.zero,
         clipBehavior: Clip.antiAlias,

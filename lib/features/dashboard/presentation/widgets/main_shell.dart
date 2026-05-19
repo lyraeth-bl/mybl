@@ -20,9 +20,12 @@ class MainShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<AppConfigurationBloc>(
-      create: (context) =>
-          di<AppConfigurationBloc>()
-            ..add(const AppConfigurationEvent.appConfigurationRequested()),
+      create: (context) => di<AppConfigurationBloc>()
+        ..add(
+          const AppConfigurationEvent.appConfigurationRequested(
+            forceRefresh: true,
+          ),
+        ),
       child: _MainShellView(navigationShell: navigationShell),
     );
   }

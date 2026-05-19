@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Mahsa Nurfarhan Hidayat / Yayasan Pakarti Luhur. All rights reserved.
+// Use of this source code is governed by a MIT License
+// that can be found in the LICENSE file.
+
 import 'package:flutter/material.dart';
 
 import '../../../../core/app_router/app_router.dart';
@@ -48,7 +52,7 @@ class MenuSheetItem {
     MenuSheetItem(
       icon: Icons.emoji_events_rounded,
       label: 'extracurricular',
-      routePath: '/attendance',
+      routePath: RouteNames.extracurricular,
     ),
     MenuSheetItem(
       icon: Icons.settings_rounded,
