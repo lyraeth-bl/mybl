@@ -37,7 +37,7 @@ class MenuSheetItem {
     MenuSheetItem(
       icon: Icons.stars_rounded,
       label: 'meritAndDemerit',
-      routePath: '/attendance',
+      routePath: RouteNames.meritAndDemerit,
     ),
     MenuSheetItem(
       icon: Icons.event_rounded,
