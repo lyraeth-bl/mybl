@@ -4,6 +4,7 @@
 
 import '../../../../core/api_client/api_client.dart';
 import '../../../../core/internal/src/interfaces/data_interfaces.dart';
+import '../models/attendance_qr_token_response/attendance_qr_token_response.dart';
 import '../models/daily_attendance_response/daily_attendance_response.dart';
 import '../models/monthly_attendance_response/monthly_attendance_response.dart';
 
@@ -14,6 +15,8 @@ abstract class AttendanceRemoteDataSource {
   });
 
   Future<DailyAttendanceResponse> fetchDailyAttendance();
+
+  Future<AttendanceQrTokenResponse> fetchQrToken();
 }
 
 class AttendanceRemoteDataSourceImpl implements AttendanceRemoteDataSource {
@@ -26,6 +29,13 @@ class AttendanceRemoteDataSourceImpl implements AttendanceRemoteDataSource {
     final response = await _httpRequest.get(ApiEndpoints.todayAttendance);
 
     return DailyAttendanceResponse.fromJson(response);
+  }
+
+  @override
+  Future<AttendanceQrTokenResponse> fetchQrToken() async {
+    final response = await _httpRequest.get(ApiEndpoints.attendanceQrToken);
+
+    return AttendanceQrTokenResponse.fromJson(response);
   }
 
   @override

@@ -28,6 +28,7 @@
   "emptyMenu": "Menu not available yet.",
   "profile": "Profile",
   "dailyAttendance": "Daily Attendance",
+  "attendanceQrCode": "Attendance QR Code",
   "attendanceSummary": "Attendance Summary",
   "attendanceCalendar": "Attendance Calendar",
   "attendanceChart": "Attendance Chart",
@@ -47,6 +48,17 @@
   "underMaintenance": "Upgrading in Progress",
   "underMaintenanceDesc": "We’re improving the system for a better experience. Hang tight and try again soon!",
   "tryAgain": "Try again",
+  "refreshQrCode": "Refresh QR code",
+  "qrCodeRefreshesAutomatically": "Refreshes automatically every 55 seconds.",
+  "qrCodeExpiresIn": "Expires in {time}",
+  "@qrCodeExpiresIn": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "qrCodeLoading": "Preparing QR code...",
   "nextMonth": "Next month",
   "previousMonth": "Previous month",
   "monday": "Monday",

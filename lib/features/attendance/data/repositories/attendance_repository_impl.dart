@@ -7,16 +7,29 @@ import 'package:fpdart/fpdart.dart';
 import '../../../../core/failure/failure.dart';
 import '../../../../core/internal/src/types.dart';
 import '../../domain/entities/attendance_entity/attendance_entity.dart';
+import '../../domain/entities/attendance_qr_token/attendance_qr_token.dart';
 import '../../domain/repositories/attendance_repository.dart';
 import '../datasources/attendance_local_data_source.dart';
 import '../datasources/attendance_remote_data_source.dart';
 import '../models/attendance_model/attendance_model.dart';
+import '../models/attendance_qr_token_model/attendance_qr_token_model.dart';
 
 class AttendanceRepositoryImpl implements AttendanceRepository {
   AttendanceRepositoryImpl(this._remoteDataSource, this._localDataSource);
 
   final AttendanceRemoteDataSource _remoteDataSource;
   final AttendanceLocalDataSource _localDataSource;
+
+  @override
+  Future<Result<AttendanceQrToken>> fetchQrToken() async {
+    try {
+      final response = await _remoteDataSource.fetchQrToken();
+
+      return right(response.qrToken.toEntity());
+    } catch (e, st) {
+      return left(Failure.fromError(e, st));
+    }
+  }
 
   @override
   Future<Result<AttendanceEntity?>> fetchDailyAttendance([

@@ -28,6 +28,7 @@
   "emptyMenu": "Menu belum tersedia.",
   "profile": "Profil",
   "dailyAttendance": "Absensi Harian",
+  "attendanceQrCode": "QR Code Absensi",
   "attendanceSummary": "Ringkasan Absensi",
   "attendanceCalendar": "Kalender Absensi",
   "attendanceChart": "Grafik Absensi",
@@ -47,6 +48,17 @@
   "underMaintenance": "Aplikasi lagi di update",
   "underMaintenanceDesc": "Kami lagi upgrade sistem biar pengalaman kamu makin oke. Tunggu sebentar, ya!",
   "tryAgain": "Coba lagi",
+  "refreshQrCode": "Perbarui QR code",
+  "qrCodeRefreshesAutomatically": "Refresh otomatis setiap 55 detik.",
+  "qrCodeExpiresIn": "Kedaluwarsa dalam {time}",
+  "@qrCodeExpiresIn": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "qrCodeLoading": "Menyiapkan QR code...",
   "nextMonth": "Bulan selanjutnya",
   "previousMonth": "Bulan sebelumnya",
   "monday": "Senin",
