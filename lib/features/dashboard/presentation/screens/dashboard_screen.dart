@@ -6,7 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/di/get_it_constant.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../attendance/presentation/bloc/daily_attendance_bloc/daily_attendance_bloc.dart';
+import '../../../attendance/presentation/widgets/attendance_qr_bottom_sheet.dart';
 import '../../../user/presentation/bloc/user_bloc.dart';
 import '../widgets/dashboard_header.dart';
 
@@ -44,9 +46,17 @@ class _DashboardViewState extends State<_DashboardView> {
 
   @override
   Widget build(BuildContext context) {
-    return CustomScrollView(
-      physics: const BouncingScrollPhysics(),
-      slivers: [SliverToBoxAdapter(child: const DashboardHeader())],
+    return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => showAttendanceQrSheet(context),
+        tooltip: AppLocalizations.of(context)!.attendanceQrCode,
+        child: const Icon(Icons.qr_code_2),
+      ),
+      body: CustomScrollView(
+        physics: const BouncingScrollPhysics(),
+        slivers: [SliverToBoxAdapter(child: const DashboardHeader())],
+      ),
     );
   }
 }

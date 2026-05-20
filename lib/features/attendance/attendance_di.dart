@@ -6,8 +6,10 @@ import 'data/datasources/attendance_local_data_source.dart';
 import 'data/datasources/attendance_remote_data_source.dart';
 import 'data/repositories/attendance_repository_impl.dart';
 import 'domain/repositories/attendance_repository.dart';
+import 'domain/usecases/fetch_attendance_qr_token_use_case.dart';
 import 'domain/usecases/fetch_daily_attendance_use_case.dart';
 import 'domain/usecases/fetch_monthly_attendance_use_case.dart';
+import 'presentation/bloc/attendance_qr_bloc/attendance_qr_bloc.dart';
 import 'presentation/bloc/daily_attendance_bloc/daily_attendance_bloc.dart';
 import 'presentation/bloc/monthly_attendance_bloc/monthly_attendance_bloc.dart';
 
@@ -32,11 +34,17 @@ void initAttendanceDI() {
   di.registerLazySingleton<FetchDailyAttendanceUseCase>(
     () => FetchDailyAttendanceUseCase(di<AttendanceRepository>()),
   );
+  di.registerLazySingleton<FetchAttendanceQrTokenUseCase>(
+    () => FetchAttendanceQrTokenUseCase(di<AttendanceRepository>()),
+  );
 
   di.registerFactory<DailyAttendanceBloc>(
     () => DailyAttendanceBloc(di<FetchDailyAttendanceUseCase>()),
   );
   di.registerFactory<MonthlyAttendanceBloc>(
     () => MonthlyAttendanceBloc(di<FetchMonthlyAttendanceUseCase>()),
+  );
+  di.registerFactory<AttendanceQrBloc>(
+    () => AttendanceQrBloc(di<FetchAttendanceQrTokenUseCase>()),
   );
 }
