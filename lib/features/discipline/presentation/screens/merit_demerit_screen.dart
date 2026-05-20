@@ -9,6 +9,7 @@ import '../../../../core/constants/constant.dart';
 import '../../../../core/di/get_it_constant.dart';
 import '../../../../core/internal/src/extensions/extensions.dart';
 import '../../../../core/widgets/refresh_wrapper.dart';
+import '../../../../core/widgets/titled_content_container.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/discipline.dart';
 import '../bloc/demerit_bloc/demerit_bloc.dart';
@@ -105,10 +106,7 @@ class _MeritDemeritHeader extends StatelessWidget {
     return SliverAppBar.medium(
       title: Text(
         l10n.meritAndDemerit,
-        style: TextStyle(
-          color: colorScheme.onPrimaryContainer,
-          fontWeight: FontWeight.bold,
-        ),
+        style: TextStyle(fontWeight: FontWeight.bold),
       ),
       backgroundColor: colorScheme.primaryContainer,
       centerTitle: true,
@@ -461,7 +459,7 @@ class _PointSummary extends StatelessWidget {
               icon: Icons.flag_outlined,
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 16),
           Expanded(
             child: _PointCard(
               label: l10n.totalPoint,
@@ -491,40 +489,34 @@ class _PointCard extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
-    return Card.filled(
-      color: colorScheme.primaryContainer,
-      shape: const RoundedRectangleBorder(borderRadius: customRadius),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Icon(icon, color: colorScheme.onPrimaryContainer),
-            const SizedBox(height: 12),
-            Text(
-              label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: textTheme.labelMedium?.copyWith(
-                color: colorScheme.onPrimaryContainer,
+    return TitledContentContainer(
+      margin: EdgeInsets.zero,
+      title: label,
+      titleIcon: Icon(icon, color: colorScheme.onPrimaryContainer),
+      child: Card.filled(
+        color: colorScheme.surfaceContainerLowest,
+        shape: const RoundedRectangleBorder(borderRadius: customRadius),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              TweenAnimationBuilder<int>(
+                tween: IntTween(begin: 0, end: point),
+                duration: const Duration(milliseconds: 650),
+                curve: Curves.easeOutCubic,
+                builder: (context, value, child) {
+                  return Text(
+                    value.toString(),
+                    style: textTheme.headlineMedium?.copyWith(
+                      color: colorScheme.onPrimaryContainer,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  );
+                },
               ),
-            ),
-            const SizedBox(height: 4),
-            TweenAnimationBuilder<int>(
-              tween: IntTween(begin: 0, end: point),
-              duration: const Duration(milliseconds: 650),
-              curve: Curves.easeOutCubic,
-              builder: (context, value, child) {
-                return Text(
-                  value.toString(),
-                  style: textTheme.headlineMedium?.copyWith(
-                    color: colorScheme.onPrimaryContainer,
-                    fontWeight: FontWeight.bold,
-                  ),
-                );
-              },
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -553,7 +545,7 @@ class _DisciplineFilters extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+      padding: const EdgeInsets.all(16),
       child: Row(
         children: [
           Expanded(
@@ -699,7 +691,7 @@ class _DisciplineCard extends StatelessWidget {
       color: colorScheme.surfaceContainerLowest,
       shape: const RoundedRectangleBorder(borderRadius: customRadius),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

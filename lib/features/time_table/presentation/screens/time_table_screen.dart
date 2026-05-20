@@ -5,8 +5,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/constants/constant.dart';
 import '../../../../core/di/get_it_constant.dart';
 import '../../../../core/internal/src/extensions/extensions.dart';
+import '../../../../core/widgets/refresh_wrapper.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../user/presentation/bloc/user_bloc.dart';
 import '../../domain/entities/time_table/time_table.dart';
@@ -51,16 +53,19 @@ class _TimeTableViewState extends State<_TimeTableView> {
 
   String _selectedDay = _dayValues.first;
 
+  String _studentClass(BuildContext context) {
+    return context.read<UserBloc>().state.maybeWhen(
+      success: (student) => '${student.kelasSaatIni}${student.noKelasSaatIni}',
+      orElse: () => '',
+    );
+  }
+
   @override
   void initState() {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final studentClass = context.read<UserBloc>().state.maybeWhen(
-        success: (student) =>
-            '${student.kelasSaatIni}${student.noKelasSaatIni}',
-        orElse: () => '',
-      );
+      final studentClass = _studentClass(context);
 
       if (studentClass.isNotEmpty) {
         context.read<TimeTableBloc>().add(
@@ -74,19 +79,35 @@ class _TimeTableViewState extends State<_TimeTableView> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
-      body: CustomScrollView(
-        physics: const BouncingScrollPhysics(),
-        slivers: [
-          const _TimeTableHeader(),
-          SliverToBoxAdapter(
-            child: _DaySelector(
-              dayValues: _dayValues,
-              selectedDay: _selectedDay,
-              onSelected: (day) => setState(() => _selectedDay = day),
+      body: RefreshWrapper(
+        onRefresh: () {
+          final studentClass = _studentClass(context);
+          if (studentClass.isEmpty) return Future<void>.value();
+
+          return blocRefresh<TimeTableBloc, TimeTableEvent, TimeTableState>(
+            context: context,
+            event: TimeTableEvent.fetchTimeTable(true, studentClass),
+            isDone: (state) => state.maybeWhen(
+              success: (_) => true,
+              failure: (_) => true,
+              orElse: () => false,
             ),
-          ),
-          _TimeTableBody(selectedDay: _selectedDay),
-        ],
+          );
+        },
+        child: CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          slivers: [
+            const _TimeTableHeader(),
+            SliverToBoxAdapter(
+              child: _DaySelector(
+                dayValues: _dayValues,
+                selectedDay: _selectedDay,
+                onSelected: (day) => setState(() => _selectedDay = day),
+              ),
+            ),
+            _TimeTableBody(selectedDay: _selectedDay),
+          ],
+        ),
       ),
     );
   }
@@ -140,6 +161,7 @@ class _DaySelector extends StatelessWidget {
           final day = dayValues[index];
 
           return ChoiceChip(
+            shape: RoundedRectangleBorder(borderRadius: customRadius),
             label: Text(_localizedDay(context, day)),
             selected: day == selectedDay,
             onSelected: (_) => onSelected(day),
@@ -262,6 +284,7 @@ class _TimeTableCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       child: Card.filled(
+        shape: RoundedRectangleBorder(borderRadius: customRadius),
         color: colorScheme.surfaceContainerLowest,
         elevation: 0,
         margin: EdgeInsets.zero,
@@ -341,7 +364,7 @@ class _ScheduleTimeBadge extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
       decoration: BoxDecoration(
         color: colorScheme.primaryContainer,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: customRadius,
       ),
       child: Column(
         children: [

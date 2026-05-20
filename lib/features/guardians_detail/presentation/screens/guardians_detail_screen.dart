@@ -5,6 +5,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/constants/constant.dart';
+import '../../../../core/widgets/titled_content_container.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../user/domain/entities/student_entity/student_entity.dart';
 import '../../../user/presentation/bloc/user_bloc.dart';
@@ -44,7 +46,10 @@ class _GuardiansDetailView extends StatelessWidget {
             physics: const BouncingScrollPhysics(),
             slivers: [
               SliverAppBar.medium(
-                title: Text(l10n.guardianDetails),
+                title: Text(
+                  l10n.guardianDetails,
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
                 pinned: true,
                 backgroundColor: colorScheme.primaryContainer,
                 shape: const RoundedRectangleBorder(
@@ -65,7 +70,7 @@ class _GuardiansDetailView extends StatelessWidget {
                       occupation: student.pekerjaanAyah,
                       lastEducation: student.pendidikanTerakhirAyah,
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 24),
                     _GuardianCard(
                       title: l10n.mother,
                       nameLabel: l10n.motherName,
@@ -73,7 +78,7 @@ class _GuardiansDetailView extends StatelessWidget {
                       occupation: student.pekerjaanIbu,
                       lastEducation: student.pendidikanTerakhirIbu,
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 24),
                     _GuardianCard(
                       title: l10n.guardian,
                       nameLabel: l10n.guardianName,
@@ -81,7 +86,7 @@ class _GuardiansDetailView extends StatelessWidget {
                       occupation: student.pekerjaanWali,
                       lastEducation: student.pendidikanTerakhirWali,
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 24),
                     _ContactDetailCard(student: student),
                   ],
                 ),
@@ -111,42 +116,22 @@ class _GuardianCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
     final l10n = AppLocalizations.of(context)!;
 
-    return Card.filled(
-      color: colorScheme.surfaceContainerLowest,
-      elevation: 0,
+    return TitledContentContainer(
+      title: title,
+      titleIcon: const Icon(Icons.family_restroom_rounded),
       margin: EdgeInsets.zero,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(Icons.family_restroom_rounded, color: colorScheme.primary),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    title,
-                    style: textTheme.titleMedium?.copyWith(
-                      color: colorScheme.onSurface,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            _DetailRow(label: nameLabel, value: name),
-            const SizedBox(height: 12),
-            _DetailRow(label: l10n.occupation, value: occupation),
-            const SizedBox(height: 12),
-            _DetailRow(label: l10n.lastEducation, value: lastEducation),
-          ],
-        ),
+      contentPadding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _DetailRow(label: nameLabel, value: name),
+          const SizedBox(height: 12),
+          _DetailRow(label: l10n.occupation, value: occupation),
+          const SizedBox(height: 12),
+          _DetailRow(label: l10n.lastEducation, value: lastEducation),
+        ],
       ),
     );
   }
@@ -163,40 +148,40 @@ class _ContactDetailCard extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
     final l10n = AppLocalizations.of(context)!;
 
-    return Card.filled(
-      color: colorScheme.surfaceContainerLowest,
-      elevation: 0,
+    return TitledContentContainer(
+      title: l10n.contactAndAddress,
       margin: EdgeInsets.zero,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              l10n.contactAndAddress,
-              style: textTheme.titleMedium?.copyWith(
-                color: colorScheme.onSurface,
-                fontWeight: FontWeight.w700,
+      child: Card.filled(
+        color: colorScheme.surfaceContainerLowest,
+        shape: RoundedRectangleBorder(borderRadius: customRadius),
+        elevation: 0,
+        margin: EdgeInsets.zero,
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _DetailRow(
+                label: l10n.parentPhoneNumber,
+                value: student.noTeleponOrangTua,
               ),
-            ),
-            const SizedBox(height: 16),
-            _DetailRow(
-              label: l10n.parentPhoneNumber,
-              value: student.noTeleponOrangTua,
-            ),
-            const SizedBox(height: 12),
-            _DetailRow(
-              label: l10n.guardianPhoneNumber,
-              value: student.noTeleponWali,
-            ),
-            const SizedBox(height: 12),
-            _DetailRow(
-              label: l10n.parentAddress,
-              value: student.alamatOrangTua,
-            ),
-            const SizedBox(height: 12),
-            _DetailRow(label: l10n.guardianAddress, value: student.alamatWali),
-          ],
+              const SizedBox(height: 12),
+              _DetailRow(
+                label: l10n.guardianPhoneNumber,
+                value: student.noTeleponWali,
+              ),
+              const SizedBox(height: 12),
+              _DetailRow(
+                label: l10n.parentAddress,
+                value: student.alamatOrangTua,
+              ),
+              const SizedBox(height: 12),
+              _DetailRow(
+                label: l10n.guardianAddress,
+                value: student.alamatWali,
+              ),
+            ],
+          ),
         ),
       ),
     );

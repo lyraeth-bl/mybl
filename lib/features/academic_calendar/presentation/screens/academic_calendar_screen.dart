@@ -9,8 +9,8 @@ import 'package:table_calendar/table_calendar.dart';
 
 import '../../../../core/di/get_it_constant.dart';
 import '../../../../core/internal/src/extensions/extensions.dart';
-import '../../../../core/widgets/custom_container.dart';
 import '../../../../core/widgets/refresh_wrapper.dart';
+import '../../../../core/widgets/titled_content_container.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../user/presentation/bloc/user_bloc.dart';
 import '../../domain/entities/academic_calendar_entity.dart';
@@ -39,13 +39,11 @@ class _AcademicCalendarViewState extends State<_AcademicCalendarView> {
   late DateTime _focusedMonth;
 
   List<Widget> get _animatedChildren => [
-    _AcademicCalendarNavigationButton(
+    _AcademicCalendarContainer(
       focusedMonth: _focusedMonth,
       onPrevious: () => _moveMonth(-1),
       onNext: () => _moveMonth(1),
     ),
-    const SizedBox(height: 16),
-    _AcademicCalendarContainer(focusedMonth: _focusedMonth),
   ].makeListAnimate();
 
   @override
@@ -186,8 +184,8 @@ class _AcademicCalendarHeader extends StatelessWidget {
   }
 }
 
-class _AcademicCalendarNavigationButton extends StatelessWidget {
-  const _AcademicCalendarNavigationButton({
+class _AcademicCalendarContainer extends StatelessWidget {
+  const _AcademicCalendarContainer({
     required this.focusedMonth,
     required this.onPrevious,
     required this.onNext,
@@ -197,79 +195,15 @@ class _AcademicCalendarNavigationButton extends StatelessWidget {
   final VoidCallback onPrevious;
   final VoidCallback onNext;
 
+  String _monthLabel(DateTime month, String locale) =>
+      DateFormat('MMMM yyyy', locale).format(month);
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final locale = Localizations.localeOf(context).toString();
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    final monthLabel = DateFormat('MMMM yyyy', locale).format(focusedMonth);
-
-    return BlocBuilder<AcademicCalendarBloc, AcademicCalendarState>(
-      buildWhen: (previous, current) {
-        final previousLoading = previous.maybeWhen(
-          loading: () => true,
-          orElse: () => false,
-        );
-        final currentLoading = current.maybeWhen(
-          loading: () => true,
-          orElse: () => false,
-        );
-        return previousLoading != currentLoading;
-      },
-      builder: (context, state) {
-        final isLoading = state.maybeWhen(
-          loading: () => true,
-          orElse: () => false,
-        );
-
-        return CustomContainer(
-          backgroundColor: colorScheme.surfaceContainerLowest,
-          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                IconButton.filledTonal(
-                  onPressed: isLoading ? null : onPrevious,
-                  icon: const Icon(Icons.chevron_left),
-                  tooltip: l10n.previousMonth,
-                ),
-                Flexible(
-                  child: Text(
-                    monthLabel,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.center,
-                    style: textTheme.titleMedium?.copyWith(
-                      color: colorScheme.onSurface,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-                IconButton.filledTonal(
-                  onPressed: isLoading ? null : onNext,
-                  icon: const Icon(Icons.chevron_right),
-                  tooltip: l10n.nextMonth,
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
-
-class _AcademicCalendarContainer extends StatelessWidget {
-  const _AcademicCalendarContainer({required this.focusedMonth});
-
-  final DateTime focusedMonth;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final locale = Localizations.localeOf(context).toString();
 
     return BlocBuilder<AcademicCalendarBloc, AcademicCalendarState>(
       buildWhen: (previous, current) {
@@ -300,27 +234,59 @@ class _AcademicCalendarContainer extends StatelessWidget {
         );
 
         return RepaintBoundary(
-          child: CustomContainer(
-            backgroundColor: Theme.of(
-              context,
-            ).colorScheme.surfaceContainerLowest,
+          child: TitledContentContainer(
+            title: l10n.academicCalendar,
             margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            padding: const EdgeInsets.all(16),
+            contentPadding: const EdgeInsets.all(16),
             child: AnimatedSwitcher(
               duration: const Duration(milliseconds: 200),
-              child: _AcademicCalendarContent(
+              child: Column(
                 key: ValueKey((
                   focusedMonth.year,
                   focusedMonth.month,
                   isLoading,
+                  data.length,
                 )),
-                focusedMonth: focusedMonth,
-                events: data,
-                isLoading: isLoading,
-                emptyMessage: failure?.localizedMessage(l10n) ?? l10n.noData,
-                emptyIcon: failure == null
-                    ? Icons.event_busy_outlined
-                    : Icons.error_outline,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      IconButton.filledTonal(
+                        onPressed: isLoading ? null : onPrevious,
+                        icon: const Icon(Icons.chevron_left),
+                        tooltip: l10n.previousMonth,
+                      ),
+                      Flexible(
+                        child: Text(
+                          _monthLabel(focusedMonth, locale),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.center,
+                          style: textTheme.titleMedium?.copyWith(
+                            color: colorScheme.onSurface,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      IconButton.filledTonal(
+                        onPressed: isLoading ? null : onNext,
+                        icon: const Icon(Icons.chevron_right),
+                        tooltip: l10n.nextMonth,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  _AcademicCalendarContent(
+                    focusedMonth: focusedMonth,
+                    events: data,
+                    isLoading: isLoading,
+                    emptyMessage:
+                        failure?.localizedMessage(l10n) ?? l10n.noData,
+                    emptyIcon: failure == null
+                        ? Icons.event_busy_outlined
+                        : Icons.error_outline,
+                  ),
+                ],
               ),
             ),
           ),
