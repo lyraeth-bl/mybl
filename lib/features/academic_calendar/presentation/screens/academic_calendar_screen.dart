@@ -298,7 +298,6 @@ class _AcademicCalendarContainer extends StatelessWidget {
 
 class _AcademicCalendarContent extends StatelessWidget {
   const _AcademicCalendarContent({
-    super.key,
     required this.focusedMonth,
     required this.events,
     required this.isLoading,
