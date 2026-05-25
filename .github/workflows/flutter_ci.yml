@@ -25,6 +25,10 @@ jobs:
       - name: Create .env file
         run: echo "${{ secrets.ENV_FILE }}" > .env
 
+      - name: Create firebase_options.dart
+        run: |
+          echo "${{ secrets.FIREBASE_OPTIONS }}" | base64 --decode > lib/firebase_options.dart
+
       - name: Generate code
         run: dart run build_runner build --delete-conflicting-outputs
 
