@@ -48,4 +48,7 @@ class RouteNames {
 
   // Notifications
   static const String notification = "/notification";
+
+  // Settings
+  static const String settings = "/settings";
 }

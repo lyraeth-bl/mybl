@@ -18,6 +18,7 @@ import '../../features/notifications/presentation/screens/notification_screen.da
 import '../../features/profile/presentation/screens/profile_detail_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/sessions/presentation/bloc/session_bloc.dart';
+import '../../features/settings/presentation/screens/settings_screen.dart';
 import '../../features/splash/presentation/screens/splash_screen.dart';
 import '../../features/time_table/presentation/screens/time_table_screen.dart';
 import 'go_router_refresh_stream.dart';
@@ -244,6 +245,11 @@ class AppRouter {
       GoRoute(
         path: RouteNames.notification,
         builder: (context, state) => const NotificationScreen(),
+      ),
+
+      GoRoute(
+        path: RouteNames.settings,
+        builder: (context, state) => const SettingsScreen(),
       ),
 
       StatefulShellRoute.indexedStack(

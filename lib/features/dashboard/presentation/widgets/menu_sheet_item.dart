@@ -57,7 +57,7 @@ class MenuSheetItem {
     MenuSheetItem(
       icon: Icons.settings_rounded,
       label: 'settings',
-      routePath: '/attendance',
+      routePath: RouteNames.settings,
     ),
   ];
 
