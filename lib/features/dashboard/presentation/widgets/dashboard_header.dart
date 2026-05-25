@@ -4,7 +4,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../../core/app_router/app_router.dart';
 import '../../../../core/widgets/profile_picture.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../user/presentation/bloc/user_bloc.dart';
@@ -148,7 +150,7 @@ class _DashboardHeaderContent extends StatelessWidget {
 
                 IconButton(
                   iconSize: 28,
-                  onPressed: () {},
+                  onPressed: () => context.push(RouteNames.notification),
                   icon: Icon(Icons.notifications),
                 ),
               ],

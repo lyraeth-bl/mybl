@@ -45,4 +45,7 @@ class RouteNames {
 
   // Academic Result
   static const String academicResult = "/academicResult";
+
+  // Notifications
+  static const String notification = "/notification";
 }

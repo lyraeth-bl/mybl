@@ -73,9 +73,9 @@ class ApiClient implements HTTPRequest {
   }
 
   @override
-  Future<Unit> delete(String url) async {
+  Future<Unit> delete(String url, {Map<String, dynamic>? data}) async {
     try {
-      await _dio.delete(url);
+      await _dio.delete(url, data: data);
       return unit;
     } catch (error, stackTrace) {
       throw Failure.fromError(error, stackTrace);

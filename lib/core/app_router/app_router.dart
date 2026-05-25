@@ -14,6 +14,7 @@ import '../../features/dashboard/presentation/widgets/main_shell.dart';
 import '../../features/discipline/presentation/screens/merit_demerit_screen.dart';
 import '../../features/extracurricular/presentation/screens/extracurricular_screen.dart';
 import '../../features/guardians_detail/presentation/screens/guardians_detail_screen.dart';
+import '../../features/notifications/presentation/screens/notification_screen.dart';
 import '../../features/profile/presentation/screens/profile_detail_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/sessions/presentation/bloc/session_bloc.dart';
@@ -238,6 +239,11 @@ class AppRouter {
       GoRoute(
         path: RouteNames.academicResult,
         builder: (context, state) => const AcademicResultScreen(),
+      ),
+
+      GoRoute(
+        path: RouteNames.notification,
+        builder: (context, state) => const NotificationScreen(),
       ),
 
       StatefulShellRoute.indexedStack(

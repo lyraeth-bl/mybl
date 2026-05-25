@@ -123,7 +123,7 @@ abstract interface class HTTPRequest {
   /// Hapus data di [url] yang kita tuju.
   ///
   /// Returns [Unit] kalau server udah setuju datanya dihapus.
-  Future<Unit> delete(String url);
+  Future<Unit> delete(String url, {Map<String, dynamic>? data});
 }
 
 /// Satpam pintu masuk buat urusan login & logout user.
@@ -372,4 +372,31 @@ abstract interface class AcademicCalendarLocalManager<T> {
   /// Ngintip data kalender bulanan yang udah pernah disimpen di lokal.
   /// Returns `null` kalau emang di gudang lokal belum ada datanya.
   List<T>? readMonthlyAcademicCalendar({required int month, required int year});
+}
+
+/// Penjaga riwayat notifikasi yang tersimpan lokal.
+abstract interface class NotificationLocalManager<T> {
+  /// Simpan satu [data] notifikasi ke storage lokal.
+  Future<Unit> saveNotification(T data);
+
+  /// Baca semua notifikasi yang tersimpan lokal.
+  List<T> readNotifications();
+
+  /// Tandai notifikasi dengan [id] sebagai sudah dibaca.
+  Future<Unit> markAsRead(int id);
+
+  /// Hapus semua riwayat notifikasi lokal.
+  Future<Unit> clearNotifications();
+}
+
+/// Spesialis buat daftarin dan cabut device token push notification.
+///
+/// Caller cukup ngasih [fcmToken]. Detail perangkat kayak platform atau app
+/// version sebaiknya diambil di layer yang memang punya akses ke info runtime.
+abstract interface class DeviceTokenRegistrar {
+  /// Daftarin [fcmToken] perangkat saat ini ke server.
+  Future<Result<Unit>> registerDeviceToken({required String fcmToken});
+
+  /// Cabut [fcmToken] perangkat saat ini dari server.
+  Future<Result<Unit>> revokeDeviceToken({required String fcmToken});
 }
