@@ -55,4 +55,7 @@ class HiveStorageNames {
 
   // Data academic calendar.
   static const String userAcademicCalendarKey = "userAcademicCalendar";
+
+  // Data riwayat notifikasi user.
+  static const String userNotificationsKey = "userNotifications";
 }
