@@ -9,7 +9,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import '../../l10n/app_localizations.dart';
 import '../app_router/app_router.dart';
 import '../di/get_it_constant.dart';
-import '../theme/my_bl_theme.dart';
+import '../theme/app_theme.dart';
 import 'app_bloc_provider.dart';
 import 'bloc/app_bloc.dart';
 
