@@ -31,6 +31,24 @@
   "attendanceQrCode": "QR Code Absensi",
   "attendanceSummary": "Ringkasan Absensi",
   "attendanceCalendar": "Kalender Absensi",
+  "attendanceLog": "Riwayat Absensi",
+  "attendanceDateFilter": "Filter tanggal absensi",
+  "fromDate": "Dari tanggal",
+  "toDate": "Sampai tanggal",
+  "last3Days": "3 hari terakhir",
+  "last7Days": "7 hari terakhir",
+  "thisMonth": "Bulan ini",
+  "attendanceDurationHoursMinutes": "{hours} jam {minutes} menit",
+  "@attendanceDurationHoursMinutes": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
   "attendanceChart": "Grafik Absensi",
   "navigation": "Navigasi",
   "timeTable": "Jadwal Pelajaran",

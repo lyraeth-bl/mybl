@@ -93,23 +93,72 @@ class _DashboardViewState extends State<_DashboardView> {
     final now = DateTime.now();
     final studentClass = _studentClass();
 
-    context.read<UserBloc>().add(const UserEvent.fetchStudentRequested(true));
-    context.read<DailyAttendanceBloc>().add(
-      const DailyAttendanceEvent.dailyAttendanceRequested(true),
+    blocRefresh<UserBloc, UserEvent, UserState>(
+      context: context,
+      event: const UserEvent.fetchStudentRequested(true),
+      isDone: (state) => state.maybeWhen(
+        success: (_) => true,
+        failure: (_) => true,
+        orElse: () => false,
+      ),
     );
-    context.read<MonthlyAttendanceBloc>().add(
-      MonthlyAttendanceEvent.monthChangeRequested(
+
+    blocRefresh<
+      DailyAttendanceBloc,
+      DailyAttendanceEvent,
+      DailyAttendanceState
+    >(
+      context: context,
+      event: const DailyAttendanceEvent.dailyAttendanceRequested(
+        forceRefresh: true,
+      ),
+      isDone: (state) => state.maybeWhen(
+        success: (_) => true,
+        emptyAttendance: () => true,
+        failure: (_) => true,
+        orElse: () => false,
+      ),
+    );
+
+    blocRefresh<
+      MonthlyAttendanceBloc,
+      MonthlyAttendanceEvent,
+      MonthlyAttendanceState
+    >(
+      context: context,
+      event: MonthlyAttendanceEvent.monthChangeRequested(
         month: now.month,
         year: now.year,
         forceRefresh: true,
       ),
+      isDone: (state) => state.maybeWhen(
+        success: (_, _, _, _, _, _) => true,
+        failure: (_) => true,
+        orElse: () => false,
+      ),
     );
-    context.read<NotificationBloc>().add(
-      const NotificationEvent.fetchNotificationsRequested(),
+
+    blocRefresh<NotificationBloc, NotificationEvent, NotificationState>(
+      context: context,
+      event: const NotificationEvent.fetchNotificationsRequested(),
+      isDone: (state) => state.maybeWhen(
+        success: (_) => true,
+        failure: (_) => true,
+        orElse: () => false,
+      ),
     );
+
+    if (studentClass.isEmpty) return Future<void>.value();
+
     if (studentClass.isNotEmpty) {
-      context.read<TimeTableBloc>().add(
-        TimeTableEvent.fetchTimeTable(true, studentClass),
+      blocRefresh<TimeTableBloc, TimeTableEvent, TimeTableState>(
+        context: context,
+        event: TimeTableEvent.fetchTimeTable(true, studentClass),
+        isDone: (state) => state.maybeWhen(
+          success: (_) => true,
+          failure: (_) => true,
+          orElse: () => false,
+        ),
       );
     }
   }
@@ -126,7 +175,7 @@ class _DashboardViewState extends State<_DashboardView> {
         tooltip: AppLocalizations.of(context)!.attendanceQrCode,
         child: const Icon(Icons.qr_code_2),
       ),
-      body: _DashboardBody(onRefresh: _refresh),
+      body: _DashboardBody(onRefresh: () async => _refresh()),
     );
   }
 }
@@ -217,7 +266,6 @@ class _DashboardBody extends StatelessWidget {
             const DashboardProfileSection(),
             const DashboardTodayAttendanceSection(),
             const DashboardTimeTableSection(),
-            const SliverFillRemaining(),
           ],
         ),
       ),

@@ -31,6 +31,24 @@
   "attendanceQrCode": "Attendance QR Code",
   "attendanceSummary": "Attendance Summary",
   "attendanceCalendar": "Attendance Calendar",
+  "attendanceLog": "Attendance Log",
+  "attendanceDateFilter": "Attendance date filter",
+  "fromDate": "From date",
+  "toDate": "To date",
+  "last3Days": "Last 3 days",
+  "last7Days": "Last 7 days",
+  "thisMonth": "This month",
+  "attendanceDurationHoursMinutes": "{hours} h {minutes} min",
+  "@attendanceDurationHoursMinutes": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
   "attendanceChart": "Attendance Chart",
   "navigation": "Navigation",
   "timeTable": "Timetable",
