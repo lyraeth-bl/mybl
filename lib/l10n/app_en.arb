@@ -34,6 +34,16 @@
   "attendanceChart": "Attendance Chart",
   "navigation": "Navigation",
   "timeTable": "Timetable",
+  "enjoyYourHoliday": "Enjoy your holiday.",
+  "todayScheduleFinished": "Today’s lessons are finished.",
+  "scheduleDurationMinutes": "{minutes} min",
+  "@scheduleDurationMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
   "guardianDetails": "Guardian Details",
   "meritAndDemerit": "Merit & Demerit",
   "academicCalendar": "Academic Calendar",
@@ -52,6 +62,18 @@
   "name": "Name",
   "emptyName": "Who are you exactly?",
   "classRoom": "Class",
+  "classRoomValue": "Class: {classRoom}",
+  "@classRoomValue": {
+    "placeholders": {
+      "classRoom": {
+        "type": "String"
+      }
+    }
+  },
+  "goodMorning": "Good morning!",
+  "goodAfternoon": "Good afternoon!",
+  "goodEvening": "Good evening!",
+  "goodNight": "Good night!",
   "underMaintenance": "Upgrading in Progress",
   "underMaintenanceDesc": "We’re improving the system for a better experience. Hang tight and try again soon!",
   "tryAgain": "Try again",
@@ -130,6 +152,9 @@
   "date": "Date",
   "checkIn": "Check in",
   "checkOut": "Check out",
+  "totalPresent": "Total present",
+  "totalAbsent": "Total absent",
+  "westernIndonesiaTime": "WIB",
   "reason": "Reason",
   "personalInfo": "Personal info",
   "personalInfoDesc": "Name, email, phone, address",

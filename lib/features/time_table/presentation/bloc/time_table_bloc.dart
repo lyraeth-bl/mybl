@@ -25,6 +25,9 @@ class TimeTableBloc extends Bloc<TimeTableEvent, TimeTableState> {
             "${student.kelasSaatIni}${student.noKelasSaatIni}",
         orElse: () => "",
       );
+
+      if (studentClass.isEmpty) return;
+
       add(_FetchTimeTable(false, studentClass));
     });
 
