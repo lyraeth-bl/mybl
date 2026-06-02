@@ -260,10 +260,6 @@ class _AcademicCalendarSection extends StatelessWidget {
           loading: () => true,
           orElse: () => false,
         );
-        final failure = state.maybeWhen(
-          failure: (failure) => failure,
-          orElse: () => null,
-        );
         final data = state.maybeWhen(
           success: (academicCalendar, _, _) => academicCalendar,
           orElse: () => const <AcademicCalendarEntity>[],
