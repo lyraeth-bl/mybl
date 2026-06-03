@@ -9,8 +9,9 @@ import 'package:intl/intl.dart';
 import '../../../../core/constants/constant.dart';
 import '../../../../core/di/get_it_constant.dart';
 import '../../../../core/internal/src/extensions/extensions.dart';
+import '../../../../core/widgets/app_container.dart';
+import '../../../../core/widgets/app_sliver_group.dart';
 import '../../../../core/widgets/refresh_wrapper.dart';
-import '../../../../core/widgets/titled_content_container.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/academic_result/academic_result.dart';
 import '../bloc/academic_result_bloc.dart';
@@ -49,8 +50,52 @@ class _AcademicResultViewState extends State<_AcademicResultView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
-      body: RefreshWrapper(
+      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+      appBar: const _AcademicResultAppBar(),
+      body: const _AcademicResultBody(),
+    );
+  }
+}
+
+class _AcademicResultAppBar extends StatelessWidget
+    implements PreferredSizeWidget {
+  const _AcademicResultAppBar();
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
+
+    return AppBar(
+      backgroundColor: colorScheme.primaryContainer,
+      surfaceTintColor: colorScheme.primaryContainer,
+      toolbarHeight: 72,
+      title: Text(
+        l10n.academicResult,
+        style: const TextStyle(fontWeight: .bold, letterSpacing: 2),
+      ),
+      centerTitle: true,
+    );
+  }
+
+  @override
+  Size get preferredSize => Size.fromHeight(80);
+}
+
+class _AcademicResultBody extends StatelessWidget {
+  const _AcademicResultBody();
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Container(
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainer,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+      ),
+      child: RefreshWrapper(
         onRefresh: () =>
             blocRefresh<
               AcademicResultBloc,
@@ -66,11 +111,8 @@ class _AcademicResultViewState extends State<_AcademicResultView> {
               ),
             ),
         child: CustomScrollView(
-          physics: const BouncingScrollPhysics(
-            parent: AlwaysScrollableScrollPhysics(),
-          ),
+          physics: const AlwaysScrollableScrollPhysics(),
           slivers: [
-            const _AcademicResultHeader(),
             BlocBuilder<AcademicResultBloc, AcademicResultState>(
               builder: (context, state) {
                 return state.maybeWhen(
@@ -89,36 +131,10 @@ class _AcademicResultViewState extends State<_AcademicResultView> {
                 );
               },
             ),
+            const SliverToBoxAdapter(child: SizedBox(height: 24)),
           ],
         ),
       ),
-    );
-  }
-}
-
-class _AcademicResultHeader extends StatelessWidget {
-  const _AcademicResultHeader();
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return SliverAppBar.medium(
-      title: Text(
-        l10n.academicResult,
-        style: TextStyle(
-          color: colorScheme.onPrimaryContainer,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-      backgroundColor: colorScheme.primaryContainer,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(bottom: Radius.circular(32)),
-      ),
-      centerTitle: true,
-      floating: false,
-      pinned: true,
     );
   }
 }
@@ -133,22 +149,25 @@ class _AcademicResultContent extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final categories = academicResult.data.categories;
 
-    final children = [
-      const SizedBox(height: 24),
-      _AcademicResultOverviewSection(academicResult: academicResult),
-      _OverallSummarySection(summary: academicResult.data.overallSummaryResult),
-      if (categories.isEmpty)
-        const _AcademicResultEmptyState()
-      else
-        TitledContentContainer(
-          title: l10n.subject,
-          contentPadding: const EdgeInsets.all(12),
-          child: _SubjectList(categories: categories),
+    return SliverMainAxisGroup(
+      slivers: [
+        _AcademicResultOverviewSection(academicResult: academicResult),
+        _OverallSummarySection(
+          summary: academicResult.data.overallSummaryResult,
         ),
-      const SizedBox(height: 24),
-    ].makeListAnimate();
-
-    return SliverList.list(children: children);
+        if (categories.isEmpty)
+          const SliverToBoxAdapter(child: _AcademicResultEmptyState())
+        else
+          AppSliverGroup(
+            title: l10n.subject,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 8,
+            ),
+            sliver: _SubjectList(categories: categories),
+          ),
+      ],
+    );
   }
 }
 
@@ -160,23 +179,51 @@ class _AcademicResultOverviewSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return TitledContentContainer(
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    return AppSliverGroup(
       title: '${l10n.semester} ${academicResult.meta.semester}',
-      titleIcon: const Icon(Icons.school_outlined),
-      contentPadding: const EdgeInsets.all(12),
-      child: _CompactInfoGrid(
-        children: [
-          _MetricTile(
-            icon: Icons.calendar_month_outlined,
-            label: l10n.schoolYear,
-            value: academicResult.meta.schoolSession,
-          ),
-          _MetricTile(
-            icon: Icons.category_outlined,
-            label: l10n.subject,
-            value: '${academicResult.data.categories.length}',
+      titleStyle: textTheme.titleMedium!.copyWith(
+        color: colorScheme.onSurface,
+        fontWeight: .bold,
+      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: AppContainer(
+        margin: EdgeInsets.zero,
+        backgroundColor: colorScheme.surfaceContainerLow,
+        elevation: 0,
+        boxShadow: <BoxShadow>[
+          BoxShadow(
+            color: colorScheme.surfaceContainerHighest,
+            offset: const Offset(5, 5),
           ),
         ],
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _SectionLead(
+              icon: Icons.school_outlined,
+              title: '${l10n.semester} ${academicResult.meta.semester}',
+              subtitle: academicResult.meta.schoolSession,
+            ),
+            const SizedBox(height: 16),
+            _CompactInfoGrid(
+              children: [
+                _MetricTile(
+                  icon: Icons.calendar_month_outlined,
+                  label: l10n.schoolYear,
+                  value: academicResult.meta.schoolSession,
+                ),
+                _MetricTile(
+                  icon: Icons.category_outlined,
+                  label: l10n.subject,
+                  value: '${academicResult.data.categories.length}',
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -193,47 +240,156 @@ class _OverallSummarySection extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
-    return TitledContentContainer(
+    return AppSliverGroup(
       title: l10n.average,
-      titleIcon: const Icon(Icons.analytics_outlined),
-      contentPadding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            _formatDecimal(summary.average),
-            style: textTheme.displaySmall?.copyWith(
-              color: colorScheme.onSurface,
-              fontWeight: FontWeight.bold,
+      titleStyle: textTheme.titleMedium!.copyWith(
+        color: colorScheme.onSurface,
+        fontWeight: .bold,
+      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: AppContainer(
+        margin: EdgeInsets.zero,
+        backgroundColor: colorScheme.surfaceContainerLow,
+        elevation: 0,
+        boxShadow: <BoxShadow>[
+          BoxShadow(
+            color: colorScheme.surfaceContainerHighest,
+            offset: const Offset(5, 5),
+          ),
+        ],
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: 56,
+                  height: 56,
+                  alignment: Alignment.center,
+                  decoration: ShapeDecoration(
+                    color: colorScheme.primaryContainer,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                  ),
+                  child: Icon(
+                    Icons.analytics_outlined,
+                    color: colorScheme.onPrimaryContainer,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l10n.average,
+                        style: textTheme.labelLarge?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        _formatDecimal(summary.average),
+                        style: textTheme.displaySmall?.copyWith(
+                          color: colorScheme.onSurface,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            _CompactInfoGrid(
+              children: [
+                _MetricTile(
+                  icon: Icons.functions_rounded,
+                  label: l10n.sumativeAverage,
+                  value: _formatDecimal(summary.sumatifAverage),
+                ),
+                _MetricTile(
+                  icon: Icons.assignment_outlined,
+                  label: l10n.reportAverage,
+                  value: _formatDecimal(summary.raportAverage),
+                ),
+                _MetricTile(
+                  icon: Icons.summarize_outlined,
+                  label: l10n.semesterReportAverage,
+                  value: _formatDecimal(summary.raportSemesterAverage),
+                ),
+                _MetricTile(
+                  icon: Icons.format_list_numbered_rounded,
+                  label: l10n.totalAssessment,
+                  value: '${summary.totalData}',
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SectionLead extends StatelessWidget {
+  const _SectionLead({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+  });
+
+  final IconData icon;
+  final String title;
+  final String subtitle;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    return Row(
+      children: [
+        Container(
+          width: 48,
+          height: 48,
+          alignment: Alignment.center,
+          decoration: ShapeDecoration(
+            color: colorScheme.primaryContainer,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(18),
             ),
           ),
-          const SizedBox(height: 16),
-          _CompactInfoGrid(
+          child: Icon(icon, color: colorScheme.onPrimaryContainer),
+        ),
+        const SizedBox(width: 14),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _MetricTile(
-                icon: Icons.functions_rounded,
-                label: l10n.sumativeAverage,
-                value: _formatDecimal(summary.sumatifAverage),
+              Text(
+                title,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: textTheme.titleMedium?.copyWith(
+                  color: colorScheme.onSurface,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-              _MetricTile(
-                icon: Icons.assignment_outlined,
-                label: l10n.reportAverage,
-                value: _formatDecimal(summary.raportAverage),
-              ),
-              _MetricTile(
-                icon: Icons.summarize_outlined,
-                label: l10n.semesterReportAverage,
-                value: _formatDecimal(summary.raportSemesterAverage),
-              ),
-              _MetricTile(
-                icon: Icons.format_list_numbered_rounded,
-                label: l10n.totalAssessment,
-                value: '${summary.totalData}',
+              const SizedBox(height: 2),
+              Text(
+                subtitle.isEmpty ? '-' : subtitle,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
               ),
             ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
@@ -245,21 +401,35 @@ class _SubjectList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        for (var index = 0; index < categories.length; index++) ...[
-          _SubjectTile(category: categories[index]),
-          if (index != categories.length - 1) const SizedBox(height: 10),
-        ],
-      ],
+    return SliverList.list(
+      children: categories
+          .asMap()
+          .entries
+          .map(
+            (entry) => _SubjectTile(
+              category: entry.value,
+              shape: _subjectTileShape(entry.key, categories.length - 1),
+            ),
+          )
+          .toList()
+          .makeListAnimate(),
     );
+  }
+
+  ShapeBorder _subjectTileShape(int index, int lastIndex) {
+    if (lastIndex == 0) {
+      return RoundedRectangleBorder(borderRadius: BorderRadius.circular(24));
+    }
+
+    return index.makeVerticalGoogleShape(lastIndex);
   }
 }
 
 class _SubjectTile extends StatelessWidget {
-  const _SubjectTile({required this.category});
+  const _SubjectTile({required this.category, required this.shape});
 
   final AcademicResultCategories category;
+  final ShapeBorder shape;
 
   @override
   Widget build(BuildContext context) {
@@ -268,79 +438,92 @@ class _SubjectTile extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
     final teacherName = category.subjectTeacherName;
 
-    return Material(
-      color: colorScheme.surfaceContainerLowest,
-      borderRadius: customRadius,
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: () => _showSubjectDetailSheet(context, category),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
+    return AppContainer(
+      margin: const EdgeInsets.symmetric(vertical: 2),
+      shape: shape,
+      borderRadius: null,
+      backgroundColor: colorScheme.surfaceContainerLow,
+      elevation: 0,
+      boxShadow: <BoxShadow>[
+        BoxShadow(
+          color: colorScheme.surfaceContainerHighest,
+          offset: const Offset(5, 5),
+        ),
+      ],
+      padding: EdgeInsets.zero,
+      onTap: () => _showSubjectDetailSheet(context, category),
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Padding(
-              padding: const EdgeInsets.all(14),
-              child: Row(
+            Container(
+              width: 56,
+              height: 56,
+              alignment: Alignment.center,
+              decoration: ShapeDecoration(
+                color: colorScheme.secondaryContainer,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(18),
+                ),
+              ),
+              child: Text(
+                _formatDecimal(category.summary.average),
+                style: textTheme.titleMedium?.copyWith(
+                  color: colorScheme.onSecondaryContainer,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    width: 52,
-                    height: 52,
-                    alignment: Alignment.center,
-                    decoration: ShapeDecoration(
-                      color: colorScheme.secondaryContainer,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: customRadius,
-                      ),
-                    ),
-                    child: Text(
-                      _formatDecimal(category.summary.average),
-                      style: textTheme.titleMedium?.copyWith(
-                        color: colorScheme.onSecondaryContainer,
-                        fontWeight: FontWeight.bold,
-                      ),
+                  Text(
+                    category.subjectName,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: textTheme.titleSmall?.copyWith(
+                      color: colorScheme.onSurface,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          category.subjectName,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: textTheme.titleSmall?.copyWith(
-                            color: colorScheme.onSurface,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        if (teacherName != null && teacherName.isNotEmpty) ...[
-                          const SizedBox(height: 2),
-                          Text(
-                            teacherName,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: textTheme.bodySmall?.copyWith(
-                              color: colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                        ],
-                        const SizedBox(height: 4),
-                        Text(
-                          '${category.summary.totalData} ${l10n.totalAssessment.toLowerCase()}',
-                          style: textTheme.labelSmall?.copyWith(
-                            color: colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                      ],
+                  if (teacherName != null && teacherName.isNotEmpty) ...[
+                    const SizedBox(height: 2),
+                    Text(
+                      teacherName,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: textTheme.bodySmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  Icon(
-                    Icons.keyboard_arrow_up_rounded,
-                    color: colorScheme.onSurfaceVariant,
+                  ],
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.format_list_numbered_rounded,
+                        size: 14,
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        '${category.summary.totalData} ${l10n.totalAssessment.toLowerCase()}',
+                        style: textTheme.labelSmall?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
+            ),
+            const SizedBox(width: 8),
+            Icon(
+              Icons.keyboard_arrow_up_rounded,
+              color: colorScheme.onSurfaceVariant,
             ),
           ],
         ),
@@ -356,10 +539,8 @@ void _showSubjectDetailSheet(
   showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
-    showDragHandle: true,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-    ),
+    useRootNavigator: true,
+    backgroundColor: Colors.transparent,
     builder: (sheetContext) {
       return DraggableScrollableSheet(
         expand: false,
@@ -388,18 +569,66 @@ class _SubjectDetailSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return SafeArea(
+      top: false,
+      child: Container(
+        decoration: BoxDecoration(
+          color: colorScheme.surfaceContainer,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+        ),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: Container(
+                width: 32,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            Expanded(
+              child: _SubjectDetailSheetContent(
+                category: category,
+                scrollController: scrollController,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SubjectDetailSheetContent extends StatelessWidget {
+  const _SubjectDetailSheetContent({
+    required this.category,
+    required this.scrollController,
+  });
+
+  final AcademicResultCategories category;
+  final ScrollController scrollController;
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     final teacherName = category.subjectTeacherName;
 
-    return SafeArea(
-      top: false,
-      child: ListView(
-        controller: scrollController,
-        padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
-        children: [
-          Row(
+    return ListView(
+      controller: scrollController,
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+      children: [
+        AppContainer(
+          margin: EdgeInsets.zero,
+          backgroundColor: colorScheme.surfaceContainerLow,
+          elevation: 0,
+          child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
@@ -429,8 +658,13 @@ class _SubjectDetailSheet extends StatelessWidget {
               _AverageBadge(value: category.summary.average),
             ],
           ),
-          const SizedBox(height: 18),
-          _CompactInfoGrid(
+        ),
+        const SizedBox(height: 12),
+        AppContainer(
+          margin: EdgeInsets.zero,
+          backgroundColor: colorScheme.surfaceContainerLow,
+          elevation: 0,
+          child: _CompactInfoGrid(
             children: [
               _MetricTile(
                 icon: Icons.analytics_outlined,
@@ -444,17 +678,35 @@ class _SubjectDetailSheet extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 18),
-          if (category.listResult.isEmpty)
-            const _AcademicResultEmptyState()
-          else
-            for (final result in category.listResult) ...[
-              _ResultDetailPanel(result: result),
-              const SizedBox(height: 12),
-            ],
-        ],
-      ),
+        ),
+        const SizedBox(height: 12),
+        if (category.listResult.isEmpty)
+          const _AcademicResultEmptyState()
+        else
+          ...category.listResult
+              .asMap()
+              .entries
+              .map(
+                (entry) => _ResultDetailPanel(
+                  result: entry.value,
+                  shape: _resultDetailShape(
+                    entry.key,
+                    category.listResult.length - 1,
+                  ),
+                ),
+              )
+              .toList()
+              .makeListAnimate(),
+      ],
     );
+  }
+
+  ShapeBorder _resultDetailShape(int index, int lastIndex) {
+    if (lastIndex == 0) {
+      return RoundedRectangleBorder(borderRadius: BorderRadius.circular(24));
+    }
+
+    return index.makeVerticalGoogleShape(lastIndex);
   }
 }
 
@@ -503,7 +755,7 @@ class _MetricTile extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: ShapeDecoration(
-        color: colorScheme.surfaceContainerHighest,
+        color: colorScheme.surfaceContainer,
         shape: const RoundedRectangleBorder(borderRadius: customRadius),
       ),
       child: Row(
@@ -542,9 +794,10 @@ class _MetricTile extends StatelessWidget {
 }
 
 class _ResultDetailPanel extends StatelessWidget {
-  const _ResultDetailPanel({required this.result});
+  const _ResultDetailPanel({required this.result, required this.shape});
 
   final AcademicResultEntity result;
+  final ShapeBorder shape;
 
   @override
   Widget build(BuildContext context) {
@@ -554,12 +807,13 @@ class _ResultDetailPanel extends StatelessWidget {
     final locale = Localizations.localeOf(context).toString();
     final classLabel = '${result.kelas} ${result.nomorKelas}'.trim();
 
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: ShapeDecoration(
-        color: colorScheme.surfaceContainer,
-        shape: const RoundedRectangleBorder(borderRadius: customRadius),
-      ),
+    return AppContainer(
+      margin: const EdgeInsets.symmetric(vertical: 2),
+      shape: shape,
+      borderRadius: null,
+      backgroundColor: colorScheme.surfaceContainerLow,
+      elevation: 0,
+      padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -579,12 +833,12 @@ class _ResultDetailPanel extends StatelessWidget {
               _ScoreBadge(score: result.nilai),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 14),
           _AssessmentMetaPanel(
             result: result,
             formattedDate: DateFormat.yMMMd(locale).format(result.tanggal),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 14),
           _ResponsiveDetailGrid(
             children: [
               _DetailTile(
@@ -609,7 +863,7 @@ class _ResultDetailPanel extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 14),
           _DescriptionPanel(description: result.keterangan),
         ],
       ),
@@ -680,7 +934,7 @@ class _LargeDetailPanel extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(12),
       decoration: ShapeDecoration(
-        color: colorScheme.surfaceContainerHighest,
+        color: colorScheme.surfaceContainer,
         shape: const RoundedRectangleBorder(borderRadius: customRadius),
       ),
       child: Column(
@@ -880,7 +1134,7 @@ class _DetailTile extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: ShapeDecoration(
-        color: colorScheme.surfaceContainerHighest,
+        color: colorScheme.surfaceContainer,
         shape: const RoundedRectangleBorder(borderRadius: customRadius),
       ),
       child: Row(
@@ -923,57 +1177,272 @@ class _AcademicResultLoadingList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SliverList.list(
-      children: const [
-        SizedBox(height: 16),
-        _LoadingCard(),
-        _LoadingCard(),
-        _LoadingCard(),
+    return SliverMainAxisGroup(
+      slivers: [
+        const _LoadingOverviewSection(),
+        const _LoadingSummarySection(),
+        const _LoadingHeader(width: 96),
+        SliverPadding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          sliver: SliverList.list(
+            children: List.generate(
+              4,
+              (index) =>
+                  _LoadingSubjectTile(shape: index.makeVerticalGoogleShape(3)),
+            ),
+          ),
+        ),
       ],
     );
   }
 }
 
-class _LoadingCard extends StatelessWidget {
-  const _LoadingCard();
+class _LoadingOverviewSection extends StatelessWidget {
+  const _LoadingOverviewSection();
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
-    return Card.filled(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      color: colorScheme.surfaceContainerLowest,
-      shape: const RoundedRectangleBorder(borderRadius: customRadius),
+    return SliverMainAxisGroup(
+      slivers: [
+        const _LoadingHeader(width: 112),
+        SliverPadding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          sliver: SliverToBoxAdapter(
+            child: AppContainer(
+              margin: EdgeInsets.zero,
+              backgroundColor: colorScheme.surfaceContainerLow,
+              elevation: 0,
+              boxShadow: <BoxShadow>[
+                BoxShadow(
+                  color: colorScheme.surfaceContainerHighest,
+                  offset: const Offset(5, 5),
+                ),
+              ],
+              child: const Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _LoadingSectionLead(),
+                  SizedBox(height: 16),
+                  _LoadingGrid(count: 2),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _LoadingSummarySection extends StatelessWidget {
+  const _LoadingSummarySection();
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return SliverMainAxisGroup(
+      slivers: [
+        const _LoadingHeader(width: 88),
+        SliverPadding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          sliver: SliverToBoxAdapter(
+            child: AppContainer(
+              margin: EdgeInsets.zero,
+              backgroundColor: colorScheme.surfaceContainerLow,
+              elevation: 0,
+              boxShadow: <BoxShadow>[
+                BoxShadow(
+                  color: colorScheme.surfaceContainerHighest,
+                  offset: const Offset(5, 5),
+                ),
+              ],
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const Text('').toShimmer(
+                        context,
+                        width: 56,
+                        height: 56,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      const SizedBox(width: 16),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            '',
+                          ).toShimmer(context, width: 72, height: 12),
+                          const SizedBox(height: 8),
+                          const Text(
+                            '',
+                          ).toShimmer(context, width: 96, height: 32),
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  const _LoadingGrid(count: 4),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _LoadingHeader extends StatelessWidget {
+  const _LoadingHeader({required this.width});
+
+  final double width;
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverToBoxAdapter(
       child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+        padding: const EdgeInsetsDirectional.fromSTEB(16, 28, 16, 8),
+        child: const Text('').toShimmer(context, width: width, height: 14),
+      ),
+    );
+  }
+}
+
+class _LoadingSectionLead extends StatelessWidget {
+  const _LoadingSectionLead();
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        const Text('').toShimmer(
+          context,
+          width: 48,
+          height: 48,
+          borderRadius: BorderRadius.circular(18),
+        ),
+        const SizedBox(width: 14),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('').toShimmer(context, width: 132, height: 16),
+              const SizedBox(height: 8),
+              const Text('').toShimmer(context, width: 180, height: 14),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _LoadingSubjectTile extends StatelessWidget {
+  const _LoadingSubjectTile({required this.shape});
+
+  final ShapeBorder shape;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return AppContainer(
+      margin: const EdgeInsets.symmetric(vertical: 2),
+      shape: shape,
+      borderRadius: null,
+      backgroundColor: colorScheme.surfaceContainerLow,
+      elevation: 0,
+      boxShadow: <BoxShadow>[
+        BoxShadow(
+          color: colorScheme.surfaceContainerHighest,
+          offset: const Offset(5, 5),
+        ),
+      ],
+      padding: const EdgeInsets.all(14),
+      child: Row(
+        children: [
+          const Text('').toShimmer(
+            context,
+            width: 56,
+            height: 56,
+            borderRadius: BorderRadius.circular(18),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                  child: const SizedBox().toShimmer(
-                    context,
-                    width: double.infinity,
-                    height: 24,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                const SizedBox().toShimmer(
-                  context,
-                  width: 64,
-                  height: 48,
-                  borderRadius: customRadius,
+                const Text('').toShimmer(context, width: 160, height: 14),
+                const SizedBox(height: 8),
+                const Text('').toShimmer(context, width: 120, height: 12),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    const Text('').toShimmer(
+                      context,
+                      width: 14,
+                      height: 14,
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                    const SizedBox(width: 6),
+                    const Text('').toShimmer(context, width: 104, height: 11),
+                  ],
                 ),
               ],
             ),
-            const SizedBox(height: 16),
-            _LoadingGrid(count: 4),
-          ],
-        ),
+          ),
+          const SizedBox(width: 8),
+          const Text('').toShimmer(
+            context,
+            width: 24,
+            height: 24,
+            borderRadius: BorderRadius.circular(999),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _LoadingMetricTile extends StatelessWidget {
+  const _LoadingMetricTile();
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: ShapeDecoration(
+        color: colorScheme.surfaceContainer,
+        shape: const RoundedRectangleBorder(borderRadius: customRadius),
+      ),
+      child: Row(
+        children: [
+          const Text('').toShimmer(
+            context,
+            width: 18,
+            height: 18,
+            borderRadius: BorderRadius.circular(999),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text('').toShimmer(context, width: 64, height: 10),
+                const SizedBox(height: 6),
+                const Text('').toShimmer(context, width: 88, height: 13),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -994,15 +1463,7 @@ class _LoadingGrid extends StatelessWidget {
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       padding: EdgeInsets.zero,
-      children: List.generate(
-        count,
-        (_) => const SizedBox().toShimmer(
-          context,
-          width: double.infinity,
-          height: double.infinity,
-          borderRadius: BorderRadius.circular(12),
-        ),
-      ),
+      children: List.generate(count, (_) => const _LoadingMetricTile()),
     );
   }
 }
