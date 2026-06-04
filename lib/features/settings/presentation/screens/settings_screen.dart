@@ -177,7 +177,7 @@ class _SettingsOptionTile extends StatelessWidget {
       onTap: onTap,
       title: Text(title),
       trailing: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 180),
+        duration: const Duration(milliseconds: 200),
         child: selected
             ? Icon(
                 Icons.check_circle_rounded,
