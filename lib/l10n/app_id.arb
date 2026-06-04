@@ -31,12 +31,41 @@
   "attendanceQrCode": "QR Code Absensi",
   "attendanceSummary": "Ringkasan Absensi",
   "attendanceCalendar": "Kalender Absensi",
+  "attendanceLog": "Riwayat Absensi",
+  "attendanceDateFilter": "Filter tanggal absensi",
+  "fromDate": "Dari tanggal",
+  "toDate": "Sampai tanggal",
+  "last3Days": "3 hari terakhir",
+  "last7Days": "7 hari terakhir",
+  "thisMonth": "Bulan ini",
+  "attendanceDurationHoursMinutes": "{hours} jam {minutes} menit",
+  "@attendanceDurationHoursMinutes": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
   "attendanceChart": "Grafik Absensi",
   "navigation": "Navigasi",
   "timeTable": "Jadwal Pelajaran",
+  "enjoyYourHoliday": "Selamat menikmati hari libur kamu.",
+  "todayScheduleFinished": "Hari ini sudah selesai.",
+  "scheduleDurationMinutes": "{minutes} menit",
+  "@scheduleDurationMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
   "guardianDetails": "Detail Orang Tua",
   "meritAndDemerit": "Merit & Demerit",
   "academicCalendar": "Kalendar Akademik",
+  "academicCalendarLog": "Riwayat Kalendar Akademik",
   "academicResult": "Hasil Akademik",
   "extracurricular": "Ekstrakulikuler",
   "merit": "Merit",
@@ -52,6 +81,18 @@
   "name": "Nama",
   "emptyName": "Ini siapa ya?",
   "classRoom": "Kelas",
+  "classRoomValue": "Kelas: {classRoom}",
+  "@classRoomValue": {
+    "placeholders": {
+      "classRoom": {
+        "type": "String"
+      }
+    }
+  },
+  "goodMorning": "Selamat pagi!",
+  "goodAfternoon": "Selamat siang!",
+  "goodEvening": "Selamat sore!",
+  "goodNight": "Selamat malam!",
   "underMaintenance": "Aplikasi lagi di update",
   "underMaintenanceDesc": "Kami lagi upgrade sistem biar pengalaman kamu makin oke. Tunggu sebentar, ya!",
   "tryAgain": "Coba lagi",
@@ -130,6 +171,9 @@
   "date": "Tanggal",
   "checkIn": "Jam masuk",
   "checkOut": "Jam keluar",
+  "totalPresent": "Total presensi",
+  "totalAbsent": "Total absen",
+  "westernIndonesiaTime": "WIB",
   "reason": "Alasan",
   "personalInfo": "Informasi pribadi",
   "personalInfoDesc": "Nama, email, nomor, alamat",

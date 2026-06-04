@@ -119,7 +119,7 @@ extension DateAndTimeFormatterExtension on DateTime {
       DateFormat("HH : mm : ss").format(toLocal());
 
   String get toDayMonthYearFormat =>
-      DateFormat('dd - MM - yyyy').format(toLocal());
+      DateFormat('dd MMMM yyyy').format(toLocal());
 
   String get toDayDateMonthYearFormat =>
       DateFormat("EEEE, d MMMM yyyy").format(toLocal());

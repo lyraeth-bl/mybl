@@ -5,11 +5,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../core/constants/constant.dart';
 import '../../../../core/di/get_it_constant.dart';
 import '../../../../core/internal/src/extensions/extensions.dart';
+import '../../../../core/widgets/app_container.dart';
+import '../../../../core/widgets/app_sliver_group.dart';
 import '../../../../core/widgets/refresh_wrapper.dart';
-import '../../../../core/widgets/titled_content_container.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/discipline.dart';
 import '../bloc/demerit_bloc/demerit_bloc.dart';
@@ -38,11 +38,6 @@ class _MeritDemeritView extends StatefulWidget {
 }
 
 class _MeritDemeritViewState extends State<_MeritDemeritView> {
-  String? _selectedMeritSchoolSession;
-  String? _selectedMeritSemester;
-  String? _selectedDemeritSchoolSession;
-  String? _selectedDemeritSemester;
-
   @override
   void initState() {
     super.initState();
@@ -60,61 +55,34 @@ class _MeritDemeritViewState extends State<_MeritDemeritView> {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-        backgroundColor: colorScheme.surfaceContainer,
-        body: NestedScrollView(
-          headerSliverBuilder: (context, innerBoxIsScrolled) => [
-            const _MeritDemeritHeader(),
-          ],
-          body: TabBarView(
-            children: [
-              _MeritTab(
-                selectedSchoolSession: _selectedMeritSchoolSession,
-                selectedSemester: _selectedMeritSemester,
-                onSchoolSessionChanged: (value) {
-                  setState(() => _selectedMeritSchoolSession = value);
-                },
-                onSemesterChanged: (value) {
-                  setState(() => _selectedMeritSemester = value);
-                },
-              ),
-              _DemeritTab(
-                selectedSchoolSession: _selectedDemeritSchoolSession,
-                selectedSemester: _selectedDemeritSemester,
-                onSchoolSessionChanged: (value) {
-                  setState(() => _selectedDemeritSchoolSession = value);
-                },
-                onSemesterChanged: (value) {
-                  setState(() => _selectedDemeritSemester = value);
-                },
-              ),
-            ],
-          ),
-        ),
+        backgroundColor: colorScheme.primaryContainer,
+        appBar: const _MeritDemeritAppBar(),
+        body: const _MeritDemeritBody(),
       ),
     );
   }
 }
 
-class _MeritDemeritHeader extends StatelessWidget {
-  const _MeritDemeritHeader();
+class _MeritDemeritAppBar extends StatelessWidget
+    implements PreferredSizeWidget {
+  const _MeritDemeritAppBar();
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
 
-    return SliverAppBar.medium(
+    return AppBar(
+      backgroundColor: colorScheme.primaryContainer,
+      surfaceTintColor: colorScheme.primaryContainer,
+      toolbarHeight: 72,
       title: Text(
         l10n.meritAndDemerit,
-        style: TextStyle(fontWeight: FontWeight.bold),
+        style: const TextStyle(fontWeight: .bold, letterSpacing: 2),
       ),
-      backgroundColor: colorScheme.primaryContainer,
       centerTitle: true,
-      pinned: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(bottom: Radius.circular(32)),
-      ),
       bottom: TabBar(
+        dividerColor: colorScheme.primaryContainer,
         labelColor: colorScheme.onPrimaryContainer,
         unselectedLabelColor: colorScheme.onPrimaryContainer.withValues(
           alpha: 0.68,
@@ -127,20 +95,39 @@ class _MeritDemeritHeader extends StatelessWidget {
       ),
     );
   }
+
+  @override
+  Size get preferredSize => const Size.fromHeight(128);
 }
 
-class _MeritTab extends StatelessWidget {
-  const _MeritTab({
-    required this.selectedSchoolSession,
-    required this.selectedSemester,
-    required this.onSchoolSessionChanged,
-    required this.onSemesterChanged,
-  });
+class _MeritDemeritBody extends StatelessWidget {
+  const _MeritDemeritBody();
 
-  final String? selectedSchoolSession;
-  final String? selectedSemester;
-  final ValueChanged<String?> onSchoolSessionChanged;
-  final ValueChanged<String?> onSemesterChanged;
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Container(
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainer,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+      ),
+      child: const TabBarView(children: [_MeritTab(), _DemeritTab()]),
+    );
+  }
+}
+
+class _MeritTab extends StatefulWidget {
+  const _MeritTab();
+
+  @override
+  State<_MeritTab> createState() => _MeritTabState();
+}
+
+class _MeritTabState extends State<_MeritTab> {
+  String? _selectedSchoolSession;
+  String? _selectedSemester;
 
   @override
   Widget build(BuildContext context) {
@@ -158,52 +145,46 @@ class _MeritTab extends StatelessWidget {
         ),
       ),
       child: CustomScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
+        physics: const BouncingScrollPhysics(
+          parent: AlwaysScrollableScrollPhysics(),
+        ),
         slivers: [
           BlocBuilder<MeritBloc, MeritState>(
             builder: (context, state) {
               return state.maybeWhen(
-                loading: () => const _DisciplineLoadingBody(),
-                success: (listMerit) {
-                  final filteredMerit = _filterMerit(listMerit);
+                loading: () => const _DisciplineLoadingContent(),
+                success: (merits) {
+                  final items = merits.map(_DisciplineItem.fromMerit).toList();
 
                   return _DisciplineContent(
                     defaultPoint: 0,
-                    totalPoint: _totalMeritPoint(listMerit),
-                    schoolSessions: _schoolSessionsFromMerit(listMerit),
-                    semesters: _semestersFromMerit(listMerit),
-                    selectedSchoolSession: selectedSchoolSession,
-                    selectedSemester: selectedSemester,
-                    onSchoolSessionChanged: onSchoolSessionChanged,
-                    onSemesterChanged: onSemesterChanged,
-                    cards: filteredMerit
-                        .map<Widget>(
-                          (merit) => _DisciplineCard(
-                            description: merit.description,
-                            point: merit.point,
-                            date: merit.date.toDayMonthYearFormat,
-                            schoolSession: merit.schoolSession,
-                            semester: merit.semester,
-                            teacherName: merit.teacherName,
-                            unit: merit.unit,
-                            isMerit: true,
-                          ),
-                        )
-                        .toList()
-                        .makeListAnimate(),
+                    totalPoint: _totalMeritPoint(merits),
+                    items: items,
+                    filteredItems: _filterItems(items),
+                    selectedSchoolSession: _selectedSchoolSession,
+                    selectedSemester: _selectedSemester,
+                    onSchoolSessionChanged: (value) {
+                      setState(() => _selectedSchoolSession = value);
+                    },
+                    onSemesterChanged: (value) {
+                      setState(() => _selectedSemester = value);
+                    },
                     emptyMessage: l10n.noDisciplineData,
                   );
                 },
                 emptyData: () => _DisciplineContent(
                   defaultPoint: 0,
                   totalPoint: 0,
-                  schoolSessions: const [],
-                  semesters: const [],
-                  selectedSchoolSession: selectedSchoolSession,
-                  selectedSemester: selectedSemester,
-                  onSchoolSessionChanged: onSchoolSessionChanged,
-                  onSemesterChanged: onSemesterChanged,
-                  cards: const [],
+                  items: const [],
+                  filteredItems: const [],
+                  selectedSchoolSession: _selectedSchoolSession,
+                  selectedSemester: _selectedSemester,
+                  onSchoolSessionChanged: (value) {
+                    setState(() => _selectedSchoolSession = value);
+                  },
+                  onSemesterChanged: (value) {
+                    setState(() => _selectedSemester = value);
+                  },
                   emptyMessage: l10n.noDisciplineData,
                 ),
                 failure: (failure) => SliverFillRemaining(
@@ -215,58 +196,43 @@ class _MeritTab extends StatelessWidget {
                     ),
                   ),
                 ),
-                orElse: () => const _DisciplineLoadingBody(),
+                orElse: () => const _DisciplineLoadingContent(),
               );
             },
           ),
+          const SliverToBoxAdapter(child: SizedBox(height: 24)),
         ],
       ),
     );
   }
 
-  List<MeritEntity> _filterMerit(List<MeritEntity> listMerit) {
-    return listMerit.where((merit) {
+  List<_DisciplineItem> _filterItems(List<_DisciplineItem> items) {
+    return items.where((item) {
       final matchesSchoolSession =
-          selectedSchoolSession == null ||
-          merit.schoolSession == selectedSchoolSession;
+          _selectedSchoolSession == null ||
+          item.schoolSession == _selectedSchoolSession;
       final matchesSemester =
-          selectedSemester == null || merit.semester == selectedSemester;
+          _selectedSemester == null || item.semester == _selectedSemester;
 
       return matchesSchoolSession && matchesSemester;
     }).toList();
   }
 
-  int _totalMeritPoint(List<MeritEntity> listMerit) =>
-      listMerit.fold(0, (total, merit) => total + merit.point);
-
-  List<String> _schoolSessionsFromMerit(List<MeritEntity> listMerit) {
-    final schoolSessions = listMerit
-        .map((merit) => merit.schoolSession)
-        .toSet()
-        .toList();
-    schoolSessions.sort((a, b) => b.compareTo(a));
-    return schoolSessions;
-  }
-
-  List<String> _semestersFromMerit(List<MeritEntity> listMerit) {
-    final semesters = listMerit.map((merit) => merit.semester).toSet().toList();
-    semesters.sort();
-    return semesters;
+  int _totalMeritPoint(List<MeritEntity> merits) {
+    return merits.fold(0, (total, merit) => total + merit.point);
   }
 }
 
-class _DemeritTab extends StatelessWidget {
-  const _DemeritTab({
-    required this.selectedSchoolSession,
-    required this.selectedSemester,
-    required this.onSchoolSessionChanged,
-    required this.onSemesterChanged,
-  });
+class _DemeritTab extends StatefulWidget {
+  const _DemeritTab();
 
-  final String? selectedSchoolSession;
-  final String? selectedSemester;
-  final ValueChanged<String?> onSchoolSessionChanged;
-  final ValueChanged<String?> onSemesterChanged;
+  @override
+  State<_DemeritTab> createState() => _DemeritTabState();
+}
+
+class _DemeritTabState extends State<_DemeritTab> {
+  String? _selectedSchoolSession;
+  String? _selectedSemester;
 
   @override
   Widget build(BuildContext context) {
@@ -284,52 +250,48 @@ class _DemeritTab extends StatelessWidget {
         ),
       ),
       child: CustomScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
+        physics: const BouncingScrollPhysics(
+          parent: AlwaysScrollableScrollPhysics(),
+        ),
         slivers: [
           BlocBuilder<DemeritBloc, DemeritState>(
             builder: (context, state) {
               return state.maybeWhen(
-                loading: () => const _DisciplineLoadingBody(),
-                success: (listDemerit) {
-                  final filteredDemerit = _filterDemerit(listDemerit);
+                loading: () => const _DisciplineLoadingContent(),
+                success: (demerits) {
+                  final items = demerits
+                      .map(_DisciplineItem.fromDemerit)
+                      .toList();
 
                   return _DisciplineContent(
                     defaultPoint: 100,
-                    totalPoint: _totalDemeritPoint(listDemerit),
-                    schoolSessions: _schoolSessionsFromDemerit(listDemerit),
-                    semesters: _semestersFromDemerit(listDemerit),
-                    selectedSchoolSession: selectedSchoolSession,
-                    selectedSemester: selectedSemester,
-                    onSchoolSessionChanged: onSchoolSessionChanged,
-                    onSemesterChanged: onSemesterChanged,
-                    cards: filteredDemerit
-                        .map<Widget>(
-                          (demerit) => _DisciplineCard(
-                            description: demerit.description,
-                            point: demerit.point,
-                            date: demerit.date.toDayMonthYearFormat,
-                            schoolSession: demerit.schoolSession,
-                            semester: demerit.semester,
-                            teacherName: demerit.teacherName,
-                            unit: demerit.unit,
-                            isMerit: false,
-                          ),
-                        )
-                        .toList()
-                        .makeListAnimate(),
+                    totalPoint: _totalDemeritPoint(demerits),
+                    items: items,
+                    filteredItems: _filterItems(items),
+                    selectedSchoolSession: _selectedSchoolSession,
+                    selectedSemester: _selectedSemester,
+                    onSchoolSessionChanged: (value) {
+                      setState(() => _selectedSchoolSession = value);
+                    },
+                    onSemesterChanged: (value) {
+                      setState(() => _selectedSemester = value);
+                    },
                     emptyMessage: l10n.noDisciplineData,
                   );
                 },
                 emptyData: () => _DisciplineContent(
                   defaultPoint: 100,
                   totalPoint: 100,
-                  schoolSessions: const [],
-                  semesters: const [],
-                  selectedSchoolSession: selectedSchoolSession,
-                  selectedSemester: selectedSemester,
-                  onSchoolSessionChanged: onSchoolSessionChanged,
-                  onSemesterChanged: onSemesterChanged,
-                  cards: const [],
+                  items: const [],
+                  filteredItems: const [],
+                  selectedSchoolSession: _selectedSchoolSession,
+                  selectedSemester: _selectedSemester,
+                  onSchoolSessionChanged: (value) {
+                    setState(() => _selectedSchoolSession = value);
+                  },
+                  onSemesterChanged: (value) {
+                    setState(() => _selectedSemester = value);
+                  },
                   emptyMessage: l10n.noDisciplineData,
                 ),
                 failure: (failure) => SliverFillRemaining(
@@ -341,52 +303,35 @@ class _DemeritTab extends StatelessWidget {
                     ),
                   ),
                 ),
-                orElse: () => const _DisciplineLoadingBody(),
+                orElse: () => const _DisciplineLoadingContent(),
               );
             },
           ),
+          const SliverToBoxAdapter(child: SizedBox(height: 24)),
         ],
       ),
     );
   }
 
-  List<DemeritEntity> _filterDemerit(List<DemeritEntity> listDemerit) {
-    return listDemerit.where((demerit) {
+  List<_DisciplineItem> _filterItems(List<_DisciplineItem> items) {
+    return items.where((item) {
       final matchesSchoolSession =
-          selectedSchoolSession == null ||
-          demerit.schoolSession == selectedSchoolSession;
+          _selectedSchoolSession == null ||
+          item.schoolSession == _selectedSchoolSession;
       final matchesSemester =
-          selectedSemester == null || demerit.semester == selectedSemester;
+          _selectedSemester == null || item.semester == _selectedSemester;
 
       return matchesSchoolSession && matchesSemester;
     }).toList();
   }
 
-  int _totalDemeritPoint(List<DemeritEntity> listDemerit) {
-    final usedPoint = listDemerit.fold(
+  int _totalDemeritPoint(List<DemeritEntity> demerits) {
+    final usedPoint = demerits.fold(
       0,
       (total, demerit) => total + demerit.point,
     );
 
     return 100 - usedPoint;
-  }
-
-  List<String> _schoolSessionsFromDemerit(List<DemeritEntity> listDemerit) {
-    final schoolSessions = listDemerit
-        .map((demerit) => demerit.schoolSession)
-        .toSet()
-        .toList();
-    schoolSessions.sort((a, b) => b.compareTo(a));
-    return schoolSessions;
-  }
-
-  List<String> _semestersFromDemerit(List<DemeritEntity> listDemerit) {
-    final semesters = listDemerit
-        .map((demerit) => demerit.semester)
-        .toSet()
-        .toList();
-    semesters.sort();
-    return semesters;
   }
 }
 
@@ -394,52 +339,96 @@ class _DisciplineContent extends StatelessWidget {
   const _DisciplineContent({
     required this.defaultPoint,
     required this.totalPoint,
-    required this.schoolSessions,
-    required this.semesters,
+    required this.items,
+    required this.filteredItems,
     required this.selectedSchoolSession,
     required this.selectedSemester,
     required this.onSchoolSessionChanged,
     required this.onSemesterChanged,
-    required this.cards,
     required this.emptyMessage,
   });
 
   final int defaultPoint;
   final int totalPoint;
-  final List<String> schoolSessions;
-  final List<String> semesters;
+  final List<_DisciplineItem> items;
+  final List<_DisciplineItem> filteredItems;
   final String? selectedSchoolSession;
   final String? selectedSemester;
   final ValueChanged<String?> onSchoolSessionChanged;
   final ValueChanged<String?> onSemesterChanged;
-  final List<Widget> cards;
   final String emptyMessage;
 
   @override
   Widget build(BuildContext context) {
-    final children = [
-      _PointSummary(defaultPoint: defaultPoint, totalPoint: totalPoint),
-      _DisciplineFilters(
-        schoolSessions: schoolSessions,
-        semesters: semesters,
-        selectedSchoolSession: selectedSchoolSession,
-        selectedSemester: selectedSemester,
-        onSchoolSessionChanged: onSchoolSessionChanged,
-        onSemesterChanged: onSemesterChanged,
-      ),
-      if (cards.isEmpty)
-        _DisciplineEmptyView(message: emptyMessage)
-      else
-        ...cards,
-      const SizedBox(height: 24),
-    ];
+    final groupedItems = _groupItems(filteredItems);
 
-    return SliverList.list(children: children);
+    return SliverMainAxisGroup(
+      slivers: [
+        _PointSection(defaultPoint: defaultPoint, totalPoint: totalPoint),
+        _FilterSection(
+          schoolSessions: _schoolSessions(items),
+          semesters: _semesters(items),
+          selectedSchoolSession: selectedSchoolSession,
+          selectedSemester: selectedSemester,
+          onSchoolSessionChanged: onSchoolSessionChanged,
+          onSemesterChanged: onSemesterChanged,
+        ),
+        if (groupedItems.isEmpty)
+          SliverToBoxAdapter(child: _DisciplineEmptyView(message: emptyMessage))
+        else
+          ...groupedItems.map((group) => _DisciplineGroupSection(group: group)),
+      ],
+    );
+  }
+
+  List<_DisciplineGroup> _groupItems(List<_DisciplineItem> items) {
+    final grouped = <String, List<_DisciplineItem>>{};
+
+    for (final item in items) {
+      final key = '${item.schoolSession}|${item.semester}';
+      grouped.putIfAbsent(key, () => <_DisciplineItem>[]).add(item);
+    }
+
+    final groups = grouped.entries.map((entry) {
+      final firstItem = entry.value.first;
+      final sortedItems = [...entry.value]
+        ..sort((a, b) => b.date.compareTo(a.date));
+
+      return _DisciplineGroup(
+        schoolSession: firstItem.schoolSession,
+        semester: firstItem.semester,
+        items: sortedItems,
+      );
+    }).toList();
+
+    groups.sort((a, b) {
+      final schoolSessionOrder = b.schoolSession.compareTo(a.schoolSession);
+      if (schoolSessionOrder != 0) return schoolSessionOrder;
+
+      return a.semester.compareTo(b.semester);
+    });
+
+    return groups;
+  }
+
+  List<String> _schoolSessions(List<_DisciplineItem> items) {
+    final schoolSessions = items
+        .map((item) => item.schoolSession)
+        .toSet()
+        .toList();
+    schoolSessions.sort((a, b) => b.compareTo(a));
+    return schoolSessions;
+  }
+
+  List<String> _semesters(List<_DisciplineItem> items) {
+    final semesters = items.map((item) => item.semester).toSet().toList();
+    semesters.sort();
+    return semesters;
   }
 }
 
-class _PointSummary extends StatelessWidget {
-  const _PointSummary({required this.defaultPoint, required this.totalPoint});
+class _PointSection extends StatelessWidget {
+  const _PointSection({required this.defaultPoint, required this.totalPoint});
 
   final int defaultPoint;
   final int totalPoint;
@@ -447,9 +436,16 @@ class _PointSummary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+    return AppSliverGroup(
+      title: l10n.point,
+      titleStyle: textTheme.titleMedium!.copyWith(
+        color: colorScheme.onSurface,
+        fontWeight: .bold,
+      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
         children: [
           Expanded(
@@ -459,7 +455,7 @@ class _PointSummary extends StatelessWidget {
               icon: Icons.flag_outlined,
             ),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: 12),
           Expanded(
             child: _PointCard(
               label: l10n.totalPoint,
@@ -489,42 +485,51 @@ class _PointCard extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
-    return TitledContentContainer(
+    return AppContainer(
       margin: EdgeInsets.zero,
-      title: label,
-      titleIcon: Icon(icon, color: colorScheme.onPrimaryContainer),
-      child: Card.filled(
-        color: colorScheme.surfaceContainerLowest,
-        shape: const RoundedRectangleBorder(borderRadius: customRadius),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              TweenAnimationBuilder<int>(
-                tween: IntTween(begin: 0, end: point),
-                duration: const Duration(milliseconds: 650),
-                curve: Curves.easeOutCubic,
-                builder: (context, value, child) {
-                  return Text(
-                    value.toString(),
-                    style: textTheme.headlineMedium?.copyWith(
-                      color: colorScheme.onPrimaryContainer,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  );
-                },
-              ),
-            ],
-          ),
+      elevation: 0,
+      boxShadow: <BoxShadow>[
+        BoxShadow(
+          color: colorScheme.surfaceContainerHighest,
+          offset: const Offset(5, 5),
         ),
+      ],
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: colorScheme.primary),
+          const SizedBox(height: 16),
+          Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: textTheme.labelMedium?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: 6),
+          TweenAnimationBuilder<int>(
+            tween: IntTween(begin: 0, end: point),
+            duration: const Duration(milliseconds: 650),
+            curve: Curves.easeOutCubic,
+            builder: (context, value, child) {
+              return Text(
+                value.toString(),
+                style: textTheme.headlineMedium?.copyWith(
+                  color: colorScheme.onSurface,
+                  fontWeight: FontWeight.bold,
+                ),
+              );
+            },
+          ),
+        ],
       ),
     );
   }
 }
 
-class _DisciplineFilters extends StatelessWidget {
-  const _DisciplineFilters({
+class _FilterSection extends StatelessWidget {
+  const _FilterSection({
     required this.schoolSessions,
     required this.semesters,
     required this.selectedSchoolSession,
@@ -543,33 +548,62 @@ class _DisciplineFilters extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
 
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Row(
-        children: [
-          Expanded(
-            child: _FilterDropdown(
-              label: l10n.schoolYear,
-              icon: Icons.calendar_month_outlined,
-              value: selectedSchoolSession,
-              allLabel: l10n.allSchoolYears,
-              values: schoolSessions,
-              onChanged: onSchoolSessionChanged,
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: _FilterDropdown(
-              label: l10n.semester,
-              icon: Icons.event_note_outlined,
-              value: selectedSemester,
-              allLabel: l10n.allSemesters,
-              values: semesters,
-              onChanged: onSemesterChanged,
-            ),
+    return AppSliverGroup(
+      title: '${l10n.schoolYear} & ${l10n.semester}',
+      titleStyle: textTheme.titleMedium!.copyWith(
+        color: colorScheme.onSurface,
+        fontWeight: .bold,
+      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: AppContainer(
+        margin: EdgeInsets.zero,
+        elevation: 0,
+        boxShadow: <BoxShadow>[
+          BoxShadow(
+            color: colorScheme.surfaceContainerHighest,
+            offset: const Offset(5, 5),
           ),
         ],
+        child: Row(
+          children: [
+            Expanded(
+              child: _FilterDropdown(
+                label: l10n.schoolYear,
+                icon: Icons.calendar_month_outlined,
+                value: selectedSchoolSession,
+                allLabel: l10n.allSchoolYears,
+                values: schoolSessions,
+                onChanged: onSchoolSessionChanged,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(16),
+                  topRight: Radius.circular(8),
+                  bottomLeft: Radius.circular(8),
+                  bottomRight: Radius.circular(8),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _FilterDropdown(
+                label: l10n.semester,
+                icon: Icons.event_note_outlined,
+                value: selectedSemester,
+                allLabel: l10n.allSemesters,
+                values: semesters,
+                onChanged: onSemesterChanged,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(8),
+                  topRight: Radius.circular(8),
+                  bottomLeft: Radius.circular(8),
+                  bottomRight: Radius.circular(16),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -583,6 +617,7 @@ class _FilterDropdown extends StatelessWidget {
     required this.allLabel,
     required this.values,
     required this.onChanged,
+    required this.borderRadius,
   });
 
   final String label;
@@ -591,6 +626,7 @@ class _FilterDropdown extends StatelessWidget {
   final String allLabel;
   final List<String> values;
   final ValueChanged<String?> onChanged;
+  final BorderRadius borderRadius;
 
   @override
   Widget build(BuildContext context) {
@@ -617,17 +653,17 @@ class _FilterDropdown extends StatelessWidget {
           vertical: 12,
         ),
         filled: true,
-        fillColor: colorScheme.surfaceContainerLowest,
+        fillColor: colorScheme.surfaceContainerLow,
         border: OutlineInputBorder(
-          borderRadius: customRadius,
+          borderRadius: borderRadius,
           borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: customRadius,
+          borderRadius: borderRadius,
           borderSide: BorderSide.none,
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: customRadius,
+          borderRadius: borderRadius,
           borderSide: BorderSide(color: colorScheme.primary),
         ),
       ),
@@ -660,67 +696,156 @@ class _FilterDropdown extends StatelessWidget {
   }
 }
 
-class _DisciplineCard extends StatelessWidget {
-  const _DisciplineCard({
-    required this.description,
-    required this.point,
-    required this.date,
-    required this.schoolSession,
-    required this.semester,
-    required this.teacherName,
-    required this.unit,
-    required this.isMerit,
-  });
+class _DisciplineGroupSection extends StatelessWidget {
+  const _DisciplineGroupSection({required this.group});
 
-  final String description;
-  final int point;
-  final String date;
-  final String schoolSession;
-  final String semester;
-  final String teacherName;
-  final String unit;
-  final bool isMerit;
+  final _DisciplineGroup group;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    return AppSliverGroup(
+      title: '${group.schoolSession} - ${l10n.semester} ${group.semester}',
+      action: _GroupPointTotal(group: group),
+      pinned: true,
+      backgroundColor: colorScheme.surfaceContainer,
+      titleStyle: textTheme.titleMedium!.copyWith(
+        color: colorScheme.onSurface,
+        fontWeight: .bold,
+      ),
+      headerPadding: const EdgeInsetsDirectional.fromSTEB(16, 16, 16, 8),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      sliver: SliverList.list(
+        children: group.items
+            .asMap()
+            .entries
+            .map(
+              (entry) => _DisciplineCard(
+                item: entry.value,
+                shape: _disciplineCardShape(entry.key, group.items.length - 1),
+              ),
+            )
+            .toList()
+            .makeListAnimate(),
+      ),
+    );
+  }
+
+  ShapeBorder _disciplineCardShape(int index, int lastIndex) {
+    if (lastIndex == 0) {
+      return RoundedRectangleBorder(borderRadius: BorderRadius.circular(24));
+    }
+
+    return index.makeVerticalGoogleShape(lastIndex);
+  }
+}
+
+class _GroupPointTotal extends StatelessWidget {
+  const _GroupPointTotal({required this.group});
+
+  final _DisciplineGroup group;
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    final isMerit = group.items.firstOrNull?.isMerit ?? true;
+    final totalPoint = group.items.fold(0, (total, item) => total + item.point);
+    final backgroundColor = isMerit
+        ? colorScheme.tertiaryContainer
+        : colorScheme.errorContainer;
+    final foregroundColor = isMerit
+        ? colorScheme.onTertiaryContainer
+        : colorScheme.onErrorContainer;
+    final prefix = isMerit ? '+' : '-';
 
-    return Card.filled(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      color: colorScheme.surfaceContainerLowest,
-      shape: const RoundedRectangleBorder(borderRadius: customRadius),
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Text(
-                    description,
-                    style: textTheme.titleMedium?.copyWith(
-                      color: colorScheme.onSurface,
-                      fontWeight: FontWeight.bold,
-                    ),
+    return Container(
+      constraints: const BoxConstraints(minWidth: 48),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: ShapeDecoration(
+        color: backgroundColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      ),
+      child: Text(
+        '$prefix$totalPoint',
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        textAlign: TextAlign.center,
+        style: textTheme.labelLarge?.copyWith(
+          color: foregroundColor,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+}
+
+class _DisciplineCard extends StatelessWidget {
+  const _DisciplineCard({required this.item, required this.shape});
+
+  final _DisciplineItem item;
+  final ShapeBorder shape;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    return AppContainer(
+      margin: const EdgeInsets.symmetric(vertical: 2),
+      shape: shape,
+      borderRadius: null,
+      elevation: 0,
+      boxShadow: <BoxShadow>[
+        BoxShadow(
+          color: colorScheme.surfaceContainerHighest,
+          offset: const Offset(5, 5),
+        ),
+      ],
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Text(
+                  item.description,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: textTheme.titleMedium?.copyWith(
+                    color: colorScheme.onSurface,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(width: 12),
-                _DisciplinePointBadge(point: point, isMerit: isMerit),
-              ],
-            ),
-            const SizedBox(height: 16),
-            _DisciplineInfoGrid(
-              date: date,
-              schoolSession: schoolSession,
-              semester: semester,
-              unit: unit,
-              teacherName: teacherName,
-            ),
-          ],
-        ),
+              ),
+              const SizedBox(width: 12),
+              _DisciplinePointBadge(point: item.point, isMerit: item.isMerit),
+            ],
+          ),
+          const SizedBox(height: 14),
+          _DisciplineMetaRow(
+            icon: Icons.calendar_today_outlined,
+            label: l10n.date,
+            value: item.date.toDayMonthYearFormat,
+          ),
+          const SizedBox(height: 10),
+          _DisciplineMetaRow(
+            icon: Icons.event_note_outlined,
+            label: l10n.semester,
+            value: item.semester,
+          ),
+          const SizedBox(height: 10),
+          _DisciplineMetaRow(
+            icon: Icons.person_outline,
+            label: l10n.teacher,
+            value: item.teacherName,
+          ),
+        ],
       ),
     );
   }
@@ -734,7 +859,6 @@ class _DisciplinePointBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     final backgroundColor = isMerit
@@ -749,93 +873,21 @@ class _DisciplinePointBadge extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: ShapeDecoration(
         color: backgroundColor,
-        shape: const RoundedRectangleBorder(borderRadius: customRadius),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            l10n.point,
-            style: textTheme.labelSmall?.copyWith(color: foregroundColor),
-          ),
-          Text(
-            '$pointPrefix$point',
-            style: textTheme.titleMedium?.copyWith(
-              color: foregroundColor,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ],
+      child: Text(
+        '$pointPrefix$point',
+        style: textTheme.titleSmall?.copyWith(
+          color: foregroundColor,
+          fontWeight: FontWeight.bold,
+        ),
       ),
     );
   }
 }
 
-class _DisciplineInfoGrid extends StatelessWidget {
-  const _DisciplineInfoGrid({
-    required this.date,
-    required this.schoolSession,
-    required this.semester,
-    required this.unit,
-    required this.teacherName,
-  });
-
-  final String date;
-  final String schoolSession;
-  final String semester;
-  final String unit;
-  final String teacherName;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-
-    return Column(
-      children: [
-        GridView.count(
-          crossAxisCount: 2,
-          crossAxisSpacing: 8,
-          mainAxisSpacing: 8,
-          childAspectRatio: 2.35,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          padding: EdgeInsets.zero,
-          children: [
-            _InfoTile(
-              icon: Icons.calendar_today_outlined,
-              label: l10n.date,
-              value: date,
-            ),
-            _InfoTile(
-              icon: Icons.school_outlined,
-              label: l10n.schoolYear,
-              value: schoolSession,
-            ),
-            _InfoTile(
-              icon: Icons.event_note_outlined,
-              label: l10n.semester,
-              value: semester,
-            ),
-            _InfoTile(
-              icon: Icons.apartment_outlined,
-              label: l10n.unit,
-              value: unit,
-            ),
-          ],
-        ),
-        const SizedBox(height: 8),
-        _InfoTile(
-          icon: Icons.person_outline,
-          label: l10n.teacher,
-          value: teacherName,
-        ),
-      ],
-    );
-  }
-}
-
-class _InfoTile extends StatelessWidget {
-  const _InfoTile({
+class _DisciplineMetaRow extends StatelessWidget {
+  const _DisciplineMetaRow({
     required this.icon,
     required this.label,
     required this.value,
@@ -850,95 +902,124 @@ class _InfoTile extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      decoration: ShapeDecoration(
-        color: colorScheme.surfaceContainer,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, size: 18, color: colorScheme.primary),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: textTheme.labelSmall?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                ),
-                Text(
-                  value,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: textTheme.labelMedium?.copyWith(
-                    color: colorScheme.onSurface,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
+    return Row(
+      children: [
+        Icon(icon, size: 18, color: colorScheme.onSurfaceVariant),
+        const SizedBox(width: 8),
+        Text(
+          '$label: ',
+          style: textTheme.bodyMedium?.copyWith(
+            color: colorScheme.onSurfaceVariant,
+          ),
+        ),
+        Expanded(
+          child: Text(
+            value,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: textTheme.bodyMedium?.copyWith(
+              color: colorScheme.onSurface,
+              fontWeight: FontWeight.w600,
             ),
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class _DisciplineLoadingBody extends StatelessWidget {
-  const _DisciplineLoadingBody();
-
-  @override
-  Widget build(BuildContext context) {
-    return SliverList.list(
-      children: const [
-        _PointSummaryLoading(),
-        _FilterLoading(),
-        _DisciplineLoadingCard(),
-        _DisciplineLoadingCard(),
-        _DisciplineLoadingCard(),
-        SizedBox(height: 24),
+        ),
       ],
     );
   }
 }
 
-class _PointSummaryLoading extends StatelessWidget {
-  const _PointSummaryLoading();
+class _DisciplineLoadingContent extends StatelessWidget {
+  const _DisciplineLoadingContent();
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-      child: Row(
-        children: [
-          Expanded(child: _LoadingBox(height: 132, borderRadius: customRadius)),
-          const SizedBox(width: 12),
-          Expanded(child: _LoadingBox(height: 132, borderRadius: customRadius)),
-        ],
-      ),
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return SliverMainAxisGroup(
+      slivers: [
+        AppSliverGroup(
+          title: AppLocalizations.of(context)!.point,
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 8,
+          ),
+          child: Row(
+            children: const [
+              Expanded(child: _PointLoadingCard()),
+              SizedBox(width: 12),
+              Expanded(child: _PointLoadingCard()),
+            ],
+          ),
+        ),
+        AppSliverGroup(
+          title:
+              '${AppLocalizations.of(context)!.schoolYear} & '
+              '${AppLocalizations.of(context)!.semester}',
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 8,
+          ),
+          child: AppContainer(
+            margin: EdgeInsets.zero,
+            elevation: 0,
+            boxShadow: <BoxShadow>[
+              BoxShadow(
+                color: colorScheme.surfaceContainerHighest,
+                offset: const Offset(5, 5),
+              ),
+            ],
+            child: const Row(
+              children: [
+                Expanded(child: _LoadingBox(height: 56)),
+                SizedBox(width: 12),
+                Expanded(child: _LoadingBox(height: 56)),
+              ],
+            ),
+          ),
+        ),
+        AppSliverGroup(
+          title: AppLocalizations.of(context)!.meritAndDemerit,
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 8,
+          ),
+          sliver: SliverList.list(
+            children: const [
+              _DisciplineLoadingCard(),
+              _DisciplineLoadingCard(),
+              _DisciplineLoadingCard(),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
 
-class _FilterLoading extends StatelessWidget {
-  const _FilterLoading();
+class _PointLoadingCard extends StatelessWidget {
+  const _PointLoadingCard();
 
   @override
   Widget build(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
-      child: Row(
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return AppContainer(
+      margin: EdgeInsets.zero,
+      elevation: 0,
+      boxShadow: <BoxShadow>[
+        BoxShadow(
+          color: colorScheme.surfaceContainerHighest,
+          offset: const Offset(5, 5),
+        ),
+      ],
+      child: const Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(child: _LoadingBox(height: 64, borderRadius: customRadius)),
-          SizedBox(width: 12),
-          Expanded(child: _LoadingBox(height: 64, borderRadius: customRadius)),
+          _LoadingBox(width: 22, height: 22),
+          SizedBox(height: 16),
+          _LoadingBox(width: 72, height: 12),
+          SizedBox(height: 8),
+          _LoadingBox(width: 48, height: 28),
         ],
       ),
     );
@@ -950,45 +1031,44 @@ class _DisciplineLoadingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card.filled(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      shape: const RoundedRectangleBorder(borderRadius: customRadius),
-      child: const Padding(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Expanded(child: _LoadingBox(height: 22)),
-                SizedBox(width: 12),
-                _LoadingBox(width: 56, height: 44, borderRadius: customRadius),
-              ],
-            ),
-            SizedBox(height: 16),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                _LoadingBox(width: 118, height: 52),
-                _LoadingBox(width: 118, height: 52),
-                _LoadingBox(width: 118, height: 52),
-                _LoadingBox(width: 118, height: 52),
-              ],
-            ),
-          ],
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return AppContainer(
+      margin: const EdgeInsets.symmetric(vertical: 2),
+      elevation: 0,
+      boxShadow: <BoxShadow>[
+        BoxShadow(
+          color: colorScheme.surfaceContainerHighest,
+          offset: const Offset(5, 5),
         ),
+      ],
+      child: const Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(child: _LoadingBox(height: 18)),
+              SizedBox(width: 12),
+              _LoadingBox(width: 48, height: 32),
+            ],
+          ),
+          SizedBox(height: 16),
+          _LoadingBox(width: 160, height: 12),
+          SizedBox(height: 10),
+          _LoadingBox(width: 96, height: 12),
+          SizedBox(height: 10),
+          _LoadingBox(width: 140, height: 12),
+        ],
       ),
     );
   }
 }
 
 class _LoadingBox extends StatelessWidget {
-  const _LoadingBox({this.width, required this.height, this.borderRadius});
+  const _LoadingBox({this.width, required this.height});
 
   final double? width;
   final double height;
-  final BorderRadiusGeometry? borderRadius;
 
   @override
   Widget build(BuildContext context) {
@@ -996,7 +1076,7 @@ class _LoadingBox extends StatelessWidget {
       context,
       width: width ?? double.infinity,
       height: height,
-      borderRadius: borderRadius ?? BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(12),
     );
   }
 }
@@ -1079,4 +1159,60 @@ class _DisciplineFailure extends StatelessWidget {
       ),
     );
   }
+}
+
+class _DisciplineItem {
+  const _DisciplineItem({
+    required this.description,
+    required this.point,
+    required this.date,
+    required this.schoolSession,
+    required this.semester,
+    required this.teacherName,
+    required this.isMerit,
+  });
+
+  factory _DisciplineItem.fromMerit(MeritEntity merit) {
+    return _DisciplineItem(
+      description: merit.description,
+      point: merit.point,
+      date: merit.date,
+      schoolSession: merit.schoolSession,
+      semester: merit.semester,
+      teacherName: merit.teacherName,
+      isMerit: true,
+    );
+  }
+
+  factory _DisciplineItem.fromDemerit(DemeritEntity demerit) {
+    return _DisciplineItem(
+      description: demerit.description,
+      point: demerit.point,
+      date: demerit.date,
+      schoolSession: demerit.schoolSession,
+      semester: demerit.semester,
+      teacherName: demerit.teacherName,
+      isMerit: false,
+    );
+  }
+
+  final String description;
+  final int point;
+  final DateTime date;
+  final String schoolSession;
+  final String semester;
+  final String teacherName;
+  final bool isMerit;
+}
+
+class _DisciplineGroup {
+  const _DisciplineGroup({
+    required this.schoolSession,
+    required this.semester,
+    required this.items,
+  });
+
+  final String schoolSession;
+  final String semester;
+  final List<_DisciplineItem> items;
 }

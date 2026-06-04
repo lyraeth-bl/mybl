@@ -9,8 +9,9 @@ import 'package:table_calendar/table_calendar.dart';
 
 import '../../../../core/di/get_it_constant.dart';
 import '../../../../core/internal/src/extensions/extensions.dart';
+import '../../../../core/widgets/app_container.dart';
+import '../../../../core/widgets/app_sliver_group.dart';
 import '../../../../core/widgets/refresh_wrapper.dart';
-import '../../../../core/widgets/titled_content_container.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../user/presentation/bloc/user_bloc.dart';
 import '../../domain/entities/academic_calendar_entity.dart';
@@ -37,14 +38,6 @@ class _AcademicCalendarView extends StatefulWidget {
 
 class _AcademicCalendarViewState extends State<_AcademicCalendarView> {
   late DateTime _focusedMonth;
-
-  List<Widget> get _animatedChildren => [
-    _AcademicCalendarContainer(
-      focusedMonth: _focusedMonth,
-      onPrevious: () => _moveMonth(-1),
-      onNext: () => _moveMonth(1),
-    ),
-  ].makeListAnimate();
 
   @override
   void initState() {
@@ -145,47 +138,90 @@ class _AcademicCalendarViewState extends State<_AcademicCalendarView> {
         if (unit != null) _fetchAcademicCalendar(unit: unit);
       },
       child: Scaffold(
-        backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
-        body: RefreshWrapper(
+        backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+        appBar: const _AcademicCalendarAppBar(),
+        body: _AcademicCalendarBody(
+          focusedMonth: _focusedMonth,
+          onPrevious: () => _moveMonth(-1),
+          onNext: () => _moveMonth(1),
           onRefresh: _refresh,
-          child: CustomScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            slivers: [
-              const _AcademicCalendarHeader(),
-              SliverToBoxAdapter(child: const SizedBox(height: 24)),
-              SliverList.list(children: _animatedChildren),
-            ],
-          ),
         ),
       ),
     );
   }
 }
 
-class _AcademicCalendarHeader extends StatelessWidget {
-  const _AcademicCalendarHeader();
+class _AcademicCalendarAppBar extends StatelessWidget
+    implements PreferredSizeWidget {
+  const _AcademicCalendarAppBar();
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context)!;
 
-    return SliverAppBar.medium(
+    return AppBar(
+      backgroundColor: colorScheme.primaryContainer,
+      surfaceTintColor: colorScheme.primaryContainer,
+      toolbarHeight: 72,
       title: Text(
         l10n.academicCalendar,
-        style: const TextStyle(fontWeight: FontWeight.bold),
+        style: const TextStyle(fontWeight: .bold, letterSpacing: 2),
       ),
-      backgroundColor: colorScheme.primaryContainer,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
       centerTitle: true,
-      floating: false,
-      pinned: true,
+    );
+  }
+
+  @override
+  Size get preferredSize => Size.fromHeight(80);
+}
+
+class _AcademicCalendarBody extends StatelessWidget {
+  const _AcademicCalendarBody({
+    required this.focusedMonth,
+    required this.onPrevious,
+    required this.onNext,
+    required this.onRefresh,
+  });
+
+  final DateTime focusedMonth;
+  final VoidCallback onPrevious;
+  final VoidCallback onNext;
+  final Future<void> Function() onRefresh;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Container(
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainer,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+      ),
+      child: RefreshWrapper(
+        onRefresh: onRefresh,
+        child: CustomScrollView(
+          physics: const BouncingScrollPhysics(
+            parent: AlwaysScrollableScrollPhysics(),
+          ),
+          slivers: [
+            _AcademicCalendarSection(
+              focusedMonth: focusedMonth,
+              onPrevious: onPrevious,
+              onNext: onNext,
+            ),
+            const _AcademicCalendarEventListSection(),
+            const SliverToBoxAdapter(child: SizedBox(height: 24)),
+          ],
+        ),
+      ),
     );
   }
 }
 
-class _AcademicCalendarContainer extends StatelessWidget {
-  const _AcademicCalendarContainer({
+class _AcademicCalendarSection extends StatelessWidget {
+  const _AcademicCalendarSection({
     required this.focusedMonth,
     required this.onPrevious,
     required this.onNext,
@@ -224,69 +260,75 @@ class _AcademicCalendarContainer extends StatelessWidget {
           loading: () => true,
           orElse: () => false,
         );
-        final failure = state.maybeWhen(
-          failure: (failure) => failure,
-          orElse: () => null,
-        );
         final data = state.maybeWhen(
           success: (academicCalendar, _, _) => academicCalendar,
           orElse: () => const <AcademicCalendarEntity>[],
         );
 
-        return RepaintBoundary(
-          child: TitledContentContainer(
-            title: l10n.academicCalendar,
-            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            contentPadding: const EdgeInsets.all(16),
-            child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 200),
-              child: Column(
-                key: ValueKey((
-                  focusedMonth.year,
-                  focusedMonth.month,
-                  isLoading,
-                  data.length,
-                )),
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      IconButton.filledTonal(
-                        onPressed: isLoading ? null : onPrevious,
-                        icon: const Icon(Icons.chevron_left),
-                        tooltip: l10n.previousMonth,
-                      ),
-                      Flexible(
-                        child: Text(
-                          _monthLabel(focusedMonth, locale),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          textAlign: TextAlign.center,
-                          style: textTheme.titleMedium?.copyWith(
-                            color: colorScheme.onSurface,
-                            fontWeight: FontWeight.w600,
+        return AppSliverGroup(
+          title: l10n.academicCalendar,
+          titleStyle: textTheme.titleMedium!.copyWith(
+            color: colorScheme.onSurface,
+            fontWeight: .bold,
+          ),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 8,
+          ),
+          child: RepaintBoundary(
+            child: AppContainer(
+              margin: EdgeInsets.zero,
+              elevation: 0,
+              boxShadow: <BoxShadow>[
+                BoxShadow(
+                  color: colorScheme.surfaceContainerHighest,
+                  offset: const Offset(5, 5),
+                ),
+              ],
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 200),
+                child: Column(
+                  key: ValueKey((
+                    focusedMonth.year,
+                    focusedMonth.month,
+                    isLoading,
+                    data.length,
+                  )),
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        IconButton.filledTonal(
+                          onPressed: isLoading ? null : onPrevious,
+                          icon: const Icon(Icons.chevron_left),
+                          tooltip: l10n.previousMonth,
+                        ),
+                        Flexible(
+                          child: Text(
+                            _monthLabel(focusedMonth, locale),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.center,
+                            style: textTheme.titleMedium?.copyWith(
+                              color: colorScheme.onSurface,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
-                      ),
-                      IconButton.filledTonal(
-                        onPressed: isLoading ? null : onNext,
-                        icon: const Icon(Icons.chevron_right),
-                        tooltip: l10n.nextMonth,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  _AcademicCalendarContent(
-                    focusedMonth: focusedMonth,
-                    events: data,
-                    isLoading: isLoading,
-                    emptyMessage:
-                        failure?.localizedMessage(l10n) ?? l10n.noData,
-                    emptyIcon: failure == null
-                        ? Icons.event_busy_outlined
-                        : Icons.error_outline,
-                  ),
-                ],
+                        IconButton.filledTonal(
+                          onPressed: isLoading ? null : onNext,
+                          icon: const Icon(Icons.chevron_right),
+                          tooltip: l10n.nextMonth,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    _AcademicCalendarContent(
+                      focusedMonth: focusedMonth,
+                      events: data,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -296,34 +338,137 @@ class _AcademicCalendarContainer extends StatelessWidget {
   }
 }
 
+class _AcademicCalendarEventListSection extends StatelessWidget {
+  const _AcademicCalendarEventListSection();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    return AppSliverGroup(
+      title: l10n.academicCalendarLog,
+      titleStyle: textTheme.titleMedium!.copyWith(
+        color: colorScheme.onSurface,
+        fontWeight: .bold,
+      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      sliver: BlocBuilder<AcademicCalendarBloc, AcademicCalendarState>(
+        buildWhen: (previous, current) {
+          final previousData = previous.maybeWhen(
+            success: (academicCalendar, _, _) => academicCalendar,
+            orElse: () => const <AcademicCalendarEntity>[],
+          );
+          final currentData = current.maybeWhen(
+            success: (academicCalendar, _, _) => academicCalendar,
+            orElse: () => const <AcademicCalendarEntity>[],
+          );
+
+          return previousData != currentData ||
+              previous.runtimeType != current.runtimeType;
+        },
+        builder: (context, state) {
+          final isLoading = state.maybeWhen(
+            loading: () => true,
+            orElse: () => false,
+          );
+          final failure = state.maybeWhen(
+            failure: (failure) => failure,
+            orElse: () => null,
+          );
+          final events = state.maybeWhen(
+            success: (academicCalendar, _, _) =>
+                _sortedEvents(academicCalendar),
+            orElse: () => const <AcademicCalendarEntity>[],
+          );
+
+          if (isLoading) {
+            return SliverList.list(
+              children: const [
+                _AcademicCalendarEventLoadingCard(),
+                _AcademicCalendarEventLoadingCard(),
+                _AcademicCalendarEventLoadingCard(),
+              ],
+            );
+          }
+
+          if (failure != null) {
+            return SliverToBoxAdapter(
+              child: _EventListMessage(
+                icon: Icons.error_outline,
+                message: failure.localizedMessage(l10n),
+              ),
+            );
+          }
+
+          if (events.isEmpty) {
+            return SliverToBoxAdapter(
+              child: _EventListMessage(
+                icon: Icons.event_busy_outlined,
+                message: l10n.noData,
+              ),
+            );
+          }
+
+          return SliverList.list(
+            children: events
+                .asMap()
+                .entries
+                .map(
+                  (entry) => _AcademicCalendarEventCard(
+                    event: entry.value,
+                    shape: _eventCardShape(entry.key, events.length - 1),
+                  ),
+                )
+                .toList()
+                .makeListAnimate(),
+          );
+        },
+      ),
+    );
+  }
+
+  ShapeBorder _eventCardShape(int index, int lastIndex) {
+    if (lastIndex == 0) {
+      return RoundedRectangleBorder(borderRadius: BorderRadius.circular(24));
+    }
+
+    return index.makeVerticalGoogleShape(lastIndex);
+  }
+
+  static List<AcademicCalendarEntity> _sortedEvents(
+    List<AcademicCalendarEntity> events,
+  ) {
+    final sortedEvents = [...events];
+
+    sortedEvents.sort((a, b) {
+      final aDate = DateTime.tryParse(a.tanggalMulai);
+      final bDate = DateTime.tryParse(b.tanggalMulai);
+
+      if (aDate != null && bDate != null) return aDate.compareTo(bDate);
+
+      return a.tanggalMulai.compareTo(b.tanggalMulai);
+    });
+
+    return sortedEvents;
+  }
+}
+
 class _AcademicCalendarContent extends StatelessWidget {
   const _AcademicCalendarContent({
     required this.focusedMonth,
     required this.events,
-    required this.isLoading,
-    required this.emptyMessage,
-    required this.emptyIcon,
   });
 
   final DateTime focusedMonth;
   final List<AcademicCalendarEntity> events;
-  final bool isLoading;
-  final String emptyMessage;
-  final IconData emptyIcon;
 
   @override
   Widget build(BuildContext context) {
     final eventMap = _buildEventMap(events);
 
-    return Column(
-      children: [
-        Calendar(focusedDay: focusedMonth, eventMap: eventMap),
-        if (!isLoading && events.isEmpty) ...[
-          const SizedBox(height: 16),
-          _EmptyCalendarMessage(icon: emptyIcon, message: emptyMessage),
-        ],
-      ],
-    );
+    return Calendar(focusedDay: focusedMonth, eventMap: eventMap);
   }
 
   Map<DateTime, List<AcademicCalendarEntity>> _buildEventMap(
@@ -470,36 +615,6 @@ class _AcademicCalendarDayCell extends StatelessWidget {
   }
 }
 
-class _EmptyCalendarMessage extends StatelessWidget {
-  const _EmptyCalendarMessage({required this.icon, required this.message});
-
-  final IconData icon;
-  final String message;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: Column(
-        children: [
-          Icon(icon, color: colorScheme.onSurfaceVariant, size: 32),
-          const SizedBox(height: 8),
-          Text(
-            message,
-            textAlign: TextAlign.center,
-            style: textTheme.bodyMedium?.copyWith(
-              color: colorScheme.onSurfaceVariant,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 class _AcademicCalendarDetailSheet extends StatelessWidget {
   const _AcademicCalendarDetailSheet({required this.day, required this.events});
 
@@ -586,9 +701,10 @@ class _AcademicCalendarDetailSheet extends StatelessWidget {
 }
 
 class _AcademicCalendarEventCard extends StatelessWidget {
-  const _AcademicCalendarEventCard({required this.event});
+  const _AcademicCalendarEventCard({required this.event, this.shape});
 
   final AcademicCalendarEntity event;
+  final ShapeBorder? shape;
 
   @override
   Widget build(BuildContext context) {
@@ -597,45 +713,53 @@ class _AcademicCalendarEventCard extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final locale = Localizations.localeOf(context).toString();
 
-    return Card.filled(
-      color: colorScheme.surfaceContainer,
-      margin: const EdgeInsets.only(bottom: 8),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              event.judul,
-              style: textTheme.titleSmall?.copyWith(
-                color: colorScheme.onSurface,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            const SizedBox(height: 10),
-            _EventInfoRow(
-              icon: Icons.calendar_today_outlined,
-              label: l10n.date,
-              value: _formatEventRange(event, locale),
-            ),
-            const SizedBox(height: 8),
-            _EventInfoRow(
-              icon: Icons.school_outlined,
-              label: l10n.unit,
-              value: event.unit,
-            ),
-            if (event.keterangan.trim().isNotEmpty) ...[
-              const SizedBox(height: 12),
-              Text(
-                event.keterangan,
-                style: textTheme.bodyMedium?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                ),
+    return AppContainer(
+      margin: const EdgeInsets.symmetric(vertical: 2),
+      shape: shape,
+      borderRadius: shape == null ? BorderRadius.circular(8) : null,
+      backgroundColor: colorScheme.surfaceContainerLowest,
+      elevation: 0,
+      boxShadow: shape == null
+          ? null
+          : <BoxShadow>[
+              BoxShadow(
+                color: colorScheme.surfaceContainerHighest,
+                offset: const Offset(5, 5),
               ),
             ],
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            event.judul,
+            style: textTheme.titleSmall?.copyWith(
+              color: colorScheme.onSurface,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 10),
+          _EventInfoRow(
+            icon: Icons.calendar_today_outlined,
+            label: l10n.date,
+            value: _formatEventRange(event, locale),
+          ),
+          const SizedBox(height: 8),
+          _EventInfoRow(
+            icon: Icons.school_outlined,
+            label: l10n.unit,
+            value: event.unit,
+          ),
+          if (event.keterangan.trim().isNotEmpty) ...[
+            const SizedBox(height: 12),
+            Text(
+              event.keterangan,
+              style: textTheme.bodyMedium?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+              ),
+            ),
           ],
-        ),
+        ],
       ),
     );
   }
@@ -651,6 +775,84 @@ class _AcademicCalendarEventCard extends StatelessWidget {
     }
 
     return '${formatter.format(startDate)} - ${formatter.format(endDate)}';
+  }
+}
+
+class _AcademicCalendarEventLoadingCard extends StatelessWidget {
+  const _AcademicCalendarEventLoadingCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return AppContainer(
+      margin: const EdgeInsets.symmetric(vertical: 2),
+      elevation: 0,
+      boxShadow: <BoxShadow>[
+        BoxShadow(
+          color: colorScheme.surfaceContainerHighest,
+          offset: const Offset(5, 5),
+        ),
+      ],
+      padding: const EdgeInsets.all(16),
+      child: const Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _LoadingBox(width: 180, height: 14),
+          SizedBox(height: 12),
+          _LoadingBox(width: 140, height: 12),
+          SizedBox(height: 10),
+          _LoadingBox(width: 96, height: 12),
+        ],
+      ),
+    );
+  }
+}
+
+class _LoadingBox extends StatelessWidget {
+  const _LoadingBox({this.width, required this.height});
+
+  final double? width;
+  final double height;
+
+  @override
+  Widget build(BuildContext context) {
+    return const SizedBox().toShimmer(
+      context,
+      width: width ?? double.infinity,
+      height: height,
+      borderRadius: BorderRadius.circular(12),
+    );
+  }
+}
+
+class _EventListMessage extends StatelessWidget {
+  const _EventListMessage({required this.icon, required this.message});
+
+  final IconData icon;
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
+      child: Column(
+        children: [
+          Icon(icon, size: 48, color: colorScheme.onSurfaceVariant),
+          const SizedBox(height: 12),
+          Text(
+            message,
+            textAlign: TextAlign.center,
+            style: textTheme.bodyLarge?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 

@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Mahsa Nurfarhan Hidayat / Yayasan Pakarti Luhur. All rights reserved.
+// Use of this source code is governed by a MIT License
+// that can be found in the LICENSE file.
+
 import 'package:flutter/material.dart';
 
 /// A dashboard card with optional header content and Material interaction.
@@ -24,6 +28,7 @@ class AppContainer extends StatelessWidget {
     this.headerColor,
     this.foregroundColor,
     this.titleTextStyle,
+    this.boxShadow,
     this.shadowColor,
     this.surfaceTintColor,
     this.elevation = 1,
@@ -88,6 +93,12 @@ class AppContainer extends StatelessWidget {
   ///
   /// Defaults to [TextTheme.titleSmall].
   final TextStyle? titleTextStyle;
+
+  /// The directional shadow painted behind the card.
+  ///
+  /// Use this when the card needs a sharper [Container]-style shadow. The
+  /// [elevation] shadow remains available for Material-style depth.
+  final List<BoxShadow>? boxShadow;
 
   /// The color used to paint the card shadow.
   final Color? shadowColor;
@@ -195,6 +206,13 @@ class AppContainer extends StatelessWidget {
 
     if (aspectRatio != null) {
       result = AspectRatio(aspectRatio: aspectRatio!, child: result);
+    }
+
+    if (boxShadow != null) {
+      result = DecoratedBox(
+        decoration: ShapeDecoration(shape: effectiveShape, shadows: boxShadow),
+        child: result,
+      );
     }
 
     if (margin != null) {

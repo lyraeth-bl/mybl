@@ -306,7 +306,7 @@ class _MenuNavigationBarState extends State<_MenuNavigationBar> {
         : widget.navigationShell.currentIndex;
 
     return NavigationBar(
-      backgroundColor: colorScheme.surface,
+      backgroundColor: colorScheme.surfaceContainerLow,
       height: 85,
       elevation: 0,
       indicatorColor: colorScheme.secondaryContainer,

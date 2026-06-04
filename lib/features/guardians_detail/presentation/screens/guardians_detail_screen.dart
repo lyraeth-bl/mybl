@@ -5,8 +5,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../core/constants/constant.dart';
-import '../../../../core/widgets/titled_content_container.dart';
+import '../../../../core/internal/src/extensions/extensions.dart';
+import '../../../../core/widgets/app_container.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../user/domain/entities/student_entity/student_entity.dart';
 import '../../../user/presentation/bloc/user_bloc.dart';
@@ -26,45 +26,97 @@ class _GuardiansDetailView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-
     return Scaffold(
-      backgroundColor: colorScheme.surfaceContainer,
-      body: BlocBuilder<UserBloc, UserState>(
+      backgroundColor: colorScheme.primaryContainer,
+      appBar: const _GuardianDetailAppBar(),
+      body: const _GuardianDetailBody(),
+    );
+  }
+}
+
+class _GuardianDetailAppBar extends StatelessWidget
+    implements PreferredSizeWidget {
+  const _GuardianDetailAppBar();
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
+
+    return AppBar(
+      backgroundColor: colorScheme.primaryContainer,
+      surfaceTintColor: colorScheme.primaryContainer,
+      toolbarHeight: 72,
+      title: Text(
+        l10n.guardianDetails,
+        style: const TextStyle(fontWeight: .bold, letterSpacing: 2),
+      ),
+      centerTitle: true,
+    );
+  }
+
+  @override
+  Size get preferredSize => Size.fromHeight(80);
+}
+
+class _GuardianDetailBody extends StatelessWidget {
+  const _GuardianDetailBody();
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Container(
+      clipBehavior: .antiAlias,
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainer,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+      ),
+      child: BlocBuilder<UserBloc, UserState>(
         builder: (context, state) {
+          final isLoading = state.maybeWhen(
+            loading: () => true,
+            orElse: () => false,
+          );
           final student = state.maybeWhen(
             success: (student) => student,
             orElse: () => null,
           );
 
-          if (student == null) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
           final l10n = AppLocalizations.of(context)!;
+
+          if (isLoading || student == null) {
+            return CustomScrollView(
+              physics: const BouncingScrollPhysics(),
+              slivers: [
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(16, 24, 16, 32),
+                  sliver: SliverList.list(
+                    children: const [
+                      _GuardianLoadingCard(),
+                      SizedBox(height: 16),
+                      _GuardianLoadingCard(),
+                      SizedBox(height: 16),
+                      _GuardianLoadingCard(),
+                      SizedBox(height: 16),
+                      _GuardianLoadingCard(rowCount: 4),
+                    ],
+                  ),
+                ),
+              ],
+            );
+          }
 
           return CustomScrollView(
             physics: const BouncingScrollPhysics(),
             slivers: [
-              SliverAppBar.medium(
-                title: Text(
-                  l10n.guardianDetails,
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                pinned: true,
-                backgroundColor: colorScheme.primaryContainer,
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.vertical(
-                    bottom: Radius.circular(32),
-                  ),
-                ),
-                elevation: 0,
-              ),
               SliverPadding(
                 padding: const EdgeInsets.fromLTRB(16, 24, 16, 32),
                 sliver: SliverList.list(
                   children: [
                     _GuardianCard(
                       title: l10n.father,
+                      icon: Icons.man_rounded,
                       nameLabel: l10n.fatherName,
                       name: student.namaAyah,
                       occupation: student.pekerjaanAyah,
@@ -73,6 +125,7 @@ class _GuardiansDetailView extends StatelessWidget {
                     const SizedBox(height: 24),
                     _GuardianCard(
                       title: l10n.mother,
+                      icon: Icons.woman_rounded,
                       nameLabel: l10n.motherName,
                       name: student.namaIbu,
                       occupation: student.pekerjaanIbu,
@@ -81,6 +134,7 @@ class _GuardiansDetailView extends StatelessWidget {
                     const SizedBox(height: 24),
                     _GuardianCard(
                       title: l10n.guardian,
+                      icon: Icons.family_restroom_rounded,
                       nameLabel: l10n.guardianName,
                       name: student.namaWali,
                       occupation: student.pekerjaanWali,
@@ -102,6 +156,7 @@ class _GuardiansDetailView extends StatelessWidget {
 class _GuardianCard extends StatelessWidget {
   const _GuardianCard({
     required this.title,
+    required this.icon,
     required this.nameLabel,
     required this.name,
     required this.occupation,
@@ -109,6 +164,7 @@ class _GuardianCard extends StatelessWidget {
   });
 
   final String title;
+  final IconData icon;
   final String nameLabel;
   final String? name;
   final String? occupation;
@@ -118,11 +174,18 @@ class _GuardianCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    return TitledContentContainer(
-      title: title,
-      titleIcon: const Icon(Icons.family_restroom_rounded),
+    return AppContainer(
+      title: _SectionTitle(icon: icon, title: title),
       margin: EdgeInsets.zero,
-      contentPadding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(24),
+      borderRadius: BorderRadius.circular(16),
+      elevation: 0,
+      boxShadow: <BoxShadow>[
+        BoxShadow(
+          color: Theme.of(context).colorScheme.surfaceContainerHighest,
+          offset: const Offset(5, 5),
+        ),
+      ],
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -144,45 +207,61 @@ class _ContactDetailCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context)!;
 
-    return TitledContentContainer(
-      title: l10n.contactAndAddress,
-      margin: EdgeInsets.zero,
-      child: Card.filled(
-        color: colorScheme.surfaceContainerLowest,
-        shape: RoundedRectangleBorder(borderRadius: customRadius),
-        elevation: 0,
-        margin: EdgeInsets.zero,
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _DetailRow(
-                label: l10n.parentPhoneNumber,
-                value: student.noTeleponOrangTua,
-              ),
-              const SizedBox(height: 12),
-              _DetailRow(
-                label: l10n.guardianPhoneNumber,
-                value: student.noTeleponWali,
-              ),
-              const SizedBox(height: 12),
-              _DetailRow(
-                label: l10n.parentAddress,
-                value: student.alamatOrangTua,
-              ),
-              const SizedBox(height: 12),
-              _DetailRow(
-                label: l10n.guardianAddress,
-                value: student.alamatWali,
-              ),
-            ],
-          ),
-        ),
+    return AppContainer(
+      title: _SectionTitle(
+        icon: Icons.contact_phone_rounded,
+        title: l10n.contactAndAddress,
       ),
+      margin: EdgeInsets.zero,
+      padding: const EdgeInsets.all(24),
+      elevation: 0,
+      borderRadius: BorderRadius.circular(16),
+      boxShadow: <BoxShadow>[
+        BoxShadow(
+          color: Theme.of(context).colorScheme.surfaceContainerHighest,
+          offset: const Offset(5, 5),
+        ),
+      ],
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _DetailRow(
+            label: l10n.parentPhoneNumber,
+            value: student.noTeleponOrangTua,
+          ),
+          const SizedBox(height: 12),
+          _DetailRow(
+            label: l10n.guardianPhoneNumber,
+            value: student.noTeleponWali,
+          ),
+          const SizedBox(height: 12),
+          _DetailRow(label: l10n.parentAddress, value: student.alamatOrangTua),
+          const SizedBox(height: 12),
+          _DetailRow(label: l10n.guardianAddress, value: student.alamatWali),
+        ],
+      ),
+    );
+  }
+}
+
+class _SectionTitle extends StatelessWidget {
+  const _SectionTitle({required this.icon, required this.title});
+
+  final IconData icon;
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Icon(icon, size: 22),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Text(title, maxLines: 1, overflow: TextOverflow.ellipsis),
+        ),
+      ],
     );
   }
 }
@@ -217,6 +296,57 @@ class _DetailRow extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _GuardianLoadingCard extends StatelessWidget {
+  const _GuardianLoadingCard({this.rowCount = 3});
+
+  final int rowCount;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return AppContainer(
+      title: Row(
+        children: [
+          const Text('').toShimmer(
+            context,
+            width: 22,
+            height: 22,
+            borderRadius: BorderRadius.circular(999),
+          ),
+          const SizedBox(width: 12),
+          const Text('').toShimmer(context, width: 96, height: 14),
+        ],
+      ),
+      margin: EdgeInsets.zero,
+      padding: const EdgeInsets.all(24),
+      elevation: 0,
+      boxShadow: <BoxShadow>[
+        BoxShadow(
+          color: colorScheme.surfaceContainerHighest,
+          offset: const Offset(5, 5),
+        ),
+      ],
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: List.generate(rowCount, (index) {
+          return Padding(
+            padding: EdgeInsets.only(top: index == 0 ? 0 : 12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('').toShimmer(context, width: 88, height: 11),
+                const SizedBox(height: 6),
+                const Text('').toShimmer(context, width: 160, height: 14),
+              ],
+            ),
+          );
+        }),
+      ),
     );
   }
 }

@@ -8,8 +8,8 @@ import 'package:flutter/material.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/attendance_summary/attendance_summary.dart';
 
-class Chart extends StatelessWidget {
-  const Chart({super.key, required this.summary});
+class AttendanceChart extends StatelessWidget {
+  const AttendanceChart({super.key, required this.summary});
 
   final AttendanceSummary summary;
 

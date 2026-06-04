@@ -11,8 +11,8 @@ import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/attendance_entity/attendance_entity.dart';
 import '../../domain/entities/attendance_status/attendance_status.dart';
 
-class Calendar extends StatelessWidget {
-  const Calendar({
+class AttendanceCalendar extends StatelessWidget {
+  const AttendanceCalendar({
     super.key,
     required this.focusedDay,
     this.attendanceData = const {},
