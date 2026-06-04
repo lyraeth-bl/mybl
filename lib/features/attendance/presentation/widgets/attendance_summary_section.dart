@@ -105,6 +105,7 @@ class AttendanceSummarySection extends StatelessWidget {
                   duration: const Duration(milliseconds: 400),
                   curve: Curves.easeOut,
                   builder: (_, value, _) =>
+                      // ignore: deprecated_member_use
                       LinearProgressIndicator(value: value, year2023: false),
                 ),
                 const SizedBox(height: 24),
