@@ -44,8 +44,51 @@ class _ProfileScreenView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
-      body: BlocBuilder<UserBloc, UserState>(
+      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+      appBar: const _ProfileAppBar(),
+      body: const _ProfileBody(),
+    );
+  }
+}
+
+class _ProfileAppBar extends StatelessWidget implements PreferredSizeWidget {
+  const _ProfileAppBar();
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
+
+    return AppBar(
+      backgroundColor: colorScheme.primaryContainer,
+      surfaceTintColor: colorScheme.primaryContainer,
+      toolbarHeight: 72,
+      title: Text(
+        l10n.profile,
+        style: const TextStyle(fontWeight: .bold, letterSpacing: 2),
+      ),
+      centerTitle: true,
+    );
+  }
+
+  @override
+  Size get preferredSize => Size.fromHeight(80);
+}
+
+class _ProfileBody extends StatelessWidget {
+  const _ProfileBody();
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Container(
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainer,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+      ),
+      child: BlocBuilder<UserBloc, UserState>(
         builder: (context, state) {
           final student = state.maybeWhen(
             success: (student) => student,
@@ -57,64 +100,15 @@ class _ProfileScreenView extends StatelessWidget {
           if (student == null) return const SizedBox.shrink();
 
           return CustomScrollView(
-            physics: const BouncingScrollPhysics(),
+            physics: const BouncingScrollPhysics(
+              parent: AlwaysScrollableScrollPhysics(),
+            ),
             slivers: [
-              _ProfileAppBar(student: student),
               _ProfileInfo(student: student),
               const _ProfileMenu(),
             ],
           );
         },
-      ),
-    );
-  }
-}
-
-/// AppBar yang "nge-shoutout" identitas user.
-///
-/// Pake [SliverAppBar.medium] biar tampilannya modern dan tetep keliatan
-/// nama user-nya meskipun di-scroll.
-class _ProfileAppBar extends StatelessWidget {
-  const _ProfileAppBar({required this.student});
-
-  final StudentEntity student;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-    final l10n = AppLocalizations.of(context)!;
-
-    return SliverAppBar.medium(
-      backgroundColor: colorScheme.primaryContainer,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(bottom: Radius.circular(32)),
-      ),
-      elevation: 0,
-      title: Row(
-        children: [
-          const SizedBox(width: 8),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                student.nama ?? l10n.emptyName,
-                style: textTheme.titleMedium!.copyWith(
-                  color: colorScheme.onSurface,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                "${student.nis} / ${student.nisn}",
-                style: textTheme.bodySmall!.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                ),
-              ),
-            ],
-          ),
-        ],
       ),
     );
   }
@@ -131,16 +125,39 @@ class _ProfileInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final l10n = AppLocalizations.of(context)!;
 
     return SliverToBoxAdapter(
       child: Center(
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 48),
-          child: ProfilePicture(
-            backgroundColor: colorScheme.surfaceContainerLow,
-            foregroundColor: colorScheme.onSurfaceVariant,
-            profileImageUrl: student.profileImageUrl ?? "",
-            radius: 48,
+          padding: const EdgeInsets.fromLTRB(16, 40, 16, 32),
+          child: Column(
+            children: [
+              ProfilePicture(
+                backgroundColor: colorScheme.surfaceContainerLow,
+                foregroundColor: colorScheme.onSurfaceVariant,
+                profileImageUrl: student.profileImageUrl ?? "",
+                radius: 48,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                student.nama ?? l10n.emptyName,
+                textAlign: TextAlign.center,
+                style: textTheme.titleMedium?.copyWith(
+                  color: colorScheme.onSurface,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                "${student.nis} / ${student.nisn ?? '-'}",
+                textAlign: TextAlign.center,
+                style: textTheme.bodySmall?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
           ),
         ),
       ),

@@ -147,59 +147,99 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
-      backgroundColor: colorScheme.surfaceContainer,
-      body: BlocBuilder<UserBloc, UserState>(
-        builder: (context, state) {
-          final student = state.maybeWhen(
-            success: (student) => student,
-            orElse: () => null,
-          );
+      backgroundColor: colorScheme.primaryContainer,
+      appBar: const _ProfileDetailAppBar(),
+      body: Container(
+        clipBehavior: Clip.antiAlias,
+        decoration: BoxDecoration(
+          color: colorScheme.surfaceContainer,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+        ),
+        child: BlocBuilder<UserBloc, UserState>(
+          builder: (context, state) {
+            final student = state.maybeWhen(
+              success: (student) => student,
+              orElse: () => null,
+            );
 
-          if (student == null) {
-            return const Center(child: CircularProgressIndicator());
-          }
+            if (student == null) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-          final l10n = AppLocalizations.of(context)!;
+            final l10n = AppLocalizations.of(context)!;
 
-          // Kita build widget animasinya setelah frame pertama beres digambar.
-          WidgetsBinding.instance.addPostFrameCallback(
-            (_) => _buildAnimatedChildren(student, l10n),
-          );
+            // Kita build widget animasinya setelah frame pertama beres digambar.
+            WidgetsBinding.instance.addPostFrameCallback(
+              (_) => _buildAnimatedChildren(student, l10n),
+            );
 
-          return CustomScrollView(
-            slivers: [
-              SliverAppBar(
-                title: Text(l10n.personalInfo),
-                pinned: true,
-                backgroundColor: colorScheme.primaryContainer,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(32),
-                ),
-                elevation: 0,
-              ),
-              const SliverToBoxAdapter(child: SizedBox(height: 24)),
-              SliverList.list(children: _animatedChildren ?? []),
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 32,
-                    horizontal: 16,
-                  ),
-                  child: Text(
-                    l10n.detailProfileNotes,
-                    style: textTheme.labelMedium!.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          );
-        },
+            return _ProfileDetailBody(
+              animatedChildren: _animatedChildren ?? const [],
+            );
+          },
+        ),
       ),
+    );
+  }
+}
+
+class _ProfileDetailAppBar extends StatelessWidget
+    implements PreferredSizeWidget {
+  const _ProfileDetailAppBar();
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
+
+    return AppBar(
+      backgroundColor: colorScheme.primaryContainer,
+      surfaceTintColor: colorScheme.primaryContainer,
+      toolbarHeight: 72,
+      title: Text(
+        l10n.personalInfo,
+        style: const TextStyle(fontWeight: .bold, letterSpacing: 2),
+      ),
+      centerTitle: true,
+    );
+  }
+
+  @override
+  Size get preferredSize => Size.fromHeight(80);
+}
+
+class _ProfileDetailBody extends StatelessWidget {
+  const _ProfileDetailBody({required this.animatedChildren});
+
+  final List<Widget> animatedChildren;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final l10n = AppLocalizations.of(context)!;
+
+    return CustomScrollView(
+      physics: const BouncingScrollPhysics(
+        parent: AlwaysScrollableScrollPhysics(),
+      ),
+      slivers: [
+        const SliverToBoxAdapter(child: SizedBox(height: 24)),
+        SliverList.list(children: animatedChildren),
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 16),
+            child: Text(
+              l10n.detailProfileNotes,
+              style: textTheme.labelMedium!.copyWith(
+                color: colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
