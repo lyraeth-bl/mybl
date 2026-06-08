@@ -99,6 +99,19 @@
   "merit": "Merit",
   "demerit": "Demerit",
   "settings": "Settings",
+  "personalization": "Personalization",
+  "support": "Support",
+  "appTheme": "App Theme",
+  "helpCenter": "Help Center",
+  "privacyPolicy": "Privacy Policy",
+  "appVersion": "v {version}",
+  "@appVersion": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
   "language": "Language",
   "indonesian": "Indonesian",
   "english": "English",
@@ -144,6 +157,11 @@
   "notificationPermissionDeniedDesc": "You can still use the app. Notifications can be enabled later from device settings.",
   "notificationPermissionFailedTitle": "Couldn’t turn on notifications",
   "notificationPermissionFailedDesc": "Something went wrong while connecting this device. Please try again.",
+  "notificationSettings": "Notification settings",
+  "notificationSettingsDesc": "Alerts, reminders, and school updates",
+  "notificationStatusActive": "Active",
+  "notificationStatusInactive": "Inactive",
+  "notificationStatusChecking": "Checking status",
   "refreshQrCode": "Refresh QR code",
   "qrCodeRefreshesAutomatically": "Refreshes automatically every 55 seconds.",
   "qrCodeExpiresIn": "Expires in {time}",

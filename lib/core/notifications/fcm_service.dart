@@ -54,6 +54,12 @@ class FCMService {
 
   Future<void> initialize() => _initialization ??= _initialize();
 
+  Future<bool> areNotificationsEnabled() async {
+    await initialize();
+
+    return _areNotificationsEnabled();
+  }
+
   Future<bool> shouldAskNotificationPermission() async {
     await initialize();
 

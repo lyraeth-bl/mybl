@@ -121,9 +121,7 @@ class _ProfileScreenViewState extends State<_ProfileScreenView> {
                 );
 
                 return CustomScrollView(
-                  physics: const BouncingScrollPhysics(
-                    parent: AlwaysScrollableScrollPhysics(),
-                  ),
+                  physics: const AlwaysScrollableScrollPhysics(),
                   slivers: [
                     ProfileOverviewSection(student: student),
                     const ProfileSummarySection(),
@@ -135,6 +133,7 @@ class _ProfileScreenViewState extends State<_ProfileScreenView> {
                         const AuthEvent.logoutRequested(),
                       ),
                     ),
+                    const SliverToBoxAdapter(child: SizedBox(height: 24)),
                   ],
                 );
               },
