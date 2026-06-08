@@ -217,10 +217,6 @@ class _MeritDemeritBodyState extends State<_MeritDemeritBody> {
                     );
                   }
 
-                  if (isLoading) {
-                    return const _DisciplineLoadingContent();
-                  }
-
                   final merits = meritState.maybeWhen(
                     success: (merits) => merits,
                     orElse: () => const <MeritEntity>[],
@@ -233,11 +229,17 @@ class _MeritDemeritBodyState extends State<_MeritDemeritBody> {
                     ...merits.map(_DisciplineItem.fromMerit),
                     ...demerits.map(_DisciplineItem.fromDemerit),
                   ]..sort((a, b) => b.date.compareTo(a.date));
-                  final filteredItems = _filterItems(items);
+                  final filteredItems = isLoading
+                      ? List<_DisciplineItem>.generate(
+                          3,
+                          _DisciplineItem.placeholder,
+                        )
+                      : _filterItems(items);
 
                   return _DisciplineContent(
                     items: items,
                     filteredItems: filteredItems,
+                    isLoading: isLoading,
                     selectedSchoolSession: _selectedSchoolSession,
                     selectedSemester: _selectedSemester,
                     onSchoolSessionChanged: (value) {
@@ -274,6 +276,7 @@ class _DisciplineContent extends StatelessWidget {
   const _DisciplineContent({
     required this.items,
     required this.filteredItems,
+    required this.isLoading,
     required this.selectedSchoolSession,
     required this.selectedSemester,
     required this.onSchoolSessionChanged,
@@ -283,6 +286,7 @@ class _DisciplineContent extends StatelessWidget {
 
   final List<_DisciplineItem> items;
   final List<_DisciplineItem> filteredItems;
+  final bool isLoading;
   final String? selectedSchoolSession;
   final String? selectedSemester;
   final ValueChanged<String?> onSchoolSessionChanged;
@@ -303,6 +307,7 @@ class _DisciplineContent extends StatelessWidget {
         _DisciplineSummarySection(
           meritPoint: meritPoint,
           demeritPoint: demeritPoint,
+          isLoading: isLoading,
         ),
         _DisciplineFilterGroup(
           schoolSessions: _schoolSessions(items),
@@ -312,13 +317,19 @@ class _DisciplineContent extends StatelessWidget {
           onSchoolSessionChanged: onSchoolSessionChanged,
           onSemesterChanged: onSemesterChanged,
           activityCount: filteredItems.length,
+          isLoading: isLoading,
           sliver: filteredItems.isEmpty
               ? SliverToBoxAdapter(
                   child: _DisciplineEmptyView(message: emptyMessage),
                 )
               : SliverList.list(
                   children: filteredItems
-                      .map((item) => _DisciplineActivityCard(item: item))
+                      .map(
+                        (item) => _DisciplineActivityCard(
+                          item: item,
+                          isLoading: isLoading,
+                        ),
+                      )
                       .toList()
                       .makeListAnimate(),
                 ),
@@ -353,10 +364,12 @@ class _DisciplineSummarySection extends StatelessWidget {
   const _DisciplineSummarySection({
     required this.meritPoint,
     required this.demeritPoint,
+    required this.isLoading,
   });
 
   final int meritPoint;
   final int demeritPoint;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
@@ -399,12 +412,23 @@ class _DisciplineSummarySection extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Text(
-                        '$disciplinePoint',
-                        style: textTheme.displaySmall?.copyWith(
-                          color: colorScheme.onPrimaryContainer,
-                          fontWeight: .bold,
-                        ),
+                      _AnimatedIntText(
+                        value: disciplinePoint,
+                        builder: (context, value) {
+                          return Text(
+                            '$value',
+                            style: textTheme.displaySmall?.copyWith(
+                              color: colorScheme.onPrimaryContainer,
+                              fontWeight: .bold,
+                            ),
+                          );
+                        },
+                      ).toShimmer(
+                        context,
+                        isLoading: isLoading,
+                        width: 56,
+                        height: 42,
+                        alignment: Alignment.center,
                       ),
                       Padding(
                         padding: const EdgeInsets.only(bottom: 8),
@@ -423,15 +447,31 @@ class _DisciplineSummarySection extends StatelessWidget {
                   const SizedBox(height: 16),
                   ClipRRect(
                     borderRadius: BorderRadius.circular(999),
-                    child: LinearProgressIndicator(
-                      minHeight: 8,
-                      value: disciplinePoint / 100,
-                      color: statusColor,
-                      backgroundColor: colorScheme.onPrimaryContainer
-                          .withValues(alpha: 0.24),
-                      // ignore: deprecated_member_use
-                      year2023: false,
+                    child: TweenAnimationBuilder<double>(
+                      tween: Tween<double>(
+                        begin: 0,
+                        end: disciplinePoint / 100,
+                      ),
+                      duration: const Duration(milliseconds: 500),
+                      curve: Curves.easeOutCubic,
+                      builder: (context, value, child) {
+                        return LinearProgressIndicator(
+                          minHeight: 8,
+                          value: value,
+                          color: statusColor,
+                          backgroundColor: colorScheme.onPrimaryContainer
+                              .withValues(alpha: 0.24),
+                          // ignore: deprecated_member_use
+                          year2023: false,
+                        );
+                      },
                     ),
+                  ).toShimmer(
+                    context,
+                    isLoading: isLoading,
+                    width: double.infinity,
+                    height: 8,
+                    borderRadius: BorderRadius.circular(999),
                   ),
                   const SizedBox(height: 16),
                   Text(
@@ -441,6 +481,13 @@ class _DisciplineSummarySection extends StatelessWidget {
                       color: colorScheme.onPrimaryContainer,
                       fontWeight: .bold,
                     ),
+                  ).toShimmer(
+                    context,
+                    isLoading: isLoading,
+                    width: 140,
+                    height: 14,
+                    alignment: Alignment.center,
+                    borderRadius: BorderRadius.circular(999),
                   ),
                 ],
               ),
@@ -453,6 +500,7 @@ class _DisciplineSummarySection extends StatelessWidget {
                     label: l10n.merit,
                     point: meritPoint,
                     isMerit: true,
+                    isLoading: isLoading,
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -461,6 +509,7 @@ class _DisciplineSummarySection extends StatelessWidget {
                     label: l10n.demerit,
                     point: demeritPoint,
                     isMerit: false,
+                    isLoading: isLoading,
                   ),
                 ),
               ],
@@ -494,11 +543,13 @@ class _DisciplineStatCard extends StatelessWidget {
     required this.label,
     required this.point,
     required this.isMerit,
+    required this.isLoading,
   });
 
   final String label;
   final int point;
   final bool isMerit;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
@@ -533,14 +584,25 @@ class _DisciplineStatCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 8),
-          Text(
-            '${isMerit ? '+' : '-'}$point ${l10nPointLabel(context)}',
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: textTheme.titleLarge?.copyWith(
-              color: foregroundColor,
-              fontWeight: .bold,
-            ),
+          _AnimatedIntText(
+            value: point,
+            builder: (context, value) {
+              return Text(
+                '${isMerit ? '+' : '-'}$value ${l10nPointLabel(context)}',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: textTheme.titleLarge?.copyWith(
+                  color: foregroundColor,
+                  fontWeight: .bold,
+                ),
+              );
+            },
+          ).toShimmer(
+            context,
+            isLoading: isLoading,
+            width: 72,
+            height: 28,
+            alignment: Alignment.center,
           ),
         ],
       ),
@@ -560,6 +622,7 @@ class _DisciplineFilterGroup extends StatelessWidget {
     required this.onSchoolSessionChanged,
     required this.onSemesterChanged,
     required this.activityCount,
+    required this.isLoading,
     required this.sliver,
   });
 
@@ -570,6 +633,7 @@ class _DisciplineFilterGroup extends StatelessWidget {
   final ValueChanged<String?> onSchoolSessionChanged;
   final ValueChanged<String?> onSemesterChanged;
   final int activityCount;
+  final bool isLoading;
   final Widget sliver;
 
   @override
@@ -602,6 +666,7 @@ class _DisciplineFilterGroup extends StatelessWidget {
                   onChanged: onSchoolSessionChanged,
                 ),
                 margin: EdgeInsets.only(left: 8),
+                isLoading: isLoading,
               ),
             ),
             const SizedBox(width: 16),
@@ -617,6 +682,7 @@ class _DisciplineFilterGroup extends StatelessWidget {
                   onChanged: onSemesterChanged,
                 ),
                 margin: EdgeInsets.only(right: 16),
+                isLoading: isLoading,
               ),
             ),
           ],
@@ -631,9 +697,20 @@ class _DisciplineFilterGroup extends StatelessWidget {
           titleOffset: 0,
           collapsedOpacity: 1,
           action: AppChipContainer(
-            value: l10n.dataCount(activityCount),
             backgroundColor: colorScheme.primaryContainer,
             foregroundColor: colorScheme.onPrimaryContainer,
+            child:
+                _AnimatedIntText(
+                  value: activityCount,
+                  builder: (context, value) => Text(l10n.dataCount(value)),
+                ).toShimmer(
+                  context,
+                  isLoading: isLoading,
+                  width: 48,
+                  height: 12,
+                  alignment: Alignment.center,
+                  borderRadius: BorderRadius.circular(999),
+                ),
           ),
           sliver: sliver,
         ),
@@ -670,11 +747,13 @@ class _FilterChipButton extends StatelessWidget {
     required this.label,
     required this.onTap,
     required this.margin,
+    required this.isLoading,
   });
 
   final String label;
   final VoidCallback onTap;
   final EdgeInsetsGeometry margin;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
@@ -687,12 +766,20 @@ class _FilterChipButton extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Expanded(
-            child: Text(
-              label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.center,
-            ),
+            child:
+                Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                ).toShimmer(
+                  context,
+                  isLoading: isLoading,
+                  width: 84,
+                  height: 12,
+                  alignment: Alignment.center,
+                  borderRadius: BorderRadius.circular(999),
+                ),
           ),
           const SizedBox(width: 4),
           const Icon(Icons.expand_more_rounded, size: 18),
@@ -767,9 +854,10 @@ class _FilterSheet extends StatelessWidget {
 }
 
 class _DisciplineActivityCard extends StatelessWidget {
-  const _DisciplineActivityCard({required this.item});
+  const _DisciplineActivityCard({required this.item, required this.isLoading});
 
   final _DisciplineItem item;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
@@ -801,6 +889,12 @@ class _DisciplineActivityCard extends StatelessWidget {
             padding: const EdgeInsets.all(8),
             backgroundColor: backgroundColor,
             foregroundColor: foregroundColor,
+          ).toShimmer(
+            context,
+            isLoading: isLoading,
+            width: 40,
+            height: 40,
+            borderRadius: BorderRadius.circular(8),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -815,6 +909,11 @@ class _DisciplineActivityCard extends StatelessWidget {
                     color: colorScheme.onSurface,
                     fontWeight: .bold,
                   ),
+                ).toShimmer(
+                  context,
+                  isLoading: isLoading,
+                  width: 160,
+                  height: 14,
                 ),
                 const SizedBox(height: 8),
                 Text(
@@ -825,6 +924,11 @@ class _DisciplineActivityCard extends StatelessWidget {
                     color: colorScheme.onSurface,
                     fontWeight: .bold,
                   ),
+                ).toShimmer(
+                  context,
+                  isLoading: isLoading,
+                  width: 128,
+                  height: 11,
                 ),
                 const SizedBox(height: 4),
                 Text(
@@ -834,17 +938,33 @@ class _DisciplineActivityCard extends StatelessWidget {
                   style: textTheme.labelMedium?.copyWith(
                     color: colorScheme.onSurfaceVariant,
                   ),
+                ).toShimmer(
+                  context,
+                  isLoading: isLoading,
+                  width: 112,
+                  height: 11,
                 ),
               ],
             ),
           ),
           const SizedBox(width: 12),
-          Text(
-            '${item.isMerit ? '+' : '-'}${item.point}',
-            style: textTheme.titleSmall?.copyWith(
-              color: foregroundColor,
-              fontWeight: FontWeight.w900,
-            ),
+          _AnimatedIntText(
+            value: item.point,
+            builder: (context, value) {
+              return Text(
+                '${item.isMerit ? '+' : '-'}$value',
+                style: textTheme.titleSmall?.copyWith(
+                  color: foregroundColor,
+                  fontWeight: FontWeight.w900,
+                ),
+              );
+            },
+          ).toShimmer(
+            context,
+            isLoading: isLoading,
+            width: 28,
+            height: 14,
+            alignment: Alignment.centerRight,
           ),
         ],
       ),
@@ -852,134 +972,19 @@ class _DisciplineActivityCard extends StatelessWidget {
   }
 }
 
-class _DisciplineLoadingContent extends StatelessWidget {
-  const _DisciplineLoadingContent();
+class _AnimatedIntText extends StatelessWidget {
+  const _AnimatedIntText({required this.value, required this.builder});
+
+  final int value;
+  final Widget Function(BuildContext context, int value) builder;
 
   @override
   Widget build(BuildContext context) {
-    return SliverMainAxisGroup(
-      slivers: [
-        const SliverPadding(
-          padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
-          sliver: SliverToBoxAdapter(child: _SummaryLoading()),
-        ),
-        AppSliverGroup(
-          title: '',
-          pinned: true,
-          headerHeight: 72,
-          headerPadding: EdgeInsets.zero,
-          backgroundColor: Theme.of(context).colorScheme.surface,
-          titleOffset: 0,
-          collapsedOpacity: 1,
-          action: SizedBox(
-            width: MediaQuery.sizeOf(context).width - 8,
-            height: 72,
-            child: const Row(
-              children: [
-                Expanded(child: _FilterLoadingChip()),
-                SizedBox(width: 8),
-                Expanded(child: _FilterLoadingChip()),
-              ],
-            ),
-          ),
-          sliver: SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            sliver: SliverList.list(
-              children: const [
-                _ActivityLoadingCard(),
-                _ActivityLoadingCard(),
-                _ActivityLoadingCard(),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _SummaryLoading extends StatelessWidget {
-  const _SummaryLoading();
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const _LoadingBox(height: 138),
-        const SizedBox(height: 16),
-        Row(
-          children: const [
-            Expanded(child: _LoadingBox(height: 112)),
-            SizedBox(width: 12),
-            Expanded(child: _LoadingBox(height: 112)),
-          ],
-        ),
-      ],
-    );
-  }
-}
-
-class _FilterLoadingChip extends StatelessWidget {
-  const _FilterLoadingChip();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsetsDirectional.fromSTEB(8, 12, 0, 12),
-      child: _LoadingBox(height: 44),
-    );
-  }
-}
-
-class _ActivityLoadingCard extends StatelessWidget {
-  const _ActivityLoadingCard();
-
-  @override
-  Widget build(BuildContext context) {
-    return AppContainer(
-      margin: const EdgeInsets.symmetric(vertical: 6),
-      padding: const EdgeInsets.all(16),
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      elevation: 0,
-      borderRadius: BorderRadius.circular(12),
-      child: const Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _LoadingBox(width: 38, height: 38),
-          SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _LoadingBox(width: 160, height: 14),
-                SizedBox(height: 8),
-                _LoadingBox(width: 128, height: 11),
-                SizedBox(height: 8),
-                _LoadingBox(width: 112, height: 11),
-              ],
-            ),
-          ),
-          SizedBox(width: 12),
-          _LoadingBox(width: 28, height: 14),
-        ],
-      ),
-    );
-  }
-}
-
-class _LoadingBox extends StatelessWidget {
-  const _LoadingBox({this.width, required this.height});
-
-  final double? width;
-  final double height;
-
-  @override
-  Widget build(BuildContext context) {
-    return const SizedBox().toShimmer(
-      context,
-      width: width ?? double.infinity,
-      height: height,
-      borderRadius: BorderRadius.circular(12),
+    return TweenAnimationBuilder<int>(
+      tween: IntTween(begin: 0, end: value),
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.easeOutCubic,
+      builder: (context, value, child) => builder(context, value),
     );
   }
 }
@@ -1093,6 +1098,18 @@ class _DisciplineItem {
       semester: demerit.semester,
       teacherName: demerit.teacherName,
       isMerit: false,
+    );
+  }
+
+  factory _DisciplineItem.placeholder(int index) {
+    return _DisciplineItem(
+      description: 'Discipline activity',
+      point: 0,
+      date: DateTime(2026),
+      schoolSession: '',
+      semester: '',
+      teacherName: 'Teacher',
+      isMerit: index.isEven,
     );
   }
 

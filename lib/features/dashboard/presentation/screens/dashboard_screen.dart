@@ -94,75 +94,75 @@ class _DashboardViewState extends State<_DashboardView> {
   Future<void> _refresh() async {
     final now = DateTime.now();
     final studentClass = _studentClass();
-
-    blocRefresh<UserBloc, UserEvent, UserState>(
-      context: context,
-      event: const UserEvent.fetchStudentRequested(true),
-      isDone: (state) => state.maybeWhen(
-        success: (_) => true,
-        failure: (_) => true,
-        orElse: () => false,
-      ),
-    );
-
-    blocRefresh<
-      DailyAttendanceBloc,
-      DailyAttendanceEvent,
-      DailyAttendanceState
-    >(
-      context: context,
-      event: const DailyAttendanceEvent.dailyAttendanceRequested(
-        forceRefresh: true,
-      ),
-      isDone: (state) => state.maybeWhen(
-        success: (_) => true,
-        emptyAttendance: () => true,
-        failure: (_) => true,
-        orElse: () => false,
-      ),
-    );
-
-    blocRefresh<
-      MonthlyAttendanceBloc,
-      MonthlyAttendanceEvent,
-      MonthlyAttendanceState
-    >(
-      context: context,
-      event: MonthlyAttendanceEvent.monthChangeRequested(
-        month: now.month,
-        year: now.year,
-        forceRefresh: true,
-      ),
-      isDone: (state) => state.maybeWhen(
-        success: (_, _, _, _, _, _) => true,
-        failure: (_) => true,
-        orElse: () => false,
-      ),
-    );
-
-    blocRefresh<NotificationBloc, NotificationEvent, NotificationState>(
-      context: context,
-      event: const NotificationEvent.fetchNotificationsRequested(),
-      isDone: (state) => state.maybeWhen(
-        success: (_) => true,
-        failure: (_) => true,
-        orElse: () => false,
-      ),
-    );
-
-    if (studentClass.isEmpty) return Future<void>.value();
-
-    if (studentClass.isNotEmpty) {
-      blocRefresh<TimeTableBloc, TimeTableEvent, TimeTableState>(
+    final refreshes = <Future<void>>[
+      blocRefresh<UserBloc, UserEvent, UserState>(
         context: context,
-        event: TimeTableEvent.fetchTimeTable(true, studentClass),
+        event: const UserEvent.fetchStudentRequested(true),
         isDone: (state) => state.maybeWhen(
           success: (_) => true,
           failure: (_) => true,
           orElse: () => false,
         ),
+      ),
+      blocRefresh<
+        DailyAttendanceBloc,
+        DailyAttendanceEvent,
+        DailyAttendanceState
+      >(
+        context: context,
+        event: const DailyAttendanceEvent.dailyAttendanceRequested(
+          forceRefresh: true,
+        ),
+        isDone: (state) => state.maybeWhen(
+          success: (_) => true,
+          emptyAttendance: () => true,
+          failure: (_) => true,
+          orElse: () => false,
+        ),
+      ),
+      blocRefresh<
+        MonthlyAttendanceBloc,
+        MonthlyAttendanceEvent,
+        MonthlyAttendanceState
+      >(
+        context: context,
+        event: MonthlyAttendanceEvent.monthChangeRequested(
+          month: now.month,
+          year: now.year,
+          forceRefresh: true,
+        ),
+        isDone: (state) => state.maybeWhen(
+          success: (_, _, _, _, _, _) => true,
+          failure: (_) => true,
+          orElse: () => false,
+        ),
+      ),
+      blocRefresh<NotificationBloc, NotificationEvent, NotificationState>(
+        context: context,
+        event: const NotificationEvent.fetchNotificationsRequested(),
+        isDone: (state) => state.maybeWhen(
+          success: (_) => true,
+          failure: (_) => true,
+          orElse: () => false,
+        ),
+      ),
+    ];
+
+    if (studentClass.isNotEmpty) {
+      refreshes.add(
+        blocRefresh<TimeTableBloc, TimeTableEvent, TimeTableState>(
+          context: context,
+          event: TimeTableEvent.fetchTimeTable(true, studentClass),
+          isDone: (state) => state.maybeWhen(
+            success: (_) => true,
+            failure: (_) => true,
+            orElse: () => false,
+          ),
+        ),
       );
     }
+
+    await Future.wait(refreshes);
   }
 
   @override
@@ -174,7 +174,7 @@ class _DashboardViewState extends State<_DashboardView> {
         tooltip: AppLocalizations.of(context)!.attendanceQrCode,
         child: const Icon(Icons.qr_code_2),
       ),
-      body: _DashboardBody(onRefresh: () async => _refresh()),
+      body: _DashboardBody(onRefresh: _refresh),
     );
   }
 }
@@ -205,7 +205,7 @@ class _DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
       notificationCount: context.select<NotificationBloc, int>(
         (bloc) => _unreadNotificationCount(bloc.state),
       ),
-      onProfileTap: () => context.push(RouteNames.profile),
+      onProfileTap: () => context.go(RouteNames.profile),
       onNotificationTap: () async {
         await context.push(RouteNames.notification);
         if (!context.mounted) return;

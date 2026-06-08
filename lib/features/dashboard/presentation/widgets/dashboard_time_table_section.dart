@@ -40,12 +40,12 @@ class DashboardTimeTableSection extends StatelessWidget {
       sliver: BlocBuilder<TimeTableBloc, TimeTableState>(
         builder: (context, state) {
           final isLoading = state.maybeWhen(
-            loading: () => true,
+            loading: (_) => true,
             orElse: () => false,
           );
 
           return state.maybeWhen(
-            loading: () => SliverList.builder(
+            loading: (_) => SliverList.builder(
               itemCount: 3,
               itemBuilder: (context, index) {
                 final shape = index.makeVerticalGoogleShape(2);

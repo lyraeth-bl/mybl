@@ -4,6 +4,7 @@
 
 import 'package:flutter/material.dart';
 
+import '../../../../core/internal/src/extensions/extensions.dart';
 import '../../../../core/widgets/app_container.dart';
 import '../../../../l10n/app_localizations.dart';
 import 'academic_result_ui_helpers.dart';
@@ -13,10 +14,12 @@ class AcademicResultScoreSummarySection extends StatelessWidget {
     super.key,
     required this.average,
     required this.totalData,
+    this.isLoading = false,
   });
 
   final double average;
   final int totalData;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
@@ -57,6 +60,11 @@ class AcademicResultScoreSummarySection extends StatelessWidget {
                             color: colorScheme.onPrimaryContainer,
                             fontWeight: .bold,
                           ),
+                        ).toShimmer(
+                          context,
+                          isLoading: isLoading,
+                          width: 72,
+                          height: 32,
                         ),
                         Padding(
                           padding: const EdgeInsets.only(bottom: 4),
@@ -83,19 +91,26 @@ class AcademicResultScoreSummarySection extends StatelessWidget {
                       foregroundColor: colorScheme.onPrimary,
                       elevation: 0,
                       borderRadius: BorderRadius.circular(999),
-                      child: Text(
-                        l10n.assessmentDataCount(totalData),
-                        style: textTheme.labelSmall?.copyWith(
-                          color: colorScheme.onPrimaryContainer,
-                          fontWeight: .bold,
-                        ),
-                      ),
+                      child:
+                          Text(
+                            l10n.assessmentDataCount(totalData),
+                            style: textTheme.labelSmall?.copyWith(
+                              color: colorScheme.onPrimaryContainer,
+                              fontWeight: .bold,
+                            ),
+                          ).toShimmer(
+                            context,
+                            isLoading: isLoading,
+                            width: 116,
+                            height: 12,
+                            borderRadius: BorderRadius.circular(999),
+                          ),
                     ),
                   ],
                 ),
               ),
               const SizedBox(width: 16),
-              _ScoreProgress(value: clampedAverage),
+              _ScoreProgress(value: clampedAverage, isLoading: isLoading),
             ],
           ),
         ),
@@ -105,9 +120,10 @@ class AcademicResultScoreSummarySection extends StatelessWidget {
 }
 
 class _ScoreProgress extends StatelessWidget {
-  const _ScoreProgress({required this.value});
+  const _ScoreProgress({required this.value, required this.isLoading});
 
   final double value;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
@@ -119,14 +135,27 @@ class _ScoreProgress extends StatelessWidget {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          CircularProgressIndicator(
-            value: percent,
-            strokeWidth: 5,
-            strokeCap: StrokeCap.round,
-            color: colorScheme.onPrimaryContainer,
-            backgroundColor: colorScheme.onPrimaryContainer.withValues(
-              alpha: 0.24,
-            ),
+          TweenAnimationBuilder<double>(
+            tween: Tween<double>(begin: 0, end: percent),
+            duration: const Duration(milliseconds: 500),
+            curve: Curves.easeOutCubic,
+            builder: (context, value, child) {
+              return CircularProgressIndicator(
+                value: value,
+                strokeWidth: 5,
+                strokeCap: StrokeCap.round,
+                color: colorScheme.onPrimaryContainer,
+                backgroundColor: colorScheme.onPrimaryContainer.withValues(
+                  alpha: 0.24,
+                ),
+              );
+            },
+          ).toShimmer(
+            context,
+            isLoading: isLoading,
+            width: 76,
+            height: 76,
+            borderRadius: BorderRadius.circular(999),
           ),
           Center(
             child: Text(
@@ -135,7 +164,7 @@ class _ScoreProgress extends StatelessWidget {
                 color: colorScheme.onPrimaryContainer,
                 fontWeight: .bold,
               ),
-            ),
+            ).toShimmer(context, isLoading: isLoading, width: 36, height: 14),
           ),
         ],
       ),

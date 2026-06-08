@@ -14,6 +14,20 @@ class AcademicResultSubjectView {
     required this.totalData,
   });
 
+  factory AcademicResultSubjectView.placeholder(int index) {
+    return AcademicResultSubjectView(
+      category: AcademicResultCategories(
+        subjectName: 'Subject',
+        subjectTeacherName: 'Teacher',
+        summary: const AcademicResultSummary(average: 0, totalData: 0),
+        listResult: const [],
+      ),
+      results: const [],
+      average: 0,
+      totalData: 0,
+    );
+  }
+
   final AcademicResultCategories category;
   final List<AcademicResultEntity> results;
   final double average;

@@ -20,10 +20,12 @@ class AcademicResultSubjectListSection extends StatelessWidget {
     super.key,
     required this.subjects,
     required this.emptyMessage,
+    this.isLoading = false,
   });
 
   final List<AcademicResultSubjectView> subjects;
   final String emptyMessage;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
@@ -38,12 +40,18 @@ class AcademicResultSubjectListSection extends StatelessWidget {
         fontWeight: FontWeight.bold,
       ),
       action: AppChipContainer(
-        value: l10n.subjectCount(subjects.length),
         backgroundColor: colorScheme.primaryContainer,
         foregroundColor: colorScheme.onPrimaryContainer,
+        child: Text(l10n.subjectCount(subjects.length)).toShimmer(
+          context,
+          isLoading: isLoading,
+          width: 64,
+          height: 12,
+          borderRadius: BorderRadius.circular(999),
+        ),
       ),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      sliver: subjects.isEmpty
+      sliver: subjects.isEmpty && !isLoading
           ? SliverToBoxAdapter(
               child: AcademicResultMessage(
                 icon: Icons.menu_book_outlined,
@@ -52,7 +60,10 @@ class AcademicResultSubjectListSection extends StatelessWidget {
             )
           : SliverList.list(
               children: subjects
-                  .map((subject) => _SubjectCard(subject: subject))
+                  .map(
+                    (subject) =>
+                        _SubjectCard(subject: subject, isLoading: isLoading),
+                  )
                   .toList()
                   .makeListAnimate(),
             ),
@@ -61,9 +72,10 @@ class AcademicResultSubjectListSection extends StatelessWidget {
 }
 
 class _SubjectCard extends StatelessWidget {
-  const _SubjectCard({required this.subject});
+  const _SubjectCard({required this.subject, required this.isLoading});
 
   final AcademicResultSubjectView subject;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
@@ -77,14 +89,17 @@ class _SubjectCard extends StatelessWidget {
       backgroundColor: colorScheme.surfaceContainerLow,
       elevation: 0,
       borderRadius: BorderRadius.circular(16),
-      onTap: () => _showSubjectDetailSheet(context, subject),
+      onTap: isLoading ? null : () => _showSubjectDetailSheet(context, subject),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _SubjectIcon(subjectName: subject.subjectName),
+              _SubjectIcon(
+                subjectName: subject.subjectName,
+                isLoading: isLoading,
+              ),
               const SizedBox(width: 16),
               Expanded(
                 child: Column(
@@ -98,6 +113,11 @@ class _SubjectCard extends StatelessWidget {
                         color: colorScheme.onSurface,
                         fontWeight: FontWeight.bold,
                       ),
+                    ).toShimmer(
+                      context,
+                      isLoading: isLoading,
+                      width: 150,
+                      height: 14,
                     ),
                     if ((subject.teacherName ?? '').trim().isNotEmpty) ...[
                       const SizedBox(height: 2),
@@ -108,6 +128,11 @@ class _SubjectCard extends StatelessWidget {
                         style: textTheme.labelSmall?.copyWith(
                           color: colorScheme.onSurfaceVariant,
                         ),
+                      ).toShimmer(
+                        context,
+                        isLoading: isLoading,
+                        width: 118,
+                        height: 11,
                       ),
                     ],
                     const SizedBox(height: 4),
@@ -120,15 +145,21 @@ class _SubjectCard extends StatelessWidget {
                         ),
                         const SizedBox(width: 6),
                         Flexible(
-                          child: Text(
-                            l10n.assessmentDataCount(subject.totalData),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: textTheme.labelSmall?.copyWith(
-                              color: colorScheme.onSurfaceVariant,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
+                          child:
+                              Text(
+                                l10n.assessmentDataCount(subject.totalData),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: textTheme.labelSmall?.copyWith(
+                                  color: colorScheme.onSurfaceVariant,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ).toShimmer(
+                                context,
+                                isLoading: isLoading,
+                                width: 112,
+                                height: 11,
+                              ),
                         ),
                       ],
                     ),
@@ -145,9 +176,14 @@ class _SubjectCard extends StatelessWidget {
                       color: scoreColor,
                       fontWeight: FontWeight.w900,
                     ),
+                  ).toShimmer(
+                    context,
+                    isLoading: isLoading,
+                    width: 28,
+                    height: 28,
+                    alignment: Alignment.centerRight,
                   ),
                   AppChipContainer(
-                    value: '${academicResultFormatScore(subject.average)}/100',
                     padding: const EdgeInsets.symmetric(
                       horizontal: 6,
                       vertical: 2,
@@ -155,6 +191,16 @@ class _SubjectCard extends StatelessWidget {
                     backgroundColor: scoreColor.withValues(alpha: 0.12),
                     foregroundColor: scoreColor,
                     textStyle: textTheme.labelSmall,
+                    child:
+                        Text(
+                          '${academicResultFormatScore(subject.average)}/100',
+                        ).toShimmer(
+                          context,
+                          isLoading: isLoading,
+                          width: 48,
+                          height: 10,
+                          borderRadius: BorderRadius.circular(999),
+                        ),
                   ),
                 ],
               ),
@@ -167,16 +213,22 @@ class _SubjectCard extends StatelessWidget {
             backgroundColor: colorScheme.surfaceContainer,
             elevation: 0,
             borderRadius: BorderRadius.circular(8),
-            child: Text(
-              '"${subject.latestDescription}"',
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
-              style: textTheme.bodySmall?.copyWith(
-                color: colorScheme.onSurfaceVariant,
-                fontStyle: FontStyle.italic,
-                height: 1.35,
-              ),
-            ),
+            child:
+                Text(
+                  '"${subject.latestDescription}"',
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                  style: textTheme.bodySmall?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                    fontStyle: FontStyle.italic,
+                    height: 1.35,
+                  ),
+                ).toShimmer(
+                  context,
+                  isLoading: isLoading,
+                  width: double.infinity,
+                  height: 58,
+                ),
           ),
         ],
       ),
@@ -185,9 +237,10 @@ class _SubjectCard extends StatelessWidget {
 }
 
 class _SubjectIcon extends StatelessWidget {
-  const _SubjectIcon({required this.subjectName});
+  const _SubjectIcon({required this.subjectName, required this.isLoading});
 
   final String subjectName;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
@@ -198,6 +251,12 @@ class _SubjectIcon extends StatelessWidget {
       padding: const EdgeInsets.all(8),
       backgroundColor: colorScheme.primaryContainer,
       foregroundColor: colorScheme.onPrimaryContainer,
+    ).toShimmer(
+      context,
+      isLoading: isLoading,
+      width: 40,
+      height: 40,
+      borderRadius: BorderRadius.circular(8),
     );
   }
 }

@@ -149,7 +149,7 @@ class _AcademicResultBody extends StatelessWidget {
           BlocBuilder<AcademicResultBloc, AcademicResultState>(
             builder: (context, state) {
               return state.maybeWhen(
-                loading: () => const AcademicResultLoadingList(),
+                loading: () => const AcademicResultContent.loading(),
                 success: (academicResult) =>
                     AcademicResultContent(academicResult: academicResult),
                 failure: (failure) => SliverFillRemaining(
@@ -160,7 +160,7 @@ class _AcademicResultBody extends StatelessWidget {
                     ),
                   ),
                 ),
-                orElse: () => const AcademicResultLoadingList(),
+                orElse: () => const AcademicResultContent.loading(),
               );
             },
           ),

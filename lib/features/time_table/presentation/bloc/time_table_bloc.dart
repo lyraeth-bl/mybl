@@ -42,7 +42,7 @@ class TimeTableBloc extends Bloc<TimeTableEvent, TimeTableState> {
     _FetchTimeTable event,
     Emitter<TimeTableState> emit,
   ) async {
-    emit(const TimeTableState.loading());
+    emit(TimeTableState.loading(timeTable: _currentTimeTable(state)));
 
     final result = await _fetchTimeTableUseCase(
       event.forceRefresh,
@@ -52,6 +52,14 @@ class TimeTableBloc extends Bloc<TimeTableEvent, TimeTableState> {
     return result.match(
       (failure) => emit(TimeTableState.failure(failure)),
       (data) => emit(TimeTableState.success(timeTable: data)),
+    );
+  }
+
+  static List<TimeTable> _currentTimeTable(TimeTableState state) {
+    return state.maybeWhen(
+      loading: (timeTable) => timeTable,
+      success: (timeTable) => timeTable,
+      orElse: () => const <TimeTable>[],
     );
   }
 

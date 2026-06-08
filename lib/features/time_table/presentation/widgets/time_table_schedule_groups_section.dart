@@ -26,17 +26,42 @@ class TimeTableScheduleGroupsSection extends StatelessWidget {
 
     return BlocBuilder<TimeTableBloc, TimeTableState>(
       builder: (context, state) {
+        final isLoading = state.maybeWhen(
+          loading: (_) => true,
+          orElse: () => false,
+        );
+
         return state.maybeWhen(
-          loading: () => SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            sliver: SliverList.list(
-              children: const [
-                _TimeTableLoadingCard(),
-                _TimeTableLoadingCard(),
-                _TimeTableLoadingCard(),
-              ],
-            ),
-          ),
+          loading: (timeTable) {
+            final selectedSchedules = _filterSchedules(timeTable, selectedDay);
+
+            if (selectedSchedules.isEmpty) {
+              return SliverPadding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                sliver: SliverList.list(
+                  children: const [
+                    _TimeTableLoadingCard(),
+                    _TimeTableLoadingCard(),
+                    _TimeTableLoadingCard(),
+                  ],
+                ),
+              );
+            }
+
+            return SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              sliver: SliverList.list(
+                children: selectedSchedules
+                    .map(
+                      (timeTable) => _TimeTableCard(
+                        timeTable: timeTable,
+                        isLoading: isLoading,
+                      ),
+                    )
+                    .toList(),
+              ),
+            );
+          },
           failure: (failure) => SliverFillRemaining(
             hasScrollBody: false,
             child: _TimeTableEmptyView(
@@ -105,9 +130,10 @@ class TimeTableScheduleGroupsSection extends StatelessWidget {
 }
 
 class _TimeTableCard extends StatelessWidget {
-  const _TimeTableCard({required this.timeTable});
+  const _TimeTableCard({required this.timeTable, this.isLoading = false});
 
   final TimeTable timeTable;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
@@ -158,6 +184,11 @@ class _TimeTableCard extends StatelessWidget {
                         color: colorScheme.onSurface,
                         fontWeight: .bold,
                       ),
+                    ).toShimmer(
+                      context,
+                      isLoading: isLoading,
+                      width: 160,
+                      height: 18,
                     ),
                     const SizedBox(height: 4),
                     Row(
@@ -173,6 +204,11 @@ class _TimeTableCard extends StatelessWidget {
                           style: textTheme.titleMedium?.copyWith(
                             color: colorScheme.onSurfaceVariant,
                           ),
+                        ).toShimmer(
+                          context,
+                          isLoading: isLoading,
+                          width: 112,
+                          height: 16,
                         ),
                       ],
                     ),
@@ -189,6 +225,12 @@ class _TimeTableCard extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
+              ).toShimmer(
+                context,
+                isLoading: isLoading,
+                width: 60,
+                height: 60,
+                borderRadius: BorderRadius.circular(8),
               ),
             ],
           ),
@@ -216,6 +258,11 @@ class _TimeTableCard extends StatelessWidget {
                         color: colorScheme.onSurface,
                         fontWeight: .bold,
                       ),
+                    ).toShimmer(
+                      context,
+                      isLoading: isLoading,
+                      width: 128,
+                      height: 14,
                     ),
                   ],
                 ),
@@ -243,6 +290,11 @@ class _TimeTableCard extends StatelessWidget {
                       color: colorScheme.primary,
                       fontWeight: .bold,
                     ),
+                  ).toShimmer(
+                    context,
+                    isLoading: isLoading,
+                    width: 44,
+                    height: 16,
                   ),
                 ],
               ),

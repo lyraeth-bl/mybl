@@ -12,9 +12,18 @@ import 'academic_result_subject_list_section.dart';
 import 'academic_result_ui_helpers.dart';
 
 class AcademicResultContent extends StatefulWidget {
-  const AcademicResultContent({super.key, required this.academicResult});
+  const AcademicResultContent({
+    super.key,
+    required this.academicResult,
+    this.isLoading = false,
+  });
 
-  final AcademicResultResponse academicResult;
+  const AcademicResultContent.loading({super.key})
+    : academicResult = null,
+      isLoading = true;
+
+  final AcademicResultResponse? academicResult;
+  final bool isLoading;
 
   @override
   State<AcademicResultContent> createState() => _AcademicResultContentState();
@@ -26,15 +35,15 @@ class _AcademicResultContentState extends State<AcademicResultContent> {
   @override
   void initState() {
     super.initState();
-    _selectedSemester = widget.academicResult.meta.semester == 2 ? 2 : 1;
+    _selectedSemester = widget.academicResult?.meta.semester == 2 ? 2 : 1;
   }
 
   @override
   void didUpdateWidget(AcademicResultContent oldWidget) {
     super.didUpdateWidget(oldWidget);
-    final nextSemester = widget.academicResult.meta.semester == 2 ? 2 : 1;
-    if (oldWidget.academicResult.meta.semester !=
-        widget.academicResult.meta.semester) {
+    final nextSemester = widget.academicResult?.meta.semester == 2 ? 2 : 1;
+    if (oldWidget.academicResult?.meta.semester !=
+        widget.academicResult?.meta.semester) {
       _selectedSemester = nextSemester;
     }
   }
@@ -42,10 +51,15 @@ class _AcademicResultContentState extends State<AcademicResultContent> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final subjects = academicResultSubjectsForSemester(
-      widget.academicResult.data.categories,
-      _selectedSemester,
-    );
+    final subjects = widget.isLoading
+        ? List<AcademicResultSubjectView>.generate(
+            3,
+            AcademicResultSubjectView.placeholder,
+          )
+        : academicResultSubjectsForSemester(
+            widget.academicResult?.data.categories ?? const [],
+            _selectedSemester,
+          );
     final totalData = subjects.fold(
       0,
       (total, subject) => total + subject.totalData,
@@ -64,9 +78,11 @@ class _AcademicResultContentState extends State<AcademicResultContent> {
         AcademicResultScoreSummarySection(
           average: average,
           totalData: totalData,
+          isLoading: widget.isLoading,
         ),
         AcademicResultSemesterFilterSection(
           selectedSemester: _selectedSemester,
+          isLoading: widget.isLoading,
           onChanged: (semester) {
             setState(() => _selectedSemester = semester);
           },
@@ -74,6 +90,7 @@ class _AcademicResultContentState extends State<AcademicResultContent> {
         AcademicResultSubjectListSection(
           subjects: subjects,
           emptyMessage: l10n.noData,
+          isLoading: widget.isLoading,
         ),
       ],
     );

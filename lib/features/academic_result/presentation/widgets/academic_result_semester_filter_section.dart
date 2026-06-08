@@ -4,6 +4,7 @@
 
 import 'package:flutter/material.dart';
 
+import '../../../../core/internal/src/extensions/extensions.dart';
 import '../../../../core/widgets/app_chip_container.dart';
 import '../../../../l10n/app_localizations.dart';
 
@@ -12,10 +13,12 @@ class AcademicResultSemesterFilterSection extends StatelessWidget {
     super.key,
     required this.selectedSemester,
     required this.onChanged,
+    this.isLoading = false,
   });
 
   final int selectedSemester;
   final ValueChanged<int> onChanged;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
@@ -31,6 +34,7 @@ class AcademicResultSemesterFilterSection extends StatelessWidget {
               label: '${l10n.semester} $semester',
               selected: selectedSemester == semester,
               onTap: () => onChanged(semester),
+              isLoading: isLoading,
             );
           }).toList(),
         ),
@@ -44,18 +48,19 @@ class _SemesterChip extends StatelessWidget {
     required this.label,
     required this.selected,
     required this.onTap,
+    required this.isLoading,
   });
 
   final String label;
   final bool selected;
   final VoidCallback onTap;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
     return AppChipContainer(
-      value: label,
       onTap: onTap,
       margin: const EdgeInsetsDirectional.only(end: 10),
       padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
@@ -66,6 +71,13 @@ class _SemesterChip extends StatelessWidget {
       side: selected
           ? BorderSide.none
           : BorderSide(color: colorScheme.outlineVariant),
+      child: Text(label).toShimmer(
+        context,
+        isLoading: isLoading,
+        width: 80,
+        height: 14,
+        borderRadius: BorderRadius.circular(999),
+      ),
     );
   }
 }
