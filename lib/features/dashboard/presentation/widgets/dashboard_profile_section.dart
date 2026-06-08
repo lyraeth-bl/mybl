@@ -31,7 +31,7 @@ class DashboardProfileSection extends StatelessWidget {
       child: AppContainer(
         backgroundColor: colorScheme.surfaceContainerLow,
         margin: EdgeInsets.zero,
-        elevation: 1,
+        elevation: 0,
         borderRadius: BorderRadius.circular(16),
         child: BlocBuilder<UserBloc, UserState>(
           builder: (context, state) {

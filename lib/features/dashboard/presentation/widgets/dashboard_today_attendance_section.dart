@@ -189,7 +189,7 @@ class _DashboardTodayAttendanceContainer extends StatelessWidget {
       backgroundColor: colorScheme.surfaceContainerLow,
       margin: EdgeInsets.zero,
       aspectRatio: 1.5,
-      elevation: 1,
+      elevation: 0,
       borderRadius: BorderRadius.circular(16),
       child: Column(
         crossAxisAlignment: crossAxisAlignment,

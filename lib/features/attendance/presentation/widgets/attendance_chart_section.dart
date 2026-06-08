@@ -46,12 +46,8 @@ class AttendanceChartSection extends StatelessWidget {
             child: AppContainer(
               margin: EdgeInsets.zero,
               elevation: 0,
-              boxShadow: <BoxShadow>[
-                BoxShadow(
-                  color: colorScheme.surfaceContainerHighest,
-                  offset: const Offset(5, 5),
-                ),
-              ],
+              backgroundColor: colorScheme.surfaceContainerLow,
+              borderRadius: BorderRadius.circular(16),
               child: SizedBox(
                 height: 250,
                 child: AttendanceChart(summary: summary),

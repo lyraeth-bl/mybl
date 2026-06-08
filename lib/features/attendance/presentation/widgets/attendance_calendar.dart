@@ -7,6 +7,8 @@ import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import '../../../../core/internal/src/extensions/extensions.dart';
+import '../../../../core/theme/app_theme.dart';
+import '../../../../core/widgets/app_container.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/attendance_entity/attendance_entity.dart';
 import '../../domain/entities/attendance_status/attendance_status.dart';
@@ -30,7 +32,9 @@ class AttendanceCalendar extends StatelessWidget {
       context: context,
       useRootNavigator: true,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      showDragHandle: true,
+      enableDrag: true,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       builder: (_) => _AttendanceDetailSheet(day: day, entity: entity),
     );
   }
@@ -49,7 +53,8 @@ class AttendanceCalendar extends StatelessWidget {
       calendarStyle: CalendarStyle(
         todayDecoration: BoxDecoration(
           color: colorScheme.primaryContainer,
-          shape: BoxShape.circle,
+          shape: BoxShape.rectangle,
+          borderRadius: BorderRadius.circular(8),
         ),
         todayTextStyle: textTheme.bodyLarge!.copyWith(
           color: colorScheme.onPrimaryContainer,
@@ -72,10 +77,7 @@ class AttendanceCalendar extends StatelessWidget {
           fontWeight: FontWeight.bold,
         ),
       ),
-
-      daysOfWeekHeight: 48,
       startingDayOfWeek: StartingDayOfWeek.monday,
-      rowHeight: 60,
       availableGestures: AvailableGestures.none,
       onDaySelected: (selectedDay, _) =>
           _showAttendanceDetail(context, selectedDay),
@@ -101,19 +103,20 @@ class _AttendanceDayCell extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    final appColors = AppColors.of(context);
 
     final (bgColor, textColor) = switch (status) {
       AttendanceStatus.present => (
-        Colors.green.withValues(alpha: 0.2),
-        Colors.green.shade800,
+        appColors.success.withValues(alpha: 0.2),
+        appColors.success,
       ),
       AttendanceStatus.late => (
         colorScheme.primaryContainer,
         colorScheme.onPrimaryContainer,
       ),
       AttendanceStatus.excused => (
-        Colors.amber.withValues(alpha: 0.2),
-        Colors.amber.shade800,
+        appColors.warning.withValues(alpha: 0.2),
+        appColors.warning,
       ),
       AttendanceStatus.absent => (
         colorScheme.errorContainer,
@@ -121,15 +124,23 @@ class _AttendanceDayCell extends StatelessWidget {
       ),
     };
 
-    return Container(
-      margin: const EdgeInsets.all(4),
-      decoration: BoxDecoration(color: bgColor, shape: BoxShape.circle),
-      child: Center(
-        child: Text(
-          '${day.day}',
-          style: textTheme.labelSmall!.copyWith(
-            color: colorScheme.onSurface,
-            fontWeight: FontWeight.bold,
+    return Center(
+      child: SizedBox.square(
+        dimension: 40,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: bgColor,
+            shape: BoxShape.rectangle,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Center(
+            child: Text(
+              '${day.day}',
+              style: textTheme.labelSmall!.copyWith(
+                color: textColor,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
         ),
       ),
@@ -161,61 +172,43 @@ class _AttendanceDetailSheet extends StatelessWidget {
       snap: true,
       snapSizes: hasEntity ? [0.6, 0.92] : [0.3],
       builder: (context, scrollController) {
-        return Container(
-          decoration: BoxDecoration(
-            color: colorScheme.surfaceContainerLow,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
-          ),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                child: Container(
-                  width: 32,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-              ),
-
-              Expanded(
-                child: SingleChildScrollView(
-                  controller: scrollController,
-                  padding: const EdgeInsets.fromLTRB(24, 0, 24, 40),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        formattedDate,
-                        style: textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: colorScheme.onSurface,
-                        ),
+        return Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                controller: scrollController,
+                padding: const EdgeInsets.fromLTRB(24, 0, 24, 40),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      formattedDate,
+                      style: textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: colorScheme.onSurface,
                       ),
-                      const SizedBox(height: 20),
-                      if (!hasEntity)
-                        Center(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 24),
-                            child: Text(
-                              l10n.noAttendanceDetailData,
-                              style: textTheme.bodyMedium?.copyWith(
-                                color: colorScheme.onSurfaceVariant,
-                              ),
-                              textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 24),
+                    if (!hasEntity)
+                      Center(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 24),
+                          child: Text(
+                            l10n.noAttendanceDetailData,
+                            style: textTheme.titleMedium?.copyWith(
+                              color: colorScheme.onSurfaceVariant,
                             ),
+                            textAlign: TextAlign.center,
                           ),
-                        )
-                      else
-                        _AttendanceDetailContent(entity: entity!),
-                    ],
-                  ),
+                        ),
+                      )
+                    else
+                      _AttendanceDetailContent(entity: entity!),
+                  ],
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         );
       },
     );
@@ -236,10 +229,12 @@ class _AttendanceDetailContent extends StatelessWidget {
 
   (Color, Color, IconData) _statusStyle(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final appColors = AppColors.of(context);
+
     return switch (entity.status) {
       'Hadir' => (
-        Colors.green.withValues(alpha: 0.15),
-        Colors.green.shade800,
+        appColors.success.withValues(alpha: 0.15),
+        appColors.success,
         Icons.check_circle_rounded,
       ),
       'Terlambat' => (
@@ -253,8 +248,8 @@ class _AttendanceDetailContent extends StatelessWidget {
         Icons.cancel_rounded,
       ),
       _ => (
-        Colors.amber.withValues(alpha: 0.15),
-        Colors.amber.shade800,
+        appColors.warning.withValues(alpha: 0.15),
+        appColors.warning,
         Icons.info_rounded,
       ),
     };
@@ -307,17 +302,17 @@ class _AttendanceDetailContent extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           decoration: BoxDecoration(
             color: bgColor,
-            borderRadius: BorderRadius.circular(24),
+            borderRadius: BorderRadius.circular(16),
           ),
           child: Row(
             children: [
               Icon(icon, color: fgColor, size: 28),
-              const SizedBox(width: 12),
+              const SizedBox(width: 16),
               Text(
                 _statusLabel,
                 style: textTheme.titleSmall?.copyWith(
                   color: fgColor,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: .bold,
                 ),
               ),
             ],
@@ -356,31 +351,35 @@ class _DetailRow extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
 
-    return Card.filled(
-      color: colorScheme.surfaceContainer,
-      margin: const EdgeInsets.all(2),
+    return AppContainer(
+      margin: const EdgeInsets.symmetric(vertical: 2),
+      padding: EdgeInsets.zero,
+      backgroundColor: colorScheme.surfaceContainerLow,
+      elevation: 0,
       shape: shape,
+      borderRadius: null,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
         child: Row(
           children: [
             Icon(icon, color: colorScheme.onSurfaceVariant),
-            const SizedBox(width: 12),
+            const SizedBox(width: 16),
             SizedBox(
               width: 100,
               child: Text(
                 label,
-                style: textTheme.bodySmall?.copyWith(
+                style: textTheme.bodyMedium?.copyWith(
                   color: colorScheme.onSurfaceVariant,
                 ),
               ),
             ),
+            const SizedBox(width: 16),
             Expanded(
               child: Text(
                 value,
                 style: textTheme.bodyMedium?.copyWith(
                   color: colorScheme.onSurface,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: .bold,
                 ),
               ),
             ),

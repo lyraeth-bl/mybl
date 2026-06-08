@@ -179,7 +179,7 @@ class _TimeTableContainer extends StatelessWidget {
       margin: EdgeInsets.symmetric(vertical: 2),
       shape: shape,
       borderRadius: null,
-      elevation: 1,
+      elevation: 0,
       child: Row(
         mainAxisAlignment: .spaceBetween,
         children: [
@@ -460,7 +460,7 @@ class _TimeTableMessageContainer extends StatelessWidget {
     return AppContainer(
       backgroundColor: colors.background,
       margin: EdgeInsets.zero,
-      elevation: 1,
+      elevation: 0,
       borderRadius: BorderRadius.circular(16),
       child: Row(
         children: [

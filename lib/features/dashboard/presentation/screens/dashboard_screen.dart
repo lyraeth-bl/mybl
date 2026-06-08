@@ -5,10 +5,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:my_bl/core/widgets/app_profile_picture.dart';
 
 import '../../../../core/app_router/app_router.dart';
 import '../../../../core/di/get_it_constant.dart';
+import '../../../../core/widgets/app_profile_picture.dart';
+import '../../../../core/widgets/app_top_bar.dart';
 import '../../../../core/widgets/refresh_wrapper.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../attendance/presentation/bloc/daily_attendance_bloc/daily_attendance_bloc.dart';
@@ -178,65 +179,41 @@ class _DashboardViewState extends State<_DashboardView> {
   }
 }
 
+@immutable
 class _DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
   const _DashboardAppBar();
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return AppBar(
+    return AppTopBar(
       toolbarHeight: 72,
-      leading:
-          BlocSelector<UserBloc, UserState, ({String? imageUrl, String? name})>(
-            selector: (state) => state.maybeWhen(
-              success: (student) => (
-                imageUrl: student.profileImageUrl,
-                name: student.nama ?? student.namaPanggilan,
-              ),
-              orElse: () => (imageUrl: null, name: null),
-            ),
-            builder: (context, profile) => Padding(
-              padding: const EdgeInsets.only(left: 12),
-              child: InkWell(
-                onTap: () => context.push(RouteNames.profile),
-                child: AppProfilePicture(
-                  imageUrl: profile.imageUrl,
-                  initials: AppProfilePicture.initialFrom(profile.name),
-                  side: BorderSide(color: colorScheme.outlineVariant, width: 2),
-                ),
-              ),
-            ),
-          ),
-      title: Text("MyBL", style: const TextStyle(fontWeight: .bold)),
-      centerTitle: true,
-      actions: [
-        IconButton(
-          onPressed: () async {
-            await context.push(RouteNames.notification);
-            if (!context.mounted) return;
-
-            context.read<NotificationBloc>().add(
-              const NotificationEvent.fetchNotificationsRequested(),
-            );
-          },
-          icon: BlocSelector<NotificationBloc, NotificationState, int>(
-            selector: _unreadNotificationCount,
-            builder: (context, unreadCount) {
-              return Badge.count(
-                count: unreadCount,
-                isLabelVisible: unreadCount > 0,
-                maxCount: 99,
-                child: Icon(
-                  Icons.notifications_active_rounded,
-                  color: colorScheme.primary,
-                ),
-              );
-            },
-          ),
+      title: const Text('MyBL'),
+      profileImageUrl: context.select<UserBloc, String?>(
+        (bloc) => bloc.state.maybeWhen(
+          success: (student) => student.profileImageUrl,
+          orElse: () => null,
         ),
-      ],
-      actionsPadding: EdgeInsets.only(right: 16),
+      ),
+      profileInitials: context.select<UserBloc, String?>(
+        (bloc) => bloc.state.maybeWhen(
+          success: (student) => AppProfilePicture.initialFrom(
+            student.nama ?? student.namaPanggilan,
+          ),
+          orElse: () => null,
+        ),
+      ),
+      notificationCount: context.select<NotificationBloc, int>(
+        (bloc) => _unreadNotificationCount(bloc.state),
+      ),
+      onProfileTap: () => context.push(RouteNames.profile),
+      onNotificationTap: () async {
+        await context.push(RouteNames.notification);
+        if (!context.mounted) return;
+
+        context.read<NotificationBloc>().add(
+          const NotificationEvent.fetchNotificationsRequested(),
+        );
+      },
     );
   }
 

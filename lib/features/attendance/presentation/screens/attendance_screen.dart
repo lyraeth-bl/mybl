@@ -4,10 +4,15 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../../core/app_router/app_router.dart';
 import '../../../../core/di/get_it_constant.dart';
+import '../../../../core/widgets/app_profile_picture.dart';
+import '../../../../core/widgets/app_top_bar.dart';
 import '../../../../core/widgets/refresh_wrapper.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../user/presentation/bloc/user_bloc.dart';
 import '../bloc/monthly_attendance_bloc/monthly_attendance_bloc.dart';
 import '../widgets/attendance_calendar_section.dart';
 import '../widgets/attendance_chart_section.dart';
@@ -53,35 +58,75 @@ class _AttendanceScreenViewState extends State<_AttendanceScreenView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
       appBar: const _AttendanceAppBar(),
       body: const _AttendanceBody(),
     );
   }
 }
 
+@immutable
 class _AttendanceAppBar extends StatelessWidget implements PreferredSizeWidget {
   const _AttendanceAppBar();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
+    return AppTopBar(
+      toolbarHeight: 72,
+      title: Text(l10n.dailyAttendance),
+      centerTitle: true,
+      actions: const <Widget>[_AttendanceProfileAction()],
+    );
+  }
+
+  @override
+  Size get preferredSize => Size.fromHeight(80);
+}
+
+class _AttendanceProfileAction extends StatelessWidget {
+  const _AttendanceProfileAction();
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context)!;
 
-    return AppBar(
-      backgroundColor: colorScheme.primaryContainer,
-      surfaceTintColor: colorScheme.primaryContainer,
-      toolbarHeight: 72,
-      title: Text(
-        l10n.dailyAttendance,
-        style: const TextStyle(fontWeight: .bold, letterSpacing: 2),
+    return BlocSelector<
+      UserBloc,
+      UserState,
+      ({String? imageUrl, String? name})
+    >(
+      selector: (state) => state.maybeWhen(
+        success: (student) => (
+          imageUrl: student.profileImageUrl,
+          name: student.nama ?? student.namaPanggilan,
+        ),
+        orElse: () => (imageUrl: null, name: null),
       ),
-      centerTitle: true,
+      builder: (context, profile) {
+        return Tooltip(
+          message: l10n.profile,
+          child: InkResponse(
+            onTap: () => context.go(RouteNames.profile),
+            customBorder: const CircleBorder(),
+            radius: 24,
+            child: SizedBox.square(
+              dimension: kMinInteractiveDimension,
+              child: Center(
+                child: AppProfilePicture(
+                  imageUrl: profile.imageUrl,
+                  initials: AppProfilePicture.initialFrom(profile.name),
+                  radius: 20,
+                  side: BorderSide(color: colorScheme.outlineVariant, width: 2),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
-
-  @override
-  Size get preferredSize => Size.fromHeight(80);
 }
 
 class _AttendanceRefreshWrapper extends StatelessWidget {
@@ -134,25 +179,16 @@ class _AttendanceBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return Container(
-      clipBehavior: .antiAlias,
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainer,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
-      ),
-      child: _AttendanceRefreshWrapper(
-        child: CustomScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          slivers: const [
-            AttendanceSummarySection(),
-            AttendanceCalendarSection(),
-            AttendanceFilteredSection(),
-            AttendanceChartSection(),
-            SliverToBoxAdapter(child: SizedBox(height: 24)),
-          ],
-        ),
+    return _AttendanceRefreshWrapper(
+      child: CustomScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        slivers: const [
+          AttendanceSummarySection(),
+          AttendanceCalendarSection(),
+          AttendanceFilteredSection(),
+          AttendanceChartSection(),
+          SliverToBoxAdapter(child: SizedBox(height: 24)),
+        ],
       ),
     );
   }
