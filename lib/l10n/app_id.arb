@@ -51,9 +51,14 @@
   },
   "attendanceChart": "Grafik Absensi",
   "navigation": "Navigasi",
+  "all": "Semua",
+  "seeAll": "Lihat Semua",
   "timeTable": "Jadwal Pelajaran",
   "enjoyYourHoliday": "Selamat menikmati hari libur kamu.",
+  "enjoyYourHolidaySubtitle": "Tidak ada jadwal pelajaran hari ini.",
   "todayScheduleFinished": "Hari ini sudah selesai.",
+  "todayScheduleFinishedSubtitle": "Semua pelajaran hari ini sudah berakhir.",
+  "ongoingNow": "Sedang berlangsung",
   "scheduleDurationMinutes": "{minutes} menit",
   "@scheduleDurationMinutes": {
     "placeholders": {
@@ -66,11 +71,47 @@
   "meritAndDemerit": "Merit & Demerit",
   "academicCalendar": "Kalendar Akademik",
   "academicCalendarLog": "Riwayat Kalendar Akademik",
+  "upcoming": "Mendatang",
+  "exam": "Ujian",
+  "academic": "Akademik",
+  "holiday": "Libur",
+  "event": "Event",
   "academicResult": "Hasil Akademik",
+  "currentSemesterScore": "Nilai semester ini",
+  "subjectList": "Daftar Mata Pelajaran",
+  "subjectCount": "{count} Mata Pelajaran",
+  "@subjectCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "assessmentDataCount": "{count} data penilaian",
+  "@assessmentDataCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "extracurricular": "Ekstrakulikuler",
   "merit": "Merit",
   "demerit": "Demerit",
   "settings": "Pengaturan",
+  "personalization": "Personalisasi",
+  "support": "Dukungan",
+  "appTheme": "Tema Aplikasi",
+  "helpCenter": "Pusat Bantuan",
+  "privacyPolicy": "Kebijakan Privasi",
+  "appVersion": "v {version}",
+  "@appVersion": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
   "language": "Bahasa",
   "indonesian": "Indonesia",
   "english": "Inggris",
@@ -104,6 +145,7 @@
   "today": "Hari ini",
   "yesterday": "Kemarin",
   "unread": "Belum dibaca",
+  "markAllAsRead": "Tandai dibaca",
   "notificationPermissionTitle": "Aktifkan notifikasi",
   "notificationPermissionDesc": "Dapatkan update sekolah, pengingat absensi, dan pengumuman penting di perangkat ini.",
   "notificationPermissionLoadingTitle": "Mengaktifkan notifikasi",
@@ -115,6 +157,11 @@
   "notificationPermissionDeniedDesc": "Aplikasi tetap bisa digunakan. Notifikasi bisa diaktifkan nanti dari pengaturan perangkat.",
   "notificationPermissionFailedTitle": "Notifikasi gagal diaktifkan",
   "notificationPermissionFailedDesc": "Ada kendala saat menghubungkan perangkat ini. Coba lagi ya.",
+  "notificationSettings": "Pengaturan notifikasi",
+  "notificationSettingsDesc": "Peringatan, pengingat, dan update sekolah",
+  "notificationStatusActive": "Aktif",
+  "notificationStatusInactive": "Tidak aktif",
+  "notificationStatusChecking": "Mengecek status",
   "refreshQrCode": "Perbarui QR code",
   "qrCodeRefreshesAutomatically": "Refresh otomatis setiap 55 detik.",
   "qrCodeExpiresIn": "Kedaluwarsa dalam {time}",
@@ -166,6 +213,19 @@
   "defaultPoint": "Poin awal",
   "totalPoint": "Total poin",
   "noDisciplineData": "Belum ada data merit atau demerit.",
+  "disciplineActivityLog": "Riwayat Kedisiplinan",
+  "dataCount": "{count} data",
+  "@dataCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "disciplineStatusExcellent": "Sangat baik. Pertahankan kebiasaan positifmu.",
+  "disciplineStatusGood": "Baik. Tetap konsisten ya.",
+  "disciplineStatusNeedsAttention": "Perlu perhatian. Perbaikan kecil tetap berarti.",
+  "disciplineStatusCritical": "Kritis. Mulai perbaiki pelan-pelan.",
   "unit": "Unit",
   "teacher": "Guru",
   "date": "Tanggal",
@@ -177,6 +237,9 @@
   "reason": "Alasan",
   "personalInfo": "Informasi pribadi",
   "personalInfoDesc": "Nama, email, nomor, alamat",
+  "totalMeritPoint": "Total Merit Point",
+  "profileAttendance": "Kehadiran",
+  "profileAverageScore": "Rata-rata Nilai",
   "dateOfBirth": "Tanggal lahir",
   "gender": "Jenis kelamin",
   "religion": "Agama",

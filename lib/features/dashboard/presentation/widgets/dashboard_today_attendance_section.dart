@@ -42,12 +42,14 @@ class DashboardTodayAttendanceSection extends StatelessWidget {
         fontWeight: .bold,
       ),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      action: AppChipContainer(value: DateFormat.yMMMMd(locale).format(now)),
+      action: AppChipContainer(
+        value: DateFormat.yMMMMEEEEd(locale).format(now),
+      ),
       sliver: SliverGrid.count(
         crossAxisCount: 2,
         crossAxisSpacing: 14,
         mainAxisSpacing: 14,
-        childAspectRatio: 1.4,
+        childAspectRatio: 1.5,
         children: [
           BlocBuilder<DailyAttendanceBloc, DailyAttendanceState>(
             builder: (context, state) {
@@ -184,21 +186,18 @@ class _DashboardTodayAttendanceContainer extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     return AppContainer(
+      backgroundColor: colorScheme.surfaceContainerLow,
       margin: EdgeInsets.zero,
-      aspectRatio: 1.4,
+      aspectRatio: 1.5,
       elevation: 0,
-      boxShadow: <BoxShadow>[
-        BoxShadow(
-          color: colorScheme.surfaceContainerHighest,
-          offset: const Offset(5, 5),
-        ),
-      ],
+      borderRadius: BorderRadius.circular(16),
       child: Column(
         crossAxisAlignment: crossAxisAlignment,
         mainAxisAlignment: .center,
         mainAxisSize: .min,
         children: [
           Row(
+            mainAxisSize: .min,
             crossAxisAlignment: .center,
             children: [
               AppIconContainer(
@@ -207,26 +206,18 @@ class _DashboardTodayAttendanceContainer extends StatelessWidget {
                 foregroundColor: iconForegroundColor,
               ),
               const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: .start,
-                  mainAxisSize: .min,
-                  children: [
-                    Text(
-                      title,
-                      style: textTheme.titleSmall!.copyWith(
-                        color: colorScheme.onSurface,
-                        fontWeight: .bold,
-                      ),
-                      maxLines: 2,
-                    ),
-                  ],
+              Text(
+                title,
+                style: textTheme.titleSmall!.copyWith(
+                  color: colorScheme.onSurface,
+                  fontWeight: .bold,
                 ),
+                maxLines: 2,
               ),
             ],
           ),
 
-          const SizedBox(height: 20),
+          const SizedBox(height: 16),
 
           Row(
             mainAxisSize: .min,

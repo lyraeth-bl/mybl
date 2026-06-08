@@ -95,15 +95,19 @@ extension GoogleListShape on int {
     if (this == 0) {
       return RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(32),
+          topLeft: Radius.circular(16),
           bottomLeft: Radius.circular(16),
+          bottomRight: Radius.circular(4),
+          topRight: Radius.circular(4),
         ),
       );
     } else if (this == lastIndex) {
       return RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
           topRight: Radius.circular(16),
-          bottomRight: Radius.circular(32),
+          bottomRight: Radius.circular(16),
+          topLeft: Radius.circular(4),
+          bottomLeft: Radius.circular(4),
         ),
       );
     }

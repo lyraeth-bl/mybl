@@ -101,14 +101,10 @@ class AttendanceCalendarSection extends StatelessWidget {
 
           return RepaintBoundary(
             child: AppContainer(
+              backgroundColor: colorScheme.surfaceContainerLow,
               margin: EdgeInsets.zero,
               elevation: 0,
-              boxShadow: <BoxShadow>[
-                BoxShadow(
-                  color: colorScheme.surfaceContainerHighest,
-                  offset: const Offset(5, 5),
-                ),
-              ],
+              borderRadius: BorderRadius.circular(16),
               child: Column(
                 children: [
                   Row(
@@ -150,10 +146,7 @@ class AttendanceCalendarSection extends StatelessWidget {
                     entityData: entityMap,
                   ),
 
-                  Divider(
-                    color: colorScheme.outlineVariant,
-                    radius: BorderRadius.circular(999),
-                  ),
+                  const SizedBox(height: 16),
 
                   const _AttendanceLegends(),
                 ],
@@ -216,7 +209,7 @@ class _LegendItem extends StatelessWidget {
         Text(
           label,
 
-          style: textTheme.labelSmall?.copyWith(
+          style: textTheme.labelMedium?.copyWith(
             color: colorScheme.onSurfaceVariant,
           ),
         ),

@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Mahsa Nurfarhan Hidayat / Yayasan Pakarti Luhur. All rights reserved.
+// Use of this source code is governed by a MIT License
+// that can be found in the LICENSE file.
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -45,6 +49,13 @@ class AttendanceFilteredSectionState extends State<AttendanceFilteredSection> {
         color: colorScheme.onSurface,
         fontWeight: .bold,
       ),
+      action: Tooltip(
+        message: l10n.attendanceDateFilter,
+        child: AppChipContainer(
+          onTap: _showPresetSheet,
+          child: const Icon(Icons.tune_rounded, size: 18),
+        ),
+      ),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: BlocBuilder<MonthlyAttendanceBloc, MonthlyAttendanceState>(
         buildWhen: (prev, curr) {
@@ -90,7 +101,6 @@ class AttendanceFilteredSectionState extends State<AttendanceFilteredSection> {
                 toDate: _toDate,
                 onFromDatePressed: () => _pickDate(isFromDate: true),
                 onToDatePressed: () => _pickDate(isFromDate: false),
-                onPresetPressed: _showPresetSheet,
               ),
               const SizedBox(height: 16),
               if (isLoading)
@@ -184,68 +194,38 @@ class _AttendanceFilterBar extends StatelessWidget {
     required this.toDate,
     required this.onFromDatePressed,
     required this.onToDatePressed,
-    required this.onPresetPressed,
   });
 
   final DateTime fromDate;
   final DateTime toDate;
   final VoidCallback onFromDatePressed;
   final VoidCallback onToDatePressed;
-  final VoidCallback onPresetPressed;
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
     final locale = Localizations.localeOf(context).toString();
     final l10n = AppLocalizations.of(context)!;
     final dateFormat = DateFormat('dd MMM yyyy', locale);
 
-    return AppContainer(
-      margin: EdgeInsets.zero,
-      elevation: 0,
-      boxShadow: <BoxShadow>[
-        BoxShadow(
-          color: colorScheme.surfaceContainerHighest,
-          offset: const Offset(5, 5),
+    return Row(
+      children: [
+        Expanded(
+          child: _DateFilterButton(
+            label: l10n.fromDate,
+            value: dateFormat.format(fromDate),
+            onTap: onFromDatePressed,
+          ),
+        ),
+        const SizedBox(width: 16),
+        Expanded(
+          child: _DateFilterButton(
+            label: l10n.toDate,
+            value: dateFormat.format(toDate),
+            onTap: onToDatePressed,
+            crossAxisAlignment: .end,
+          ),
         ),
       ],
-      child: Row(
-        children: [
-          Expanded(
-            child: _DateFilterButton(
-              label: l10n.fromDate,
-              value: dateFormat.format(fromDate),
-              onTap: onFromDatePressed,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(16),
-                topRight: Radius.circular(8),
-                bottomLeft: Radius.circular(8),
-                bottomRight: Radius.circular(8),
-              ),
-            ),
-          ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: _DateFilterButton(
-              label: l10n.toDate,
-              value: dateFormat.format(toDate),
-              onTap: onToDatePressed,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(8),
-                topRight: Radius.circular(8),
-                bottomLeft: Radius.circular(8),
-                bottomRight: Radius.circular(8),
-              ),
-            ),
-          ),
-          const SizedBox(width: 8),
-          IconButton.filledTonal(
-            onPressed: onPresetPressed,
-            icon: const Icon(Icons.tune_rounded),
-            tooltip: l10n.attendanceDateFilter,
-          ),
-        ],
-      ),
     );
   }
 }
@@ -255,28 +235,29 @@ class _DateFilterButton extends StatelessWidget {
     required this.label,
     required this.value,
     required this.onTap,
-    required this.borderRadius,
+    this.crossAxisAlignment = .start,
   });
 
   final String label;
   final String value;
   final VoidCallback onTap;
-  final BorderRadiusGeometry borderRadius;
+  final CrossAxisAlignment crossAxisAlignment;
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
 
-    return AppChipContainer(
-      borderRadius: borderRadius,
+    return AppContainer(
+      margin: EdgeInsets.zero,
       onTap: onTap,
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      elevation: 0,
       backgroundColor: colorScheme.surfaceContainerLow,
-      foregroundColor: colorScheme.onSurface,
+      borderRadius: BorderRadius.circular(16),
+      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: crossAxisAlignment,
+        mainAxisSize: .min,
         children: [
           Text(
             label,
@@ -284,17 +265,16 @@ class _DateFilterButton extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             style: textTheme.labelSmall?.copyWith(
               color: colorScheme.onSurfaceVariant,
-              fontWeight: FontWeight.w500,
             ),
           ),
-          const SizedBox(height: 2),
+          const SizedBox(height: 8),
           Text(
             value,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: textTheme.labelMedium?.copyWith(
               color: colorScheme.onSurface,
-              fontWeight: FontWeight.w700,
+              fontWeight: .bold,
             ),
           ),
         ],
@@ -308,6 +288,7 @@ class _AttendancePresetSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context)!;
     final today = DateUtils.dateOnly(DateTime.now());
     final firstDateOfMonth = DateTime(today.year, today.month);
@@ -347,22 +328,29 @@ class _AttendancePresetSheet extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(24, 0, 24, 8),
+              padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
                   l10n.attendanceDateFilter,
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleMedium?.copyWith(fontWeight: .bold),
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: .bold,
+                    color: colorScheme.onSurface,
+                  ),
                 ),
               ),
             ),
             ...presets.map(
-              (preset) => ListTile(
-                leading: const Icon(Icons.date_range_rounded),
-                title: Text(preset.label),
-                onTap: () => Navigator.of(context).pop(preset.range),
+              (preset) => AppContainer(
+                elevation: 0,
+                backgroundColor: colorScheme.surfaceContainer,
+                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                borderRadius: BorderRadius.circular(16),
+                padding: EdgeInsets.zero,
+                child: ListTile(
+                  title: Text(preset.label),
+                  onTap: () => Navigator.of(context).pop(preset.range),
+                ),
               ),
             ),
           ],
@@ -409,44 +397,31 @@ class _AttendanceLogContainer extends StatelessWidget {
       shape: shape,
       borderRadius: null,
       elevation: 0,
-      boxShadow: <BoxShadow>[
-        BoxShadow(
-          color: colorScheme.surfaceContainerHighest,
-          offset: const Offset(5, 5),
-        ),
-      ],
+      backgroundColor: colorScheme.surfaceContainerLow,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           AppIconContainer(
+            padding: EdgeInsets.all(8),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
             icon: statusStyle.icon,
             backgroundColor: statusStyle.backgroundColor,
             foregroundColor: statusStyle.foregroundColor,
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  l10n.date,
-                  style: textTheme.labelSmall?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                ).toShimmer(
-                  context,
-                  isLoading: isLoading,
-                  width: 64,
-                  height: 10,
-                ),
-                const SizedBox(height: 2),
                 Text(
                   entity == null ? '' : dateFormat.format(entity.tanggal),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: textTheme.titleSmall?.copyWith(
                     color: colorScheme.onSurface,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: .bold,
                   ),
                 ).toShimmer(
                   context,
@@ -454,24 +429,11 @@ class _AttendanceLogContainer extends StatelessWidget {
                   width: 120,
                   height: 12,
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 16),
                 Text(
-                  '${l10n.checkIn}, ${l10n.checkOut}',
-                  style: textTheme.labelSmall?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                ).toShimmer(
-                  context,
-                  isLoading: isLoading,
-                  width: 112,
-                  height: 10,
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  '${_timeLabel(checkIn, timeFormat)} - ${_timeLabel(checkOut, timeFormat)}',
+                  '${_timeLabel(checkIn, timeFormat)}     -     ${_timeLabel(checkOut, timeFormat)}',
                   style: textTheme.bodyMedium?.copyWith(
-                    color: colorScheme.onSurface,
-                    fontWeight: FontWeight.w700,
+                    color: colorScheme.onSurfaceVariant,
                   ),
                 ).toShimmer(
                   context,
@@ -530,26 +492,26 @@ class _AttendanceMessageContainer extends StatelessWidget {
     return AppContainer(
       margin: EdgeInsets.zero,
       elevation: 0,
-      boxShadow: <BoxShadow>[
-        BoxShadow(
-          color: colorScheme.surfaceContainerHighest,
-          offset: const Offset(5, 5),
-        ),
-      ],
+      backgroundColor: colorScheme.surfaceContainerLow,
+      borderRadius: BorderRadius.circular(16),
       child: Row(
         children: [
           AppIconContainer(
+            padding: EdgeInsets.all(8),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
             icon: icon,
             backgroundColor: colorScheme.primaryContainer,
             foregroundColor: colorScheme.onPrimaryContainer,
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 16),
           Expanded(
             child: Text(
               message,
               style: textTheme.titleMedium?.copyWith(
                 color: colorScheme.onSurface,
-                fontWeight: FontWeight.bold,
+                fontWeight: .bold,
               ),
             ),
           ),

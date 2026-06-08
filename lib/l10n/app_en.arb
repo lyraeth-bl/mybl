@@ -51,9 +51,14 @@
   },
   "attendanceChart": "Attendance Chart",
   "navigation": "Navigation",
+  "all": "All",
+  "seeAll": "See all",
   "timeTable": "Timetable",
   "enjoyYourHoliday": "Enjoy your holiday.",
+  "enjoyYourHolidaySubtitle": "There are no lessons scheduled today.",
   "todayScheduleFinished": "Today’s lessons are finished.",
+  "todayScheduleFinishedSubtitle": "All lessons for today have ended.",
+  "ongoingNow": "Ongoing now",
   "scheduleDurationMinutes": "{minutes} min",
   "@scheduleDurationMinutes": {
     "placeholders": {
@@ -66,11 +71,47 @@
   "meritAndDemerit": "Merit & Demerit",
   "academicCalendar": "Academic Calendar",
   "academicCalendarLog": "Academic Calendar Log",
+  "upcoming": "Upcoming",
+  "exam": "Exam",
+  "academic": "Academic",
+  "holiday": "Holiday",
+  "event": "Event",
   "academicResult": "Academic Result",
+  "currentSemesterScore": "Current semester score",
+  "subjectList": "Subject List",
+  "subjectCount": "{count} Subjects",
+  "@subjectCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "assessmentDataCount": "{count} assessment data",
+  "@assessmentDataCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "extracurricular": "Extracurricular",
   "merit": "Merit",
   "demerit": "Demerit",
   "settings": "Settings",
+  "personalization": "Personalization",
+  "support": "Support",
+  "appTheme": "App Theme",
+  "helpCenter": "Help Center",
+  "privacyPolicy": "Privacy Policy",
+  "appVersion": "v {version}",
+  "@appVersion": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
   "language": "Language",
   "indonesian": "Indonesian",
   "english": "English",
@@ -104,6 +145,7 @@
   "today": "Today",
   "yesterday": "Yesterday",
   "unread": "Unread",
+  "markAllAsRead": "Mark all read",
   "notificationPermissionTitle": "Turn on notifications",
   "notificationPermissionDesc": "Get school updates, attendance reminders, and important announcements on this device.",
   "notificationPermissionLoadingTitle": "Turning notifications on",
@@ -115,6 +157,11 @@
   "notificationPermissionDeniedDesc": "You can still use the app. Notifications can be enabled later from device settings.",
   "notificationPermissionFailedTitle": "Couldn’t turn on notifications",
   "notificationPermissionFailedDesc": "Something went wrong while connecting this device. Please try again.",
+  "notificationSettings": "Notification settings",
+  "notificationSettingsDesc": "Alerts, reminders, and school updates",
+  "notificationStatusActive": "Active",
+  "notificationStatusInactive": "Inactive",
+  "notificationStatusChecking": "Checking status",
   "refreshQrCode": "Refresh QR code",
   "qrCodeRefreshesAutomatically": "Refreshes automatically every 55 seconds.",
   "qrCodeExpiresIn": "Expires in {time}",
@@ -166,6 +213,19 @@
   "defaultPoint": "Default point",
   "totalPoint": "Total point",
   "noDisciplineData": "No merit or demerit data yet.",
+  "disciplineActivityLog": "Activity Log",
+  "dataCount": "{count} data",
+  "@dataCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "disciplineStatusExcellent": "Excellent standing. Keep making good choices.",
+  "disciplineStatusGood": "Good standing. Stay consistent.",
+  "disciplineStatusNeedsAttention": "Needs attention. Small improvements matter.",
+  "disciplineStatusCritical": "Critical standing. Take it one day at a time.",
   "unit": "Unit",
   "teacher": "Teacher",
   "date": "Date",
@@ -177,6 +237,9 @@
   "reason": "Reason",
   "personalInfo": "Personal info",
   "personalInfoDesc": "Name, email, phone, address",
+  "totalMeritPoint": "Total Merit Point",
+  "profileAttendance": "Attendance",
+  "profileAverageScore": "Average Score",
   "dateOfBirth": "Date of birth",
   "gender": "Gender",
   "religion": "Religion",

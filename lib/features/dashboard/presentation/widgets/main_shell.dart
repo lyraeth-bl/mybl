@@ -459,11 +459,9 @@ class _MenuGridItem extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         Material(
-          color: colorScheme.secondaryContainer,
-          borderRadius: BorderRadius.circular(24),
-
+          color: colorScheme.primaryContainer,
+          borderRadius: BorderRadius.circular(16),
           clipBehavior: Clip.antiAlias,
-
           child: InkWell(
             onTap: onTap,
             child: Container(
@@ -473,7 +471,7 @@ class _MenuGridItem extends StatelessWidget {
               child: Icon(
                 item.icon,
                 size: 32,
-                color: colorScheme.onSecondaryContainer,
+                color: colorScheme.onPrimaryContainer,
               ),
             ),
           ),
@@ -487,7 +485,7 @@ class _MenuGridItem extends StatelessWidget {
             label,
             style: textTheme.labelMedium?.copyWith(
               color: colorScheme.onSurface,
-              fontWeight: FontWeight.w500,
+              fontWeight: .bold,
             ),
             textAlign: TextAlign.center,
             maxLines: 2,

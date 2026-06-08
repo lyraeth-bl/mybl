@@ -4,7 +4,7 @@
 
 import 'package:flutter/material.dart';
 
-import '../../../../core/constants/constant.dart';
+import '../../../../core/widgets/app_sliver_group.dart';
 import '../../../../l10n/app_localizations.dart';
 
 class TimeTableDaySelectorSection extends StatelessWidget {
@@ -12,6 +12,7 @@ class TimeTableDaySelectorSection extends StatelessWidget {
     super.key,
     required this.selectedDay,
     required this.onSelected,
+    required this.sliver,
   });
 
   static const String monday = 'Senin';
@@ -34,30 +35,30 @@ class TimeTableDaySelectorSection extends StatelessWidget {
 
   final String selectedDay;
   final ValueChanged<String> onSelected;
+  final Widget sliver;
 
   @override
   Widget build(BuildContext context) {
-    return SliverToBoxAdapter(
-      child: SizedBox(
-        height: 64,
-        child: ListView.separated(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-          physics: const BouncingScrollPhysics(),
-          scrollDirection: Axis.horizontal,
-          itemCount: defaultDayValues.length,
-          separatorBuilder: (context, index) => const SizedBox(width: 8),
-          itemBuilder: (context, index) {
-            final day = defaultDayValues[index];
+    final colorScheme = Theme.of(context).colorScheme;
 
-            return ChoiceChip(
-              shape: RoundedRectangleBorder(borderRadius: customRadius),
-              label: Text(_localizedDay(context, day)),
-              selected: day == selectedDay,
-              onSelected: (_) => onSelected(day),
-            );
-          },
+    return AppSliverGroup(
+      title: '',
+      pinned: true,
+      headerHeight: 64,
+      headerPadding: EdgeInsets.zero,
+      backgroundColor: colorScheme.surface,
+      titleOffset: 0,
+      collapsedOpacity: 1,
+      action: SizedBox(
+        width: MediaQuery.sizeOf(context).width - 8,
+        height: 64,
+        child: _TimeTableDaySelector(
+          selectedDay: selectedDay,
+          onSelected: onSelected,
+          localizedDay: (day) => _localizedDay(context, day),
         ),
       ),
+      sliver: sliver,
     );
   }
 
@@ -74,5 +75,37 @@ class TimeTableDaySelectorSection extends StatelessWidget {
       sunday => l10n.sunday,
       _ => day,
     };
+  }
+}
+
+class _TimeTableDaySelector extends StatelessWidget {
+  const _TimeTableDaySelector({
+    required this.selectedDay,
+    required this.onSelected,
+    required this.localizedDay,
+  });
+
+  final String selectedDay;
+  final ValueChanged<String> onSelected;
+  final String Function(String day) localizedDay;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.separated(
+      padding: const EdgeInsetsDirectional.fromSTEB(8, 10, 16, 10),
+      physics: const BouncingScrollPhysics(),
+      scrollDirection: Axis.horizontal,
+      itemCount: TimeTableDaySelectorSection.defaultDayValues.length,
+      separatorBuilder: (context, index) => const SizedBox(width: 8),
+      itemBuilder: (context, index) {
+        final day = TimeTableDaySelectorSection.defaultDayValues[index];
+
+        return ChoiceChip(
+          label: Text(localizedDay(day)),
+          selected: day == selectedDay,
+          onSelected: (_) => onSelected(day),
+        );
+      },
+    );
   }
 }

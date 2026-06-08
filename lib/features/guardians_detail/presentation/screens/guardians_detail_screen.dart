@@ -4,9 +4,13 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../../core/app_router/app_router.dart';
 import '../../../../core/internal/src/extensions/extensions.dart';
 import '../../../../core/widgets/app_container.dart';
+import '../../../../core/widgets/app_profile_picture.dart';
+import '../../../../core/widgets/app_top_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../user/domain/entities/student_entity/student_entity.dart';
 import '../../../user/presentation/bloc/user_bloc.dart';
@@ -25,9 +29,7 @@ class _GuardiansDetailView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
-      backgroundColor: colorScheme.primaryContainer,
       appBar: const _GuardianDetailAppBar(),
       body: const _GuardianDetailBody(),
     );
@@ -40,18 +42,13 @@ class _GuardianDetailAppBar extends StatelessWidget
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context)!;
 
-    return AppBar(
-      backgroundColor: colorScheme.primaryContainer,
-      surfaceTintColor: colorScheme.primaryContainer,
+    return AppTopBar(
       toolbarHeight: 72,
-      title: Text(
-        l10n.guardianDetails,
-        style: const TextStyle(fontWeight: .bold, letterSpacing: 2),
-      ),
+      title: Text(l10n.guardianDetails),
       centerTitle: true,
+      actions: const <Widget>[_GuardianDetailProfileAction()],
     );
   }
 
@@ -59,96 +56,132 @@ class _GuardianDetailAppBar extends StatelessWidget
   Size get preferredSize => Size.fromHeight(80);
 }
 
+class _GuardianDetailProfileAction extends StatelessWidget {
+  const _GuardianDetailProfileAction();
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
+
+    return BlocSelector<
+      UserBloc,
+      UserState,
+      ({String? imageUrl, String? name})
+    >(
+      selector: (state) => state.maybeWhen(
+        success: (student) => (
+          imageUrl: student.profileImageUrl,
+          name: student.nama ?? student.namaPanggilan,
+        ),
+        orElse: () => (imageUrl: null, name: null),
+      ),
+      builder: (context, profile) {
+        return Tooltip(
+          message: l10n.profile,
+          child: InkResponse(
+            onTap: () => context.go(RouteNames.profile),
+            customBorder: const CircleBorder(),
+            radius: 24,
+            child: SizedBox.square(
+              dimension: kMinInteractiveDimension,
+              child: Center(
+                child: AppProfilePicture(
+                  imageUrl: profile.imageUrl,
+                  initials: AppProfilePicture.initialFrom(profile.name),
+                  radius: 20,
+                  side: BorderSide(color: colorScheme.outlineVariant, width: 2),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
 class _GuardianDetailBody extends StatelessWidget {
   const _GuardianDetailBody();
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    return BlocBuilder<UserBloc, UserState>(
+      builder: (context, state) {
+        final isLoading = state.maybeWhen(
+          loading: () => true,
+          orElse: () => false,
+        );
+        final student = state.maybeWhen(
+          success: (student) => student,
+          orElse: () => null,
+        );
 
-    return Container(
-      clipBehavior: .antiAlias,
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainer,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
-      ),
-      child: BlocBuilder<UserBloc, UserState>(
-        builder: (context, state) {
-          final isLoading = state.maybeWhen(
-            loading: () => true,
-            orElse: () => false,
-          );
-          final student = state.maybeWhen(
-            success: (student) => student,
-            orElse: () => null,
-          );
+        final l10n = AppLocalizations.of(context)!;
 
-          final l10n = AppLocalizations.of(context)!;
-
-          if (isLoading || student == null) {
-            return CustomScrollView(
-              physics: const BouncingScrollPhysics(),
-              slivers: [
-                SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(16, 24, 16, 32),
-                  sliver: SliverList.list(
-                    children: const [
-                      _GuardianLoadingCard(),
-                      SizedBox(height: 16),
-                      _GuardianLoadingCard(),
-                      SizedBox(height: 16),
-                      _GuardianLoadingCard(),
-                      SizedBox(height: 16),
-                      _GuardianLoadingCard(rowCount: 4),
-                    ],
-                  ),
-                ),
-              ],
-            );
-          }
-
+        if (isLoading || student == null) {
           return CustomScrollView(
             physics: const BouncingScrollPhysics(),
             slivers: [
               SliverPadding(
                 padding: const EdgeInsets.fromLTRB(16, 24, 16, 32),
                 sliver: SliverList.list(
-                  children: [
-                    _GuardianCard(
-                      title: l10n.father,
-                      icon: Icons.man_rounded,
-                      nameLabel: l10n.fatherName,
-                      name: student.namaAyah,
-                      occupation: student.pekerjaanAyah,
-                      lastEducation: student.pendidikanTerakhirAyah,
-                    ),
-                    const SizedBox(height: 24),
-                    _GuardianCard(
-                      title: l10n.mother,
-                      icon: Icons.woman_rounded,
-                      nameLabel: l10n.motherName,
-                      name: student.namaIbu,
-                      occupation: student.pekerjaanIbu,
-                      lastEducation: student.pendidikanTerakhirIbu,
-                    ),
-                    const SizedBox(height: 24),
-                    _GuardianCard(
-                      title: l10n.guardian,
-                      icon: Icons.family_restroom_rounded,
-                      nameLabel: l10n.guardianName,
-                      name: student.namaWali,
-                      occupation: student.pekerjaanWali,
-                      lastEducation: student.pendidikanTerakhirWali,
-                    ),
-                    const SizedBox(height: 24),
-                    _ContactDetailCard(student: student),
+                  children: const [
+                    _GuardianLoadingCard(),
+                    SizedBox(height: 16),
+                    _GuardianLoadingCard(),
+                    SizedBox(height: 16),
+                    _GuardianLoadingCard(),
+                    SizedBox(height: 16),
+                    _GuardianLoadingCard(rowCount: 4),
                   ],
                 ),
               ),
             ],
           );
-        },
-      ),
+        }
+
+        return CustomScrollView(
+          physics: const BouncingScrollPhysics(),
+          slivers: [
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(16, 24, 16, 32),
+              sliver: SliverList.list(
+                children: [
+                  _GuardianCard(
+                    title: l10n.father,
+                    icon: Icons.man_rounded,
+                    nameLabel: l10n.fatherName,
+                    name: student.namaAyah,
+                    occupation: student.pekerjaanAyah,
+                    lastEducation: student.pendidikanTerakhirAyah,
+                  ),
+                  const SizedBox(height: 24),
+                  _GuardianCard(
+                    title: l10n.mother,
+                    icon: Icons.woman_rounded,
+                    nameLabel: l10n.motherName,
+                    name: student.namaIbu,
+                    occupation: student.pekerjaanIbu,
+                    lastEducation: student.pendidikanTerakhirIbu,
+                  ),
+                  const SizedBox(height: 24),
+                  _GuardianCard(
+                    title: l10n.guardian,
+                    icon: Icons.family_restroom_rounded,
+                    nameLabel: l10n.guardianName,
+                    name: student.namaWali,
+                    occupation: student.pekerjaanWali,
+                    lastEducation: student.pendidikanTerakhirWali,
+                  ),
+                  const SizedBox(height: 24),
+                  _ContactDetailCard(student: student),
+                ],
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }
@@ -172,20 +205,15 @@ class _GuardianCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context)!;
 
     return AppContainer(
       title: _SectionTitle(icon: icon, title: title),
       margin: EdgeInsets.zero,
-      padding: const EdgeInsets.all(24),
       borderRadius: BorderRadius.circular(16),
       elevation: 0,
-      boxShadow: <BoxShadow>[
-        BoxShadow(
-          color: Theme.of(context).colorScheme.surfaceContainerHighest,
-          offset: const Offset(5, 5),
-        ),
-      ],
+      backgroundColor: colorScheme.surfaceContainerLow,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -208,6 +236,7 @@ class _ContactDetailCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final colorScheme = Theme.of(context).colorScheme;
 
     return AppContainer(
       title: _SectionTitle(
@@ -215,15 +244,9 @@ class _ContactDetailCard extends StatelessWidget {
         title: l10n.contactAndAddress,
       ),
       margin: EdgeInsets.zero,
-      padding: const EdgeInsets.all(24),
+      backgroundColor: colorScheme.surfaceContainerLow,
       elevation: 0,
       borderRadius: BorderRadius.circular(16),
-      boxShadow: <BoxShadow>[
-        BoxShadow(
-          color: Theme.of(context).colorScheme.surfaceContainerHighest,
-          offset: const Offset(5, 5),
-        ),
-      ],
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -323,14 +346,8 @@ class _GuardianLoadingCard extends StatelessWidget {
         ],
       ),
       margin: EdgeInsets.zero,
-      padding: const EdgeInsets.all(24),
       elevation: 0,
-      boxShadow: <BoxShadow>[
-        BoxShadow(
-          color: colorScheme.surfaceContainerHighest,
-          offset: const Offset(5, 5),
-        ),
-      ],
+      backgroundColor: colorScheme.surfaceContainerLow,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: List.generate(rowCount, (index) {

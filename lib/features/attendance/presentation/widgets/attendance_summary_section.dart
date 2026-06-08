@@ -1,7 +1,13 @@
+// Copyright (c) 2026 Mahsa Nurfarhan Hidayat / Yayasan Pakarti Luhur. All rights reserved.
+// Use of this source code is governed by a MIT License
+// that can be found in the LICENSE file.
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 
 import '../../../../core/internal/src/extensions/extensions.dart';
+import '../../../../core/widgets/app_chip_container.dart';
 import '../../../../core/widgets/app_container.dart';
 import '../../../../core/widgets/app_sliver_group.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -11,15 +17,29 @@ import '../bloc/monthly_attendance_bloc/monthly_attendance_bloc.dart';
 class AttendanceSummarySection extends StatelessWidget {
   const AttendanceSummarySection({super.key});
 
+  String _monthLabel(int month, int year, String locale) =>
+      DateFormat('MMMM yyyy', locale).format(DateTime(year, month));
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     final l10n = AppLocalizations.of(context)!;
+    final locale = Localizations.localeOf(context).toString();
 
     return BlocBuilder<MonthlyAttendanceBloc, MonthlyAttendanceState>(
       buildWhen: (prev, curr) {
         final prevData = (
+          month: prev.maybeWhen(
+            success: (month, _, _, _, _, _) => month,
+            loading: (month, _) => month,
+            orElse: () => 0,
+          ),
+          year: prev.maybeWhen(
+            success: (_, year, _, _, _, _) => year,
+            loading: (_, year) => year,
+            orElse: () => 0,
+          ),
           isLoading: prev.maybeWhen(
             loading: (_, _) => true,
             orElse: () => false,
@@ -30,6 +50,16 @@ class AttendanceSummarySection extends StatelessWidget {
           ),
         );
         final currData = (
+          month: curr.maybeWhen(
+            success: (month, _, _, _, _, _) => month,
+            loading: (month, _) => month,
+            orElse: () => 0,
+          ),
+          year: curr.maybeWhen(
+            success: (_, year, _, _, _, _) => year,
+            loading: (_, year) => year,
+            orElse: () => 0,
+          ),
           isLoading: curr.maybeWhen(
             loading: (_, _) => true,
             orElse: () => false,
@@ -42,6 +72,11 @@ class AttendanceSummarySection extends StatelessWidget {
         return prevData != currData;
       },
       builder: (context, state) {
+        final (month, year) = state.maybeWhen(
+          success: (month, year, _, _, _, _) => (month, year),
+          loading: (month, year) => (month, year),
+          orElse: () => (DateTime.now().month, DateTime.now().year),
+        );
         final summary = state.maybeWhen(
           success: (_, _, _, _, _, summary) => summary,
           orElse: () => const AttendanceSummary(),
@@ -61,7 +96,7 @@ class AttendanceSummarySection extends StatelessWidget {
         final percent = '${(rate * 100).toStringAsFixed(0)}%';
 
         return AppSliverGroup(
-          title: l10n.attendanceSummary,
+          title: l10n.thisMonth,
           titleStyle: textTheme.titleMedium!.copyWith(
             color: colorScheme.onSurface,
             fontWeight: .bold,
@@ -70,15 +105,12 @@ class AttendanceSummarySection extends StatelessWidget {
             horizontal: 16,
             vertical: 8,
           ),
+          action: AppChipContainer(value: _monthLabel(month, year, locale)),
           child: AppContainer(
+            backgroundColor: colorScheme.surfaceContainerLow,
             margin: EdgeInsets.zero,
             elevation: 0,
-            boxShadow: <BoxShadow>[
-              BoxShadow(
-                color: colorScheme.surfaceContainerHighest,
-                offset: const Offset(5, 5),
-              ),
-            ],
+            borderRadius: BorderRadius.circular(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -166,7 +198,7 @@ class _AttendanceSummaryCard extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     return AppContainer(
-      backgroundColor: colorScheme.surfaceContainerLow,
+      backgroundColor: colorScheme.surfaceContainerHigh,
       margin: EdgeInsets.symmetric(horizontal: 2),
       shape: shapeBorder,
       borderRadius: null,
@@ -181,7 +213,7 @@ class _AttendanceSummaryCard extends StatelessWidget {
                   value,
                   style: textTheme.titleLarge?.copyWith(
                     color: colorScheme.onSurface,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: .bold,
                   ),
                 ).toShimmer(
                   context,

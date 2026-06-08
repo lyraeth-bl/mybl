@@ -4,7 +4,9 @@ part of 'time_table_bloc.dart';
 sealed class TimeTableState with _$TimeTableState {
   const factory TimeTableState.initial() = _Initial;
 
-  const factory TimeTableState.loading() = _Loading;
+  const factory TimeTableState.loading({
+    @Default(<TimeTable>[]) List<TimeTable> timeTable,
+  }) = _Loading;
 
   const factory TimeTableState.success({required List<TimeTable> timeTable}) =
       _Success;

@@ -7,8 +7,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/internal/src/extensions/extensions.dart';
 import '../../../../core/widgets/app_container.dart';
+import '../../../../core/widgets/app_profile_picture.dart';
 import '../../../../core/widgets/app_sliver_group.dart';
-import '../../../../core/widgets/profile_picture.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../user/presentation/bloc/user_bloc.dart';
 
@@ -29,14 +29,10 @@ class DashboardProfileSection extends StatelessWidget {
       ),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: AppContainer(
+        backgroundColor: colorScheme.surfaceContainerLow,
         margin: EdgeInsets.zero,
         elevation: 0,
-        boxShadow: <BoxShadow>[
-          BoxShadow(
-            color: colorScheme.surfaceContainerHighest,
-            offset: const Offset(5, 5),
-          ),
-        ],
+        borderRadius: BorderRadius.circular(16),
         child: BlocBuilder<UserBloc, UserState>(
           builder: (context, state) {
             final isLoading = state.maybeWhen(
@@ -68,8 +64,12 @@ class DashboardProfileSection extends StatelessWidget {
 
             return Row(
               children: [
-                ProfilePicture(
-                  profileImageUrl: student?.profileImageUrl ?? "",
+                AppProfilePicture(
+                  imageUrl: student?.profileImageUrl,
+                  initials: AppProfilePicture.initialFrom(
+                    student?.nama ?? student?.namaPanggilan,
+                  ),
+                  side: BorderSide(color: colorScheme.outlineVariant, width: 2),
                 ).toShimmer(
                   context,
                   isLoading: isLoading,

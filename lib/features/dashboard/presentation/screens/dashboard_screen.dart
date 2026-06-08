@@ -8,6 +8,8 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/app_router/app_router.dart';
 import '../../../../core/di/get_it_constant.dart';
+import '../../../../core/widgets/app_profile_picture.dart';
+import '../../../../core/widgets/app_top_bar.dart';
 import '../../../../core/widgets/refresh_wrapper.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../attendance/presentation/bloc/daily_attendance_bloc/daily_attendance_bloc.dart';
@@ -92,134 +94,126 @@ class _DashboardViewState extends State<_DashboardView> {
   Future<void> _refresh() async {
     final now = DateTime.now();
     final studentClass = _studentClass();
-
-    blocRefresh<UserBloc, UserEvent, UserState>(
-      context: context,
-      event: const UserEvent.fetchStudentRequested(true),
-      isDone: (state) => state.maybeWhen(
-        success: (_) => true,
-        failure: (_) => true,
-        orElse: () => false,
-      ),
-    );
-
-    blocRefresh<
-      DailyAttendanceBloc,
-      DailyAttendanceEvent,
-      DailyAttendanceState
-    >(
-      context: context,
-      event: const DailyAttendanceEvent.dailyAttendanceRequested(
-        forceRefresh: true,
-      ),
-      isDone: (state) => state.maybeWhen(
-        success: (_) => true,
-        emptyAttendance: () => true,
-        failure: (_) => true,
-        orElse: () => false,
-      ),
-    );
-
-    blocRefresh<
-      MonthlyAttendanceBloc,
-      MonthlyAttendanceEvent,
-      MonthlyAttendanceState
-    >(
-      context: context,
-      event: MonthlyAttendanceEvent.monthChangeRequested(
-        month: now.month,
-        year: now.year,
-        forceRefresh: true,
-      ),
-      isDone: (state) => state.maybeWhen(
-        success: (_, _, _, _, _, _) => true,
-        failure: (_) => true,
-        orElse: () => false,
-      ),
-    );
-
-    blocRefresh<NotificationBloc, NotificationEvent, NotificationState>(
-      context: context,
-      event: const NotificationEvent.fetchNotificationsRequested(),
-      isDone: (state) => state.maybeWhen(
-        success: (_) => true,
-        failure: (_) => true,
-        orElse: () => false,
-      ),
-    );
-
-    if (studentClass.isEmpty) return Future<void>.value();
-
-    if (studentClass.isNotEmpty) {
-      blocRefresh<TimeTableBloc, TimeTableEvent, TimeTableState>(
+    final refreshes = <Future<void>>[
+      blocRefresh<UserBloc, UserEvent, UserState>(
         context: context,
-        event: TimeTableEvent.fetchTimeTable(true, studentClass),
+        event: const UserEvent.fetchStudentRequested(true),
         isDone: (state) => state.maybeWhen(
           success: (_) => true,
           failure: (_) => true,
           orElse: () => false,
         ),
+      ),
+      blocRefresh<
+        DailyAttendanceBloc,
+        DailyAttendanceEvent,
+        DailyAttendanceState
+      >(
+        context: context,
+        event: const DailyAttendanceEvent.dailyAttendanceRequested(
+          forceRefresh: true,
+        ),
+        isDone: (state) => state.maybeWhen(
+          success: (_) => true,
+          emptyAttendance: () => true,
+          failure: (_) => true,
+          orElse: () => false,
+        ),
+      ),
+      blocRefresh<
+        MonthlyAttendanceBloc,
+        MonthlyAttendanceEvent,
+        MonthlyAttendanceState
+      >(
+        context: context,
+        event: MonthlyAttendanceEvent.monthChangeRequested(
+          month: now.month,
+          year: now.year,
+          forceRefresh: true,
+        ),
+        isDone: (state) => state.maybeWhen(
+          success: (_, _, _, _, _, _) => true,
+          failure: (_) => true,
+          orElse: () => false,
+        ),
+      ),
+      blocRefresh<NotificationBloc, NotificationEvent, NotificationState>(
+        context: context,
+        event: const NotificationEvent.fetchNotificationsRequested(),
+        isDone: (state) => state.maybeWhen(
+          success: (_) => true,
+          failure: (_) => true,
+          orElse: () => false,
+        ),
+      ),
+    ];
+
+    if (studentClass.isNotEmpty) {
+      refreshes.add(
+        blocRefresh<TimeTableBloc, TimeTableEvent, TimeTableState>(
+          context: context,
+          event: TimeTableEvent.fetchTimeTable(true, studentClass),
+          isDone: (state) => state.maybeWhen(
+            success: (_) => true,
+            failure: (_) => true,
+            orElse: () => false,
+          ),
+        ),
       );
     }
+
+    await Future.wait(refreshes);
   }
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
     return Scaffold(
-      backgroundColor: colorScheme.primaryContainer,
       appBar: const _DashboardAppBar(),
       floatingActionButton: FloatingActionButton(
         onPressed: () => showAttendanceQrSheet(context),
         tooltip: AppLocalizations.of(context)!.attendanceQrCode,
         child: const Icon(Icons.qr_code_2),
       ),
-      body: _DashboardBody(onRefresh: () async => _refresh()),
+      body: _DashboardBody(onRefresh: _refresh),
     );
   }
 }
 
+@immutable
 class _DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
   const _DashboardAppBar();
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return AppBar(
-      backgroundColor: colorScheme.primaryContainer,
-      surfaceTintColor: colorScheme.primaryContainer,
+    return AppTopBar(
       toolbarHeight: 72,
-      title: Text(
-        "MyBL",
-        style: const TextStyle(fontWeight: .bold, letterSpacing: 2),
-      ),
-      centerTitle: true,
-      actions: [
-        IconButton(
-          onPressed: () async {
-            await context.push(RouteNames.notification);
-            if (!context.mounted) return;
-
-            context.read<NotificationBloc>().add(
-              const NotificationEvent.fetchNotificationsRequested(),
-            );
-          },
-          icon: BlocSelector<NotificationBloc, NotificationState, int>(
-            selector: _unreadNotificationCount,
-            builder: (context, unreadCount) {
-              return Badge.count(
-                count: unreadCount,
-                isLabelVisible: unreadCount > 0,
-                maxCount: 99,
-                child: const Icon(Icons.notifications_on_outlined),
-              );
-            },
-          ),
+      title: const Text('MyBL'),
+      profileImageUrl: context.select<UserBloc, String?>(
+        (bloc) => bloc.state.maybeWhen(
+          success: (student) => student.profileImageUrl,
+          orElse: () => null,
         ),
-      ],
-      actionsPadding: EdgeInsets.only(right: 16),
+      ),
+      profileInitials: context.select<UserBloc, String?>(
+        (bloc) => bloc.state.maybeWhen(
+          success: (student) => AppProfilePicture.initialFrom(
+            student.nama ?? student.namaPanggilan,
+          ),
+          orElse: () => null,
+        ),
+      ),
+      notificationCount: context.select<NotificationBloc, int>(
+        (bloc) => _unreadNotificationCount(bloc.state),
+      ),
+      onProfileTap: () => context.go(RouteNames.profile),
+      onNotificationTap: () async {
+        await context.push(RouteNames.notification);
+        if (!context.mounted) return;
+
+        context.read<NotificationBloc>().add(
+          const NotificationEvent.fetchNotificationsRequested(),
+        );
+      },
     );
   }
 
@@ -250,24 +244,15 @@ class _DashboardBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return Container(
-      clipBehavior: .antiAlias,
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainer,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
-      ),
-      child: RefreshWrapper(
-        onRefresh: onRefresh,
-        child: CustomScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          slivers: [
-            const DashboardProfileSection(),
-            const DashboardTodayAttendanceSection(),
-            const DashboardTimeTableSection(),
-          ],
-        ),
+    return RefreshWrapper(
+      onRefresh: onRefresh,
+      child: CustomScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        slivers: [
+          const DashboardProfileSection(),
+          const DashboardTodayAttendanceSection(),
+          const DashboardTimeTableSection(),
+        ],
       ),
     );
   }

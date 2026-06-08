@@ -4,11 +4,9 @@
 
 import 'package:flutter/material.dart';
 
-/// Kartu menu andalan buat di halaman profil.
-///
-/// Daripada nulis [ListTile] berulang-ulang, mending pake widget ini aja.
-/// Udah sepaket sama icon, title, subtitle, dan handling [onTap]-nya.
-/// Bentuk pojokannya (shape) juga bisa lo custom kalo mau beda sendiri.
+import '../../../../core/widgets/app_container.dart';
+import '../../../../core/widgets/app_icon_container.dart';
+
 class ProfileCardMenu extends StatelessWidget {
   const ProfileCardMenu({
     super.key,
@@ -37,26 +35,50 @@ class ProfileCardMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
 
-    return Card(
-      margin: const EdgeInsets.all(2),
+    return AppContainer(
+      margin: const EdgeInsets.only(bottom: 4),
+      padding: EdgeInsets.zero,
+      backgroundColor: colorScheme.surfaceContainerLow,
       elevation: 0,
       shape:
           shape ??
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      borderRadius: null,
+      onTap: onTap,
       child: ListTile(
-        onTap: onTap,
         shape:
             shape ??
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-        leading: CircleAvatar(
-          backgroundColor: colorScheme.surfaceContainerHigh,
-          foregroundColor: colorScheme.onSurfaceVariant,
-          child: Icon(icon),
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        leading: AppIconContainer(
+          icon: icon,
+          padding: const EdgeInsets.all(12),
+          backgroundColor: colorScheme.primaryContainer,
+          foregroundColor: colorScheme.onPrimaryContainer,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-        subtitle: Text(subtitle),
+        title: Text(
+          title,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: textTheme.titleMedium?.copyWith(
+            color: colorScheme.onSurface,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        subtitle: Padding(
+          padding: const EdgeInsets.only(top: 4),
+          child: Text(
+            subtitle,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: textTheme.bodyMedium?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ),
       ),
     );
   }
