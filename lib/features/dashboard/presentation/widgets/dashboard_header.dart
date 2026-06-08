@@ -7,7 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/app_router/app_router.dart';
-import '../../../../core/widgets/profile_picture.dart';
+import '../../../../core/widgets/app_profile_picture.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../user/presentation/bloc/user_bloc.dart';
 
@@ -91,13 +91,23 @@ class _DashboardHeaderContent extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
             child: Row(
               children: [
-                BlocSelector<UserBloc, UserState, String>(
+                BlocSelector<
+                  UserBloc,
+                  UserState,
+                  ({String? imageUrl, String? name})
+                >(
                   selector: (state) => state.maybeWhen(
-                    success: (student) => student.profileImageUrl ?? "",
-                    orElse: () => "",
+                    success: (student) => (
+                      imageUrl: student.profileImageUrl,
+                      name: student.nama ?? student.namaPanggilan,
+                    ),
+                    orElse: () => (imageUrl: null, name: null),
                   ),
-                  builder: (context, studentImageUrl) {
-                    return ProfilePicture(profileImageUrl: studentImageUrl);
+                  builder: (context, profile) {
+                    return AppProfilePicture(
+                      imageUrl: profile.imageUrl,
+                      initials: AppProfilePicture.initialFrom(profile.name),
+                    );
                   },
                 ),
 

@@ -5,6 +5,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:my_bl/core/widgets/app_profile_picture.dart';
 
 import '../../../../core/app_router/app_router.dart';
 import '../../../../core/di/get_it_constant.dart';
@@ -165,10 +166,7 @@ class _DashboardViewState extends State<_DashboardView> {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
     return Scaffold(
-      backgroundColor: colorScheme.primaryContainer,
       appBar: const _DashboardAppBar(),
       floatingActionButton: FloatingActionButton(
         onPressed: () => showAttendanceQrSheet(context),
@@ -188,13 +186,29 @@ class _DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
     final colorScheme = Theme.of(context).colorScheme;
 
     return AppBar(
-      backgroundColor: colorScheme.primaryContainer,
-      surfaceTintColor: colorScheme.primaryContainer,
       toolbarHeight: 72,
-      title: Text(
-        "MyBL",
-        style: const TextStyle(fontWeight: .bold, letterSpacing: 2),
-      ),
+      leading:
+          BlocSelector<UserBloc, UserState, ({String? imageUrl, String? name})>(
+            selector: (state) => state.maybeWhen(
+              success: (student) => (
+                imageUrl: student.profileImageUrl,
+                name: student.nama ?? student.namaPanggilan,
+              ),
+              orElse: () => (imageUrl: null, name: null),
+            ),
+            builder: (context, profile) => Padding(
+              padding: const EdgeInsets.only(left: 12),
+              child: InkWell(
+                onTap: () => context.push(RouteNames.profile),
+                child: AppProfilePicture(
+                  imageUrl: profile.imageUrl,
+                  initials: AppProfilePicture.initialFrom(profile.name),
+                  side: BorderSide(color: colorScheme.outlineVariant, width: 2),
+                ),
+              ),
+            ),
+          ),
+      title: Text("MyBL", style: const TextStyle(fontWeight: .bold)),
       centerTitle: true,
       actions: [
         IconButton(
@@ -213,7 +227,10 @@ class _DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
                 count: unreadCount,
                 isLabelVisible: unreadCount > 0,
                 maxCount: 99,
-                child: const Icon(Icons.notifications_on_outlined),
+                child: Icon(
+                  Icons.notifications_active_rounded,
+                  color: colorScheme.primary,
+                ),
               );
             },
           ),
@@ -250,24 +267,15 @@ class _DashboardBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return Container(
-      clipBehavior: .antiAlias,
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainer,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
-      ),
-      child: RefreshWrapper(
-        onRefresh: onRefresh,
-        child: CustomScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          slivers: [
-            const DashboardProfileSection(),
-            const DashboardTodayAttendanceSection(),
-            const DashboardTimeTableSection(),
-          ],
-        ),
+    return RefreshWrapper(
+      onRefresh: onRefresh,
+      child: CustomScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        slivers: [
+          const DashboardProfileSection(),
+          const DashboardTodayAttendanceSection(),
+          const DashboardTimeTableSection(),
+        ],
       ),
     );
   }

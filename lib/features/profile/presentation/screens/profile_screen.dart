@@ -8,8 +8,8 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/app_router/app_router.dart';
 import '../../../../core/di/get_it_constant.dart';
+import '../../../../core/widgets/app_profile_picture.dart';
 import '../../../../core/widgets/logout_button.dart';
-import '../../../../core/widgets/profile_picture.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../sessions/presentation/bloc/session_bloc.dart';
@@ -134,10 +134,13 @@ class _ProfileInfo extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(16, 40, 16, 32),
           child: Column(
             children: [
-              ProfilePicture(
+              AppProfilePicture(
                 backgroundColor: colorScheme.surfaceContainerLow,
                 foregroundColor: colorScheme.onSurfaceVariant,
-                profileImageUrl: student.profileImageUrl ?? "",
+                imageUrl: student.profileImageUrl,
+                initials: AppProfilePicture.initialFrom(
+                  student.nama ?? student.namaPanggilan,
+                ),
                 radius: 48,
               ),
               const SizedBox(height: 16),

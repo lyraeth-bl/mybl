@@ -4,9 +4,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../../core/app_router/app_router.dart';
 import '../../../../core/internal/src/extensions/extensions.dart';
-import '../../../../core/widgets/app_chip_container.dart';
+import '../../../../core/theme/app_theme.dart';
+import '../../../../core/utils/subject_icon_resolver.dart';
 import '../../../../core/widgets/app_container.dart';
 import '../../../../core/widgets/app_icon_container.dart';
 import '../../../../core/widgets/app_sliver_group.dart';
@@ -22,7 +25,6 @@ class DashboardTimeTableSection extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     final l10n = AppLocalizations.of(context)!;
-    final currentDay = _localizedDayName(l10n, DateTime.now().weekday);
 
     return AppSliverGroup(
       title: l10n.timeTable,
@@ -31,15 +33,9 @@ class DashboardTimeTableSection extends StatelessWidget {
         fontWeight: .bold,
       ),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      action: BlocSelector<TimeTableBloc, TimeTableState, String>(
-        selector: (state) {
-          final schedules = state.whenOrNull(success: (timeTable) => timeTable);
-
-          if (schedules == null) return currentDay;
-
-          return _todaySchedulePreview(l10n, schedules).day;
-        },
-        builder: (context, day) => AppChipContainer(value: day),
+      action: TextButton(
+        onPressed: () => context.push(RouteNames.timeTable),
+        child: Text(l10n.seeAll),
       ),
       sliver: BlocBuilder<TimeTableBloc, TimeTableState>(
         builder: (context, state) {
@@ -53,6 +49,7 @@ class DashboardTimeTableSection extends StatelessWidget {
               itemCount: 3,
               itemBuilder: (context, index) {
                 final shape = index.makeVerticalGoogleShape(2);
+                final iconColors = _timeTableIconColors(context, index);
 
                 return _TimeTableContainer(
                   subject: '',
@@ -62,6 +59,8 @@ class DashboardTimeTableSection extends StatelessWidget {
                   durationLabel: null,
                   isLoading: isLoading,
                   shape: shape,
+                  iconBackgroundColor: iconColors.backgroundColor,
+                  iconForegroundColor: iconColors.foregroundColor,
                 );
               },
             ),
@@ -69,10 +68,24 @@ class DashboardTimeTableSection extends StatelessWidget {
               final preview = _todaySchedulePreview(l10n, timeTableList);
 
               if (preview.message != null) {
+                final type = switch (preview.icon) {
+                  Icons.weekend_outlined => _MessageType.holiday,
+                  Icons.check_circle_outline => _MessageType.success,
+                  _ => _MessageType.info,
+                };
+
+                final subtitle = switch (type) {
+                  _MessageType.holiday => l10n.enjoyYourHolidaySubtitle,
+                  _MessageType.success => l10n.todayScheduleFinishedSubtitle,
+                  _ => null,
+                };
+
                 return SliverToBoxAdapter(
                   child: _TimeTableMessageContainer(
                     icon: preview.icon ?? Icons.calendar_month_outlined,
                     message: preview.message!,
+                    subtitle: subtitle,
+                    type: type,
                   ),
                 );
               }
@@ -84,6 +97,7 @@ class DashboardTimeTableSection extends StatelessWidget {
                   child: _TimeTableMessageContainer(
                     icon: Icons.event_busy_outlined,
                     message: l10n.noData,
+                    type: _MessageType.info,
                   ),
                 );
               }
@@ -95,6 +109,7 @@ class DashboardTimeTableSection extends StatelessWidget {
                   final shape = index.makeVerticalGoogleShape(
                     schedules.length - 1,
                   );
+                  final iconColors = _timeTableIconColors(context, index);
 
                   return _TimeTableContainer(
                     subject: timeTable.namaMataPelajaran,
@@ -104,6 +119,8 @@ class DashboardTimeTableSection extends StatelessWidget {
                     durationLabel: _scheduleDurationLabel(l10n, timeTable),
                     isLoading: isLoading,
                     shape: shape,
+                    iconBackgroundColor: iconColors.backgroundColor,
+                    iconForegroundColor: iconColors.foregroundColor,
                   );
                 },
               );
@@ -112,12 +129,14 @@ class DashboardTimeTableSection extends StatelessWidget {
               child: _TimeTableMessageContainer(
                 icon: Icons.error_outline,
                 message: l10n.noData,
+                type: _MessageType.error,
               ),
             ),
             orElse: () => SliverToBoxAdapter(
               child: _TimeTableMessageContainer(
                 icon: Icons.calendar_month_outlined,
                 message: l10n.noData,
+                type: _MessageType.info,
               ),
             ),
           );
@@ -136,6 +155,8 @@ class _TimeTableContainer extends StatelessWidget {
     required this.timeEnd,
     this.durationLabel,
     required this.isLoading,
+    required this.iconBackgroundColor,
+    required this.iconForegroundColor,
   });
 
   final ShapeBorder? shape;
@@ -145,6 +166,8 @@ class _TimeTableContainer extends StatelessWidget {
   final String timeEnd;
   final String? durationLabel;
   final bool isLoading;
+  final Color iconBackgroundColor;
+  final Color iconForegroundColor;
 
   @override
   Widget build(BuildContext context) {
@@ -152,19 +175,32 @@ class _TimeTableContainer extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     return AppContainer(
+      backgroundColor: colorScheme.surfaceContainerLow,
       margin: EdgeInsets.symmetric(vertical: 2),
       shape: shape,
       borderRadius: null,
-      elevation: 0,
-      boxShadow: <BoxShadow>[
-        BoxShadow(
-          color: colorScheme.surfaceContainerHighest,
-          offset: const Offset(5, 5),
-        ),
-      ],
+      elevation: 1,
       child: Row(
         mainAxisAlignment: .spaceBetween,
         children: [
+          AppIconContainer(
+            icon: SubjectIconResolver.resolve(subject),
+            backgroundColor: iconBackgroundColor,
+            foregroundColor: iconForegroundColor,
+            padding: const EdgeInsets.all(8),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ).toShimmer(
+            context,
+            isLoading: isLoading,
+            width: 40,
+            height: 40,
+            borderRadius: BorderRadius.circular(8),
+          ),
+
+          const SizedBox(width: 24),
+
           Expanded(
             child: Column(
               crossAxisAlignment: .start,
@@ -232,6 +268,38 @@ class _TimeTableContainer extends StatelessWidget {
       ),
     );
   }
+}
+
+({Color backgroundColor, Color foregroundColor}) _timeTableIconColors(
+  BuildContext context,
+  int index,
+) {
+  final colorScheme = Theme.of(context).colorScheme;
+  final appColors = AppColors.of(context);
+
+  return switch (index % 3) {
+    0 => (
+      backgroundColor: colorScheme.primaryContainer,
+      foregroundColor: colorScheme.onPrimaryContainer,
+    ),
+    1 => (
+      backgroundColor: appColors.warning.withValues(alpha: 0.6),
+      foregroundColor: _foregroundColorFor(context, appColors.warning),
+    ),
+    _ => (
+      backgroundColor: colorScheme.tertiaryContainer,
+      foregroundColor: colorScheme.onTertiaryContainer,
+    ),
+  };
+}
+
+Color _foregroundColorFor(BuildContext context, Color backgroundColor) {
+  final colorScheme = Theme.of(context).colorScheme;
+  final brightness = ThemeData.estimateBrightnessForColor(backgroundColor);
+
+  return brightness == Brightness.dark
+      ? colorScheme.onPrimary
+      : colorScheme.scrim;
 }
 
 ({String day, List<TimeTable> schedules, IconData? icon, String? message})
@@ -369,44 +437,95 @@ String _localizedDayName(AppLocalizations l10n, int weekday) {
 }
 
 class _TimeTableMessageContainer extends StatelessWidget {
-  const _TimeTableMessageContainer({required this.icon, required this.message});
+  const _TimeTableMessageContainer({
+    required this.icon,
+    required this.message,
+    this.subtitle,
+    this.type = _MessageType.info,
+  });
 
   final IconData icon;
   final String message;
+  final String? subtitle;
+  final _MessageType type;
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final appColors = AppColors.of(context);
     final textTheme = Theme.of(context).textTheme;
 
+    final colors = type.resolveColors(colorScheme, appColors);
+
     return AppContainer(
+      backgroundColor: colors.background,
       margin: EdgeInsets.zero,
-      elevation: 0,
-      boxShadow: <BoxShadow>[
-        BoxShadow(
-          color: colorScheme.surfaceContainerHighest,
-          offset: const Offset(5, 5),
-        ),
-      ],
+      elevation: 1,
+      borderRadius: BorderRadius.circular(16),
       child: Row(
         children: [
           AppIconContainer(
             icon: icon,
-            backgroundColor: colorScheme.primaryContainer,
-            foregroundColor: colorScheme.onPrimaryContainer,
+            backgroundColor: colors.iconBackground,
+            foregroundColor: colors.iconForeground,
           ),
           const SizedBox(width: 12),
           Expanded(
-            child: Text(
-              message,
-              style: textTheme.titleMedium!.copyWith(
-                color: colorScheme.onSurface,
-                fontWeight: .bold,
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  message,
+                  style: textTheme.titleMedium!.copyWith(
+                    color: colorScheme.onSurface,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                if (subtitle != null) ...[
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle!,
+                    style: textTheme.bodySmall!.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ],
             ),
           ),
         ],
       ),
     );
+  }
+}
+
+enum _MessageType { info, success, holiday, error }
+
+extension _MessageTypeX on _MessageType {
+  ({Color background, Color iconBackground, Color iconForeground})
+  resolveColors(ColorScheme colorScheme, AppColors appColors) {
+    return switch (this) {
+      _MessageType.success => (
+        background: appColors.success.withValues(alpha: 0.08),
+        iconBackground: appColors.success.withValues(alpha: 0.2),
+        iconForeground: appColors.success,
+      ),
+      _MessageType.holiday => (
+        background: appColors.warning.withValues(alpha: 0.08),
+        iconBackground: appColors.warning.withValues(alpha: 0.2),
+        iconForeground: appColors.warning,
+      ),
+      _MessageType.error => (
+        background: colorScheme.errorContainer.withValues(alpha: 0.4),
+        iconBackground: colorScheme.errorContainer,
+        iconForeground: colorScheme.onErrorContainer,
+      ),
+      _MessageType.info => (
+        background: colorScheme.surfaceContainerLow,
+        iconBackground: colorScheme.primaryContainer,
+        iconForeground: colorScheme.onPrimaryContainer,
+      ),
+    };
   }
 }

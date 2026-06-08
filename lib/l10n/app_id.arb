@@ -51,9 +51,12 @@
   },
   "attendanceChart": "Grafik Absensi",
   "navigation": "Navigasi",
+  "seeAll": "Lihat Semua",
   "timeTable": "Jadwal Pelajaran",
   "enjoyYourHoliday": "Selamat menikmati hari libur kamu.",
+  "enjoyYourHolidaySubtitle": "Tidak ada jadwal pelajaran hari ini.",
   "todayScheduleFinished": "Hari ini sudah selesai.",
+  "todayScheduleFinishedSubtitle": "Semua pelajaran hari ini sudah berakhir.",
   "scheduleDurationMinutes": "{minutes} menit",
   "@scheduleDurationMinutes": {
     "placeholders": {

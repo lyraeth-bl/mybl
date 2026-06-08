@@ -51,9 +51,12 @@
   },
   "attendanceChart": "Attendance Chart",
   "navigation": "Navigation",
+  "seeAll": "See all",
   "timeTable": "Timetable",
   "enjoyYourHoliday": "Enjoy your holiday.",
+  "enjoyYourHolidaySubtitle": "There are no lessons scheduled today.",
   "todayScheduleFinished": "Today’s lessons are finished.",
+  "todayScheduleFinishedSubtitle": "All lessons for today have ended.",
   "scheduleDurationMinutes": "{minutes} min",
   "@scheduleDurationMinutes": {
     "placeholders": {
