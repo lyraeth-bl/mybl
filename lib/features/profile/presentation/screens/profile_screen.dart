@@ -10,12 +10,16 @@ import '../../../../core/app_router/app_router.dart';
 import '../../../../core/di/get_it_constant.dart';
 import '../../../../core/widgets/app_top_bar.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../academic_result/presentation/bloc/academic_result_bloc.dart';
+import '../../../attendance/presentation/bloc/monthly_attendance_bloc/monthly_attendance_bloc.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
+import '../../../discipline/presentation/bloc/merit_bloc/merit_bloc.dart';
 import '../../../notifications/presentation/bloc/notification_bloc.dart';
 import '../../../sessions/presentation/bloc/session_bloc.dart';
 import '../../../user/presentation/bloc/user_bloc.dart';
 import '../widgets/profile_menu_section.dart';
 import '../widgets/profile_overview_section.dart';
+import '../widgets/profile_summary_section.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -25,6 +29,13 @@ class ProfileScreen extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider<AuthBloc>(create: (context) => di<AuthBloc>()),
+        BlocProvider<MeritBloc>(create: (context) => di<MeritBloc>()),
+        BlocProvider<MonthlyAttendanceBloc>(
+          create: (context) => di<MonthlyAttendanceBloc>(),
+        ),
+        BlocProvider<AcademicResultBloc>(
+          create: (context) => di<AcademicResultBloc>(),
+        ),
         BlocProvider<NotificationBloc>(
           create: (context) => di<NotificationBloc>(),
         ),
@@ -34,8 +45,33 @@ class ProfileScreen extends StatelessWidget {
   }
 }
 
-class _ProfileScreenView extends StatelessWidget {
+class _ProfileScreenView extends StatefulWidget {
   const _ProfileScreenView();
+
+  @override
+  State<_ProfileScreenView> createState() => _ProfileScreenViewState();
+}
+
+class _ProfileScreenViewState extends State<_ProfileScreenView> {
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final now = DateTime.now();
+
+      context.read<MeritBloc>().add(const MeritEvent.fetchMerit());
+      context.read<MonthlyAttendanceBloc>().add(
+        MonthlyAttendanceEvent.monthChangeRequested(
+          month: now.month,
+          year: now.year,
+        ),
+      );
+      context.read<AcademicResultBloc>().add(
+        const AcademicResultEvent.fetchAcademicResult(),
+      );
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -90,6 +126,7 @@ class _ProfileScreenView extends StatelessWidget {
                   ),
                   slivers: [
                     ProfileOverviewSection(student: student),
+                    const ProfileSummarySection(),
                     ProfileMenuSection(
                       isLogoutLoading: isLogoutLoading,
                       onPersonalInfoTap: () =>

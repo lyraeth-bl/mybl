@@ -22,23 +22,23 @@ class NotificationScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider<NotificationBloc>(
       create: (context) => di<NotificationBloc>(),
-      child: const _NotificationScreenView(),
+      child: const _NotificationView(),
     );
   }
 }
 
-class _NotificationScreenView extends StatefulWidget {
-  const _NotificationScreenView();
+class _NotificationView extends StatefulWidget {
+  const _NotificationView();
 
   @override
-  State<_NotificationScreenView> createState() =>
-      _NotificationScreenViewState();
+  State<_NotificationView> createState() => _NotificationViewState();
 }
 
-class _NotificationScreenViewState extends State<_NotificationScreenView> {
+class _NotificationViewState extends State<_NotificationView> {
   @override
   void initState() {
     super.initState();
+
     WidgetsBinding.instance.addPostFrameCallback(
       (_) => context.read<NotificationBloc>().add(
         const NotificationEvent.fetchNotificationsRequested(),
@@ -46,39 +46,38 @@ class _NotificationScreenViewState extends State<_NotificationScreenView> {
     );
   }
 
-  Future<void> _refresh() {
-    return blocRefresh<NotificationBloc, NotificationEvent, NotificationState>(
-      context: context,
-      event: const NotificationEvent.fetchNotificationsRequested(),
-      isDone: (state) => state.maybeWhen(
-        success: (_) => true,
-        failure: (_) => true,
-        orElse: () => false,
-      ),
+  @override
+  Widget build(BuildContext context) {
+    return const _NotificationFailureListener(
+      child: Scaffold(appBar: _NotificationAppBar(), body: _NotificationBody()),
+    );
+  }
+}
+
+@immutable
+class _NotificationAppBar extends StatelessWidget
+    implements PreferredSizeWidget {
+  const _NotificationAppBar();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
+    return AppTopBar(
+      toolbarHeight: 72,
+      title: Text(l10n.notifications),
+      centerTitle: true,
     );
   }
 
-  void _markAsRead(AppNotification notification) {
-    if (notificationIsRead(notification)) return;
+  @override
+  Size get preferredSize => Size.fromHeight(80);
+}
 
-    context.read<NotificationBloc>().add(
-      NotificationEvent.notificationReadRequested(notification: notification),
-    );
-  }
+class _NotificationFailureListener extends StatelessWidget {
+  const _NotificationFailureListener({required this.child});
 
-  void _markAllAsRead(List<AppNotification> notifications) {
-    final unreadNotifications = notifications
-        .where((notification) => !notificationIsRead(notification))
-        .toList();
-    if (unreadNotifications.isEmpty) return;
-
-    final bloc = context.read<NotificationBloc>();
-    for (final notification in unreadNotifications) {
-      bloc.add(
-        NotificationEvent.notificationReadRequested(notification: notification),
-      );
-    }
-  }
+  final Widget child;
 
   @override
   Widget build(BuildContext context) {
@@ -95,52 +94,108 @@ class _NotificationScreenViewState extends State<_NotificationScreenView> {
           context,
         ).showSnackBar(SnackBar(content: Text(failure.localizedMessage(l10n))));
       },
-      child: Scaffold(
-        appBar: AppTopBar(
-          toolbarHeight: 72,
-          title: Text(l10n.notifications),
-          centerTitle: true,
-        ),
-        body: RefreshWrapper(
-          onRefresh: _refresh,
-          child: BlocBuilder<NotificationBloc, NotificationState>(
-            buildWhen: (previous, current) {
-              final previousData = notificationsFromState(previous);
-              final currentData = notificationsFromState(current);
+      child: child,
+    );
+  }
+}
 
-              return previousData != currentData ||
-                  previous.runtimeType != current.runtimeType;
-            },
-            builder: (context, state) {
-              final notifications = notificationsFromState(state);
-              final groups = groupNotifications(context, notifications);
+class _NotificationRefreshWrapper extends StatelessWidget {
+  const _NotificationRefreshWrapper({required this.child});
 
-              return CustomScrollView(
-                physics: const AlwaysScrollableScrollPhysics(
-                  parent: BouncingScrollPhysics(),
-                ),
-                slivers: [
-                  if (groups.isEmpty)
-                    const SliverFillRemaining(
-                      hasScrollBody: false,
-                      child: NotificationEmptyState(),
-                    )
-                  else ...[
-                    const SliverToBoxAdapter(child: SizedBox(height: 12)),
-                    for (final group in groups)
-                      NotificationSliverGroup(
-                        group: group,
-                        onNotificationTap: _markAsRead,
-                        onMarkAllAsRead: _markAllAsRead,
-                      ),
-                    const SliverToBoxAdapter(child: SizedBox(height: 24)),
-                  ],
-                ],
-              );
-            },
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return RefreshWrapper(
+      onRefresh: () {
+        return blocRefresh<
+          NotificationBloc,
+          NotificationEvent,
+          NotificationState
+        >(
+          context: context,
+          event: const NotificationEvent.fetchNotificationsRequested(),
+          isDone: (state) => state.maybeWhen(
+            success: (_) => true,
+            failure: (_) => true,
+            orElse: () => false,
           ),
-        ),
+        );
+      },
+      child: child,
+    );
+  }
+}
+
+class _NotificationBody extends StatelessWidget {
+  const _NotificationBody();
+
+  @override
+  Widget build(BuildContext context) {
+    return _NotificationRefreshWrapper(
+      child: BlocBuilder<NotificationBloc, NotificationState>(
+        buildWhen: _notificationBuildWhen,
+        builder: (context, state) {
+          final notifications = notificationsFromState(state);
+          final groups = groupNotifications(context, notifications);
+
+          return CustomScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            slivers: [
+              if (groups.isEmpty)
+                const SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: NotificationEmptyState(),
+                )
+              else ...[
+                const SliverToBoxAdapter(child: SizedBox(height: 16)),
+                for (final group in groups)
+                  NotificationSliverGroup(
+                    group: group,
+                    onNotificationTap: (notification) =>
+                        _markAsRead(context, notification),
+                    onMarkAllAsRead: (notifications) =>
+                        _markAllAsRead(context, notifications),
+                  ),
+                const SliverToBoxAdapter(child: SizedBox(height: 24)),
+              ],
+            ],
+          );
+        },
       ),
+    );
+  }
+}
+
+bool _notificationBuildWhen(
+  NotificationState previous,
+  NotificationState current,
+) {
+  final previousData = notificationsFromState(previous);
+  final currentData = notificationsFromState(current);
+
+  return previousData != currentData ||
+      previous.runtimeType != current.runtimeType;
+}
+
+void _markAsRead(BuildContext context, AppNotification notification) {
+  if (notificationIsRead(notification)) return;
+
+  context.read<NotificationBloc>().add(
+    NotificationEvent.notificationReadRequested(notification: notification),
+  );
+}
+
+void _markAllAsRead(BuildContext context, List<AppNotification> notifications) {
+  final unreadNotifications = notifications
+      .where((notification) => !notificationIsRead(notification))
+      .toList();
+  if (unreadNotifications.isEmpty) return;
+
+  final bloc = context.read<NotificationBloc>();
+  for (final notification in unreadNotifications) {
+    bloc.add(
+      NotificationEvent.notificationReadRequested(notification: notification),
     );
   }
 }

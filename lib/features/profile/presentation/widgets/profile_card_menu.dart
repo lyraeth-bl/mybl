@@ -38,7 +38,7 @@ class ProfileCardMenu extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     return AppContainer(
-      margin: const EdgeInsets.only(bottom: 8),
+      margin: const EdgeInsets.only(bottom: 4),
       padding: EdgeInsets.zero,
       backgroundColor: colorScheme.surfaceContainerLow,
       elevation: 0,
