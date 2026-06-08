@@ -77,6 +77,24 @@
   "holiday": "Libur",
   "event": "Event",
   "academicResult": "Hasil Akademik",
+  "currentSemesterScore": "Nilai semester ini",
+  "subjectList": "Daftar Mata Pelajaran",
+  "subjectCount": "{count} Mata Pelajaran",
+  "@subjectCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "assessmentDataCount": "{count} data penilaian",
+  "@assessmentDataCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "extracurricular": "Ekstrakulikuler",
   "merit": "Merit",
   "demerit": "Demerit",

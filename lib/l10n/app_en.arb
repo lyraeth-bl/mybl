@@ -77,6 +77,24 @@
   "holiday": "Holiday",
   "event": "Event",
   "academicResult": "Academic Result",
+  "currentSemesterScore": "Current semester score",
+  "subjectList": "Subject List",
+  "subjectCount": "{count} Subjects",
+  "@subjectCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "assessmentDataCount": "{count} assessment data",
+  "@assessmentDataCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "extracurricular": "Extracurricular",
   "merit": "Merit",
   "demerit": "Demerit",
