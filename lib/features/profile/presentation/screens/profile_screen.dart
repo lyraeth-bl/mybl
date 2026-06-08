@@ -8,172 +8,34 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/app_router/app_router.dart';
 import '../../../../core/di/get_it_constant.dart';
-import '../../../../core/widgets/app_profile_picture.dart';
-import '../../../../core/widgets/logout_button.dart';
+import '../../../../core/widgets/app_top_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
+import '../../../notifications/presentation/bloc/notification_bloc.dart';
 import '../../../sessions/presentation/bloc/session_bloc.dart';
-import '../../../user/domain/entities/student_entity/student_entity.dart';
 import '../../../user/presentation/bloc/user_bloc.dart';
-import '../widgets/profile_card_menu.dart';
+import '../widgets/profile_menu_section.dart';
+import '../widgets/profile_overview_section.dart';
 
-/// Layar utama buat pamer profil user.
-///
-/// Di sini user bisa liat info singkat mereka kayak nama, NIS, sampe foto profil.
-/// Screen ini juga jadi gerbang buat masuk ke detail profil atau buat logout.
-/// Kita ngebungkus ini pake [AuthBloc] biar urusan logout-nya lancar jaya.
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<AuthBloc>(
-      create: (context) => di<AuthBloc>(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<AuthBloc>(create: (context) => di<AuthBloc>()),
+        BlocProvider<NotificationBloc>(
+          create: (context) => di<NotificationBloc>(),
+        ),
+      ],
       child: const _ProfileScreenView(),
     );
   }
 }
 
-/// Tampilan utama dari [ProfileScreen].
-///
-/// Widget ini pake [CustomScrollView] biar ada efek scroll yang asik (pake [BouncingScrollPhysics]).
-/// Dia dengerin [UserBloc] buat mastiin data [StudentEntity] selalu yang paling update.
 class _ProfileScreenView extends StatelessWidget {
   const _ProfileScreenView();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-      appBar: const _ProfileAppBar(),
-      body: const _ProfileBody(),
-    );
-  }
-}
-
-class _ProfileAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const _ProfileAppBar();
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final l10n = AppLocalizations.of(context)!;
-
-    return AppBar(
-      backgroundColor: colorScheme.primaryContainer,
-      surfaceTintColor: colorScheme.primaryContainer,
-      toolbarHeight: 72,
-      title: Text(
-        l10n.profile,
-        style: const TextStyle(fontWeight: .bold, letterSpacing: 2),
-      ),
-      centerTitle: true,
-    );
-  }
-
-  @override
-  Size get preferredSize => Size.fromHeight(80);
-}
-
-class _ProfileBody extends StatelessWidget {
-  const _ProfileBody();
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return Container(
-      clipBehavior: Clip.antiAlias,
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainer,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
-      ),
-      child: BlocBuilder<UserBloc, UserState>(
-        builder: (context, state) {
-          final student = state.maybeWhen(
-            success: (student) => student,
-            orElse: () => null,
-          );
-
-          // Kalo data student-nya belum ada (mungkin lagi loading atau error),
-          // kita kasih space kosong dulu biar nggak crash.
-          if (student == null) return const SizedBox.shrink();
-
-          return CustomScrollView(
-            physics: const BouncingScrollPhysics(
-              parent: AlwaysScrollableScrollPhysics(),
-            ),
-            slivers: [
-              _ProfileInfo(student: student),
-              const _ProfileMenu(),
-            ],
-          );
-        },
-      ),
-    );
-  }
-}
-
-/// Bagian yang khusus nampilin foto profil.
-///
-/// Dibikin terpisah biar rapi dan gampang kalo mau di-style macem-macem.
-class _ProfileInfo extends StatelessWidget {
-  const _ProfileInfo({required this.student});
-
-  final StudentEntity student;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-    final l10n = AppLocalizations.of(context)!;
-
-    return SliverToBoxAdapter(
-      child: Center(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 40, 16, 32),
-          child: Column(
-            children: [
-              AppProfilePicture(
-                backgroundColor: colorScheme.surfaceContainerLow,
-                foregroundColor: colorScheme.onSurfaceVariant,
-                imageUrl: student.profileImageUrl,
-                initials: AppProfilePicture.initialFrom(
-                  student.nama ?? student.namaPanggilan,
-                ),
-                radius: 48,
-              ),
-              const SizedBox(height: 16),
-              Text(
-                student.nama ?? l10n.emptyName,
-                textAlign: TextAlign.center,
-                style: textTheme.titleMedium?.copyWith(
-                  color: colorScheme.onSurface,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                "${student.nis} / ${student.nisn ?? '-'}",
-                textAlign: TextAlign.center,
-                style: textTheme.bodySmall?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// Daftar menu yang ada di profil.
-///
-/// Isinya ada link ke detail personal info sama tombol logout.
-/// Dia dengerin [AuthBloc] buat handle pindah screen pas user sukses logout.
-class _ProfileMenu extends StatelessWidget {
-  const _ProfileMenu();
 
   @override
   Widget build(BuildContext context) {
@@ -186,52 +48,62 @@ class _ProfileMenu extends StatelessWidget {
               context.read<SessionBloc>().add(const SessionEvent.loggedOut()),
         );
       },
-      child: SliverList.list(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Column(
-              children: [
-                ProfileCardMenu(
-                  title: l10n.personalInfo,
-                  subtitle: l10n.personalInfoDesc,
-                  icon: Icons.medical_information_outlined,
-                  onTap: () => context.push(RouteNames.profileDetail),
-                ),
-              ],
-            ),
-          ),
+      child: Scaffold(
+        appBar: AppTopBar(
+          toolbarHeight: 72,
+          title: Text(l10n.profile),
+          centerTitle: true,
+        ),
+        body: BlocBuilder<UserBloc, UserState>(
+          builder: (context, userState) {
+            final student = userState.maybeWhen(
+              success: (student) => student,
+              orElse: () => null,
+            );
 
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-            child: BlocBuilder<AuthBloc, AuthState>(
-              buildWhen: (prev, curr) {
-                final prevLoading = prev.maybeWhen(
+            if (student == null) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            return BlocBuilder<AuthBloc, AuthState>(
+              buildWhen: (previous, current) {
+                final previousLoading = previous.maybeWhen(
                   loading: () => true,
                   orElse: () => false,
                 );
-                final currLoading = curr.maybeWhen(
+                final currentLoading = current.maybeWhen(
                   loading: () => true,
                   orElse: () => false,
                 );
-                return prevLoading != currLoading;
+
+                return previousLoading != currentLoading;
               },
-              builder: (context, state) {
-                final isLoading = state.maybeWhen(
+              builder: (context, authState) {
+                final isLogoutLoading = authState.maybeWhen(
                   loading: () => true,
                   orElse: () => false,
                 );
 
-                return LogoutButton(
-                  onPressed: () => context.read<AuthBloc>().add(
-                    const AuthEvent.logoutRequested(),
+                return CustomScrollView(
+                  physics: const BouncingScrollPhysics(
+                    parent: AlwaysScrollableScrollPhysics(),
                   ),
-                  isLoading: isLoading,
+                  slivers: [
+                    ProfileOverviewSection(student: student),
+                    ProfileMenuSection(
+                      isLogoutLoading: isLogoutLoading,
+                      onPersonalInfoTap: () =>
+                          context.push(RouteNames.profileDetail),
+                      onLogoutPressed: () => context.read<AuthBloc>().add(
+                        const AuthEvent.logoutRequested(),
+                      ),
+                    ),
+                  ],
                 );
               },
-            ),
-          ),
-        ],
+            );
+          },
+        ),
       ),
     );
   }
