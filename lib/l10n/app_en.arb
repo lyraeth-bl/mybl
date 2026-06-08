@@ -132,6 +132,7 @@
   "today": "Today",
   "yesterday": "Yesterday",
   "unread": "Unread",
+  "markAllAsRead": "Mark all read",
   "notificationPermissionTitle": "Turn on notifications",
   "notificationPermissionDesc": "Get school updates, attendance reminders, and important announcements on this device.",
   "notificationPermissionLoadingTitle": "Turning notifications on",

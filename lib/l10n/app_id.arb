@@ -132,6 +132,7 @@
   "today": "Hari ini",
   "yesterday": "Kemarin",
   "unread": "Belum dibaca",
+  "markAllAsRead": "Tandai dibaca",
   "notificationPermissionTitle": "Aktifkan notifikasi",
   "notificationPermissionDesc": "Dapatkan update sekolah, pengingat absensi, dan pengumuman penting di perangkat ini.",
   "notificationPermissionLoadingTitle": "Mengaktifkan notifikasi",

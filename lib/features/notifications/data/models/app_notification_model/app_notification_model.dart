@@ -46,7 +46,7 @@ abstract class AppNotificationModel with _$AppNotificationModel {
       type: _stringValue(data['type'], fallback: 'notification'),
       title: _stringValue(data['title'], fallback: message.notification?.title),
       body: _stringValue(data['body'], fallback: message.notification?.body),
-      imageUrl: _nullableString(data['image_url']),
+      imageUrl: _remoteImageUrl(message),
       dataPayload: _parsePayload(data['data_payload'], fallback: data),
       targetType: _stringValue(data['target_type']),
       targetValue: _stringValue(data['target_value']),
@@ -100,6 +100,15 @@ String? _nullableString(Object? value) {
   if (stringValue.isEmpty) return null;
 
   return stringValue;
+}
+
+String? _remoteImageUrl(RemoteMessage message) {
+  final data = message.data;
+
+  return _nullableString(data['image_url']) ??
+      _nullableString(data['imageUrl']) ??
+      _nullableString(message.notification?.android?.imageUrl) ??
+      _nullableString(message.notification?.apple?.imageUrl);
 }
 
 int? _parseInt(Object? value) {
