@@ -170,6 +170,19 @@
   "defaultPoint": "Poin awal",
   "totalPoint": "Total poin",
   "noDisciplineData": "Belum ada data merit atau demerit.",
+  "disciplineActivityLog": "Riwayat Kedisiplinan",
+  "dataCount": "{count} data",
+  "@dataCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "disciplineStatusExcellent": "Sangat baik. Pertahankan kebiasaan positifmu.",
+  "disciplineStatusGood": "Baik. Tetap konsisten ya.",
+  "disciplineStatusNeedsAttention": "Perlu perhatian. Perbaikan kecil tetap berarti.",
+  "disciplineStatusCritical": "Kritis. Mulai perbaiki pelan-pelan.",
   "unit": "Unit",
   "teacher": "Guru",
   "date": "Tanggal",

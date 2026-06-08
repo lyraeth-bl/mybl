@@ -170,6 +170,19 @@
   "defaultPoint": "Default point",
   "totalPoint": "Total point",
   "noDisciplineData": "No merit or demerit data yet.",
+  "disciplineActivityLog": "Activity Log",
+  "dataCount": "{count} data",
+  "@dataCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "disciplineStatusExcellent": "Excellent standing. Keep making good choices.",
+  "disciplineStatusGood": "Good standing. Stay consistent.",
+  "disciplineStatusNeedsAttention": "Needs attention. Small improvements matter.",
+  "disciplineStatusCritical": "Critical standing. Take it one day at a time.",
   "unit": "Unit",
   "teacher": "Teacher",
   "date": "Date",
