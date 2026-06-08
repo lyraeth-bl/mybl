@@ -57,6 +57,7 @@
   "enjoyYourHolidaySubtitle": "Tidak ada jadwal pelajaran hari ini.",
   "todayScheduleFinished": "Hari ini sudah selesai.",
   "todayScheduleFinishedSubtitle": "Semua pelajaran hari ini sudah berakhir.",
+  "ongoingNow": "Sedang berlangsung",
   "scheduleDurationMinutes": "{minutes} menit",
   "@scheduleDurationMinutes": {
     "placeholders": {

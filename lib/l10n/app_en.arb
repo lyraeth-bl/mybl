@@ -57,6 +57,7 @@
   "enjoyYourHolidaySubtitle": "There are no lessons scheduled today.",
   "todayScheduleFinished": "Today’s lessons are finished.",
   "todayScheduleFinishedSubtitle": "All lessons for today have ended.",
+  "ongoingNow": "Ongoing now",
   "scheduleDurationMinutes": "{minutes} min",
   "@scheduleDurationMinutes": {
     "placeholders": {
