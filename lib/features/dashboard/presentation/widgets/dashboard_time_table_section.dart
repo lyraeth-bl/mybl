@@ -339,7 +339,7 @@ _todaySchedulePreview(AppLocalizations l10n, List<TimeTable> schedules) {
 
   return (
     day: todayLabel,
-    schedules: todaySchedules,
+    schedules: _currentAndUpcomingSchedules(todaySchedules, DateTime.now()),
     icon: null,
     message: null,
   );
@@ -376,6 +376,25 @@ List<TimeTable> _schedulesForDay(List<TimeTable> schedules, String day) {
   });
 
   return filtered;
+}
+
+List<TimeTable> _currentAndUpcomingSchedules(
+  List<TimeTable> schedules,
+  DateTime now,
+) {
+  final nowInMinutes = now.hour * Duration.minutesPerHour + now.minute;
+  final firstActiveOrUpcomingIndex = schedules.indexWhere((schedule) {
+    final end = _timeOfDayFromScheduleTime(schedule.jamSelesai);
+    if (end == null) return false;
+
+    final endInMinutes = end.hour * Duration.minutesPerHour + end.minute;
+
+    return nowInMinutes < endInMinutes;
+  });
+
+  if (firstActiveOrUpcomingIndex == -1) return schedules;
+
+  return schedules.skip(firstActiveOrUpcomingIndex).toList();
 }
 
 String _normalizeDay(String value) => value.trim().toLowerCase();
