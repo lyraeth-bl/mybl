@@ -29,14 +29,19 @@ class AcademicResultSemesterFilterSection extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
         child: Row(
-          children: [1, 2].map((semester) {
-            return _SemesterChip(
-              label: '${l10n.semester} $semester',
-              selected: selectedSemester == semester,
-              onTap: () => onChanged(semester),
-              isLoading: isLoading,
-            );
-          }).toList(),
+          children: isLoading
+              ? const [
+                  _SemesterLoadingChip(width: 116),
+                  SizedBox(width: 10),
+                  _SemesterLoadingChip(width: 116),
+                ]
+              : [1, 2].map((semester) {
+                  return _SemesterChip(
+                    label: '${l10n.semester} $semester',
+                    selected: selectedSemester == semester,
+                    onTap: () => onChanged(semester),
+                  );
+                }).toList(),
         ),
       ),
     );
@@ -48,13 +53,11 @@ class _SemesterChip extends StatelessWidget {
     required this.label,
     required this.selected,
     required this.onTap,
-    required this.isLoading,
   });
 
   final String label;
   final bool selected;
   final VoidCallback onTap;
-  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
@@ -71,13 +74,21 @@ class _SemesterChip extends StatelessWidget {
       side: selected
           ? BorderSide.none
           : BorderSide(color: colorScheme.outlineVariant),
-      child: Text(label).toShimmer(
-        context,
-        isLoading: isLoading,
-        width: 80,
-        height: 14,
-        borderRadius: BorderRadius.circular(999),
-      ),
+      child: Text(label),
     );
+  }
+}
+
+class _SemesterLoadingChip extends StatelessWidget {
+  const _SemesterLoadingChip({required this.width});
+
+  final double width;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: width,
+      height: 36,
+    ).toShimmer(context, borderRadius: BorderRadius.circular(999));
   }
 }

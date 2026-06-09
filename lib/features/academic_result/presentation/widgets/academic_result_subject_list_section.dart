@@ -39,17 +39,17 @@ class AcademicResultSubjectListSection extends StatelessWidget {
         color: colorScheme.onSurface,
         fontWeight: FontWeight.bold,
       ),
-      action: AppChipContainer(
-        backgroundColor: colorScheme.primaryContainer,
-        foregroundColor: colorScheme.onPrimaryContainer,
-        child: Text(l10n.subjectCount(subjects.length)).toShimmer(
-          context,
-          isLoading: isLoading,
-          width: 64,
-          height: 12,
-          borderRadius: BorderRadius.circular(999),
-        ),
-      ),
+      action: isLoading
+          ? const SizedBox(width: 82, height: 32).toShimmer(
+              context,
+              borderRadius: BorderRadius.circular(999),
+              alignment: Alignment.centerRight,
+            )
+          : AppChipContainer(
+              backgroundColor: colorScheme.primaryContainer,
+              foregroundColor: colorScheme.onPrimaryContainer,
+              child: Text(l10n.subjectCount(subjects.length)),
+            ),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       sliver: subjects.isEmpty && !isLoading
           ? SliverToBoxAdapter(
