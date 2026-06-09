@@ -11,15 +11,14 @@ import '../../../../core/di/get_it_constant.dart';
 import '../../../../core/widgets/app_profile_picture.dart';
 import '../../../../core/widgets/app_top_bar.dart';
 import '../../../../core/widgets/refresh_wrapper.dart';
-import '../../../../l10n/app_localizations.dart';
 import '../../../attendance/presentation/bloc/daily_attendance_bloc/daily_attendance_bloc.dart';
 import '../../../attendance/presentation/bloc/monthly_attendance_bloc/monthly_attendance_bloc.dart';
-import '../../../attendance/presentation/widgets/attendance_qr_bottom_sheet.dart';
 import '../../../notifications/domain/entities/app_notification/app_notification.dart';
 import '../../../notifications/presentation/bloc/notification_bloc.dart';
 import '../../../time_table/presentation/bloc/time_table_bloc.dart';
 import '../../../user/presentation/bloc/user_bloc.dart';
 import '../widgets/dashboard_profile_section.dart';
+import '../widgets/dashboard_quick_menu_section.dart';
 import '../widgets/dashboard_time_table_section.dart';
 import '../widgets/dashboard_today_attendance_section.dart';
 
@@ -169,11 +168,6 @@ class _DashboardViewState extends State<_DashboardView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const _DashboardAppBar(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => showAttendanceQrSheet(context),
-        tooltip: AppLocalizations.of(context)!.attendanceQrCode,
-        child: const Icon(Icons.qr_code_2),
-      ),
       body: _DashboardBody(onRefresh: _refresh),
     );
   }
@@ -250,8 +244,10 @@ class _DashboardBody extends StatelessWidget {
         physics: const AlwaysScrollableScrollPhysics(),
         slivers: [
           const DashboardProfileSection(),
+          const DashboardQuickMenuSection(),
           const DashboardTodayAttendanceSection(),
           const DashboardTimeTableSection(),
+          const SliverToBoxAdapter(child: SizedBox(height: 48)),
         ],
       ),
     );

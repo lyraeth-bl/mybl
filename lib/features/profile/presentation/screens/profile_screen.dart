@@ -89,6 +89,13 @@ class _ProfileScreenViewState extends State<_ProfileScreenView> {
           toolbarHeight: 72,
           title: Text(l10n.profile),
           centerTitle: true,
+          actions: [
+            IconButton(
+              onPressed: () => context.push(RouteNames.settings),
+              tooltip: l10n.settings,
+              icon: const Icon(Icons.settings_rounded),
+            ),
+          ],
         ),
         body: BlocBuilder<UserBloc, UserState>(
           builder: (context, userState) {
@@ -133,7 +140,7 @@ class _ProfileScreenViewState extends State<_ProfileScreenView> {
                         const AuthEvent.logoutRequested(),
                       ),
                     ),
-                    const SliverToBoxAdapter(child: SizedBox(height: 24)),
+                    const SliverToBoxAdapter(child: SizedBox(height: 48)),
                   ],
                 );
               },

@@ -28,6 +28,8 @@ class AcademicResultScoreSummarySection extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final clampedAverage = average.clamp(0, 100).toDouble();
 
+    if (isLoading) return const _ScoreSummaryLoading();
+
     return SliverPadding(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
       sliver: SliverToBoxAdapter(
@@ -114,6 +116,23 @@ class AcademicResultScoreSummarySection extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _ScoreSummaryLoading extends StatelessWidget {
+  const _ScoreSummaryLoading();
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverPadding(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+      sliver: SliverToBoxAdapter(
+        child: const SizedBox(
+          width: double.infinity,
+          height: 124,
+        ).toShimmer(context, borderRadius: BorderRadius.circular(16)),
       ),
     );
   }
