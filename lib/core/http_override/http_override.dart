@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
+
 /// Class jagoan buat bypass urusan sertifikat HTTP yang rewel.
 ///
 /// Pas lagi development, kadang kita butuh akses ke API yang sertifikatnya
@@ -14,6 +16,6 @@ class MyHttpOverrides extends HttpOverrides {
   HttpClient createHttpClient(SecurityContext? context) {
     return super.createHttpClient(context)
       ..badCertificateCallback =
-          (X509Certificate cert, String host, int port) => true;
+          (X509Certificate cert, String host, int port) => kDebugMode;
   }
 }
