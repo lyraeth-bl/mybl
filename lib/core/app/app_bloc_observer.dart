@@ -11,12 +11,16 @@ class AppBlocObserver extends BlocObserver {
   @override
   void onChange(BlocBase<dynamic> bloc, Change<dynamic> change) {
     super.onChange(bloc, change);
-    debugPrint("BlocObserver : ${bloc.runtimeType} $change");
+    if (kDebugMode) {
+      debugPrint("BlocObserver : ${bloc.runtimeType} $change");
+    }
   }
 
   @override
   void onEvent(Bloc<dynamic, dynamic> bloc, Object? event) {
     super.onEvent(bloc, event);
-    debugPrint("BlocEvent : ${bloc.runtimeType} $event");
+    if (kDebugMode) {
+      debugPrint("BlocEvent : ${bloc.runtimeType} $event");
+    }
   }
 }
