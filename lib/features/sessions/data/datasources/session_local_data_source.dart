@@ -56,4 +56,28 @@ class SessionLocalDataSourceImpl implements SessionLocalDataSource {
 
     return unit;
   }
+
+  @override
+  Future<Unit> clearTokenExpiresAt() async {
+    await _secureStorage.delete(key: SecureStorageNames.accessTokenExpiryKey);
+    return unit;
+  }
+
+  @override
+  Future<DateTime?> readTokenExpiresAt() async {
+    final raw = await _secureStorage.read(
+      key: SecureStorageNames.accessTokenExpiryKey,
+    );
+    if (raw == null) return null;
+    return DateTime.tryParse(raw);
+  }
+
+  @override
+  Future<Unit> saveTokenExpiresAt(DateTime expiresAt) async {
+    await _secureStorage.write(
+      key: SecureStorageNames.accessTokenExpiryKey,
+      value: expiresAt.toIso8601String(),
+    );
+    return unit;
+  }
 }

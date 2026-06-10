@@ -257,7 +257,10 @@ class _LoginFormState extends State<_LoginForm>
             );
 
             context.read<SessionBloc>().add(
-              SessionEvent.loggedIn(accessToken: accessToken),
+              SessionEvent.loggedIn(
+                accessToken: accessToken,
+                expiresAt: expiresAt,
+              ),
             );
           },
         );

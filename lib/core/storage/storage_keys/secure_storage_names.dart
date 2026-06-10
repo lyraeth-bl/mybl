@@ -11,4 +11,5 @@
 /// Untuk data non-sensitif, gunakan [HiveStorageNames].
 class SecureStorageNames {
   static const String accessTokenKey = "auth-kAccessToken";
+  static const String accessTokenExpiryKey = "auth-kAccessTokenExpiry";
 }

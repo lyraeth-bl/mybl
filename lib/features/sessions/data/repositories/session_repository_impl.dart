@@ -32,4 +32,16 @@ class SessionRepositoryImpl implements SessionRepository {
   @override
   Future<Unit> saveAccessToken(String accessToken) async =>
       await _localDataSource.saveAccessToken(accessToken);
+
+  @override
+  Future<Unit> clearTokenExpiresAt() async =>
+      await _localDataSource.clearTokenExpiresAt();
+
+  @override
+  Future<DateTime?> readTokenExpiresAt() async =>
+      await _localDataSource.readTokenExpiresAt();
+
+  @override
+  Future<Unit> saveTokenExpiresAt(DateTime expiresAt) async =>
+      await _localDataSource.saveTokenExpiresAt(expiresAt);
 }

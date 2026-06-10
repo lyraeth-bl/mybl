@@ -47,8 +47,17 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
     emit(const SessionState.loading());
 
     final storedAccessToken = await _readAccessTokenUseCase();
-
     if (storedAccessToken == null) {
+      emit(const SessionState.unauthenticated());
+
+      return;
+    }
+
+    final expiresAt = await di<TokenProvider>().readTokenExpiresAt();
+    if (expiresAt != null && DateTime.now().isAfter(expiresAt)) {
+      await _clearAllBoxesUseCase();
+      await _clearAccessTokenUseCase();
+      di<TokenProvider>().clearAccessToken();
       emit(const SessionState.unauthenticated());
 
       return;
@@ -66,6 +75,7 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
 
     await _saveAccessTokenUseCase(event.accessToken);
 
+    await di<TokenProvider>().saveTokenExpiresAt(event.expiresAt);
     di<TokenProvider>().saveAccessToken(event.accessToken);
 
     emit(SessionState.authenticated(accessToken: event.accessToken));
@@ -84,6 +94,8 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
     await _clearAllBoxesUseCase();
 
     await _clearAccessTokenUseCase();
+
+    await di<TokenProvider>().clearTokenExpiresAt();
 
     di<TokenProvider>().clearAccessToken();
 

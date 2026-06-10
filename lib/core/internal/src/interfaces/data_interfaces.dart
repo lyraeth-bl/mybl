@@ -185,6 +185,24 @@ abstract interface class TokenStorage {
   /// Ini penting banget buat keamanan biar nggak ada orang iseng yang bisa
   /// masuk pake sesi lama yang udah nggak dipake.
   Future<Unit> clearAccessToken();
+
+  /// Catat kapan token akses bakal basi (expired).
+  ///
+  /// Ini ngebantu app buat tau kapan harus minta login ulang atau refresh token
+  /// sebelum user ditendang sama server.
+  Future<Unit> saveTokenExpiresAt(DateTime expiresAt);
+
+  /// Ngintip jadwal kapan token akses kita bakal expired.
+  ///
+  /// Returns [DateTime] jadwal expired-nya, atau `null` kalau emang belum ada
+  /// data sesi yang kecatat.
+  Future<DateTime?> readTokenExpiresAt();
+
+  /// Hapus info kadaluarsa token dari brangkas.
+  ///
+  /// Dipanggil bareng [clearAccessToken] biar data sesi bener-bener bersih
+  /// pas user logout.
+  Future<Unit> clearTokenExpiresAt();
 }
 
 /// Si paling sibuk buat urusan manajemen gudang (database lokal).

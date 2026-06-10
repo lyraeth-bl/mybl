@@ -48,4 +48,16 @@ class TokenProviderImpl implements TokenProvider {
 
     return unit;
   }
+
+  @override
+  Future<Unit> clearTokenExpiresAt() =>
+      _sessionLocalDataSource.clearTokenExpiresAt();
+
+  @override
+  Future<DateTime?> readTokenExpiresAt() =>
+      _sessionLocalDataSource.readTokenExpiresAt();
+
+  @override
+  Future<Unit> saveTokenExpiresAt(DateTime expiresAt) =>
+      _sessionLocalDataSource.saveTokenExpiresAt(expiresAt);
 }
