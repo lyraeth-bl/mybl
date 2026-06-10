@@ -54,7 +54,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     final result = await _logoutUseCase();
 
     return result.match(
-      (failure) => emit(AuthState.failure(failure)),
+      (failure) => emit(const AuthState.successLogout()),
       (response) => emit(const AuthState.successLogout()),
     );
   }
