@@ -1,0 +1,4 @@
+interface:
+  display_name: "Flutter Transaction List UI"
+  short_description: "Build sticky grouped transaction lists"
+  default_prompt: "Use $flutter-transaction-list-ui to implement a MyBL transaction history list screen."

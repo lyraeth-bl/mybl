@@ -18,6 +18,11 @@ data:
       - any-glob-to-any-file: 'lib/features/**/data/models/**'
       - any-glob-to-any-file: 'lib/features/**/data/repositories/**'
 
+core:
+  - changed-files:
+      - any-glob-to-any-file: 'lib/core/**'
+
+
 dependencies:
   - changed-files:
       - any-glob-to-any-file: 'pubspec.yaml'

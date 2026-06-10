@@ -1,0 +1,18 @@
+{
+  "paths": {
+    "features": "lib/features",
+    "data": "data",
+    "domain": "domain",
+    "presentation": "presentation",
+    "datasources": "datasources",
+    "models": "models",
+    "repositories": "repositories",
+    "usecases": "usecases",
+    "entities": "entities",
+    "ui": "screens",
+    "state": "bloc"
+  },
+  "naming": {
+    "dataClassGenerator": "freezed"
+  }
+}

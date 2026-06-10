@@ -1,0 +1,267 @@
+{
+  "@@locale": "en",
+  "dioNetworkError": "No internet connection. Check your network and try again.",
+  "dioServerError": "Server error. Please try again later.",
+  "dioUnauthorizedError": "Unauthorized access. Please log in again.",
+  "dioForbiddenError": "Access denied. You don’t have permission.",
+  "dioBadRequestError": "Invalid request. Please check your input.",
+  "dioSerializationError": "Failed to process data from server.",
+  "dioCancelledError": "Request was cancelled.",
+  "dioRateLimitedError": "Too many requests. Please slow down.",
+  "dioTimeoutError": "Request timeout. Please try again.",
+  "dioUnexpectedError": "Something went wrong. Please try again.",
+  "nis": "NIS",
+  "pleaseEnterNis": "The nis field is required.",
+  "password": "Password",
+  "pleaseEnterPassword": "The password field is required.",
+  "letsSignIn": "Let's Sign in",
+  "welcomeBack": "Welcome Back",
+  "youHaveBeenMissed": "You've been missed!",
+  "signIn": "Sign in",
+  "logout": "Logout",
+  "rememberMyNis": "Remember my NIS?",
+  "forgetPassword": "Forget your password?",
+  "schoolName": "Sekolah Budi Luhur",
+  "schoolSlogan": "Cerdas Berbudi Luhur",
+  "home": "Home",
+  "menu": "Menu",
+  "quickMenu": "Quick Menu",
+  "emptyMenu": "Menu not available yet.",
+  "profile": "Profile",
+  "dailyAttendance": "Daily Attendance",
+  "qrCode": "QR",
+  "attendanceQrCode": "Attendance QR Code",
+  "attendanceSummary": "Attendance Summary",
+  "attendanceCalendar": "Attendance Calendar",
+  "attendanceLog": "Attendance Log",
+  "attendanceDateFilter": "Attendance date filter",
+  "fromDate": "From date",
+  "toDate": "To date",
+  "last3Days": "Last 3 days",
+  "last7Days": "Last 7 days",
+  "thisMonth": "This month",
+  "attendanceDurationHoursMinutes": "{hours} h {minutes} min",
+  "@attendanceDurationHoursMinutes": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "attendanceChart": "Attendance Chart",
+  "navigation": "Navigation",
+  "all": "All",
+  "seeAll": "See all",
+  "timeTable": "Timetable",
+  "enjoyYourHoliday": "Enjoy your holiday.",
+  "enjoyYourHolidaySubtitle": "There are no lessons scheduled today.",
+  "todayScheduleFinished": "Today’s lessons are finished.",
+  "todayScheduleFinishedSubtitle": "All lessons for today have ended.",
+  "ongoingNow": "Ongoing now",
+  "scheduleDurationMinutes": "{minutes} min",
+  "@scheduleDurationMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "guardianDetails": "Guardian Details",
+  "meritAndDemerit": "Merit & Demerit",
+  "academicCalendar": "Academic Calendar",
+  "academicCalendarLog": "Academic Calendar Log",
+  "upcoming": "Upcoming",
+  "exam": "Exam",
+  "academic": "Academic",
+  "holiday": "Holiday",
+  "event": "Event",
+  "academicResult": "Academic Result",
+  "currentSemesterScore": "Current semester score",
+  "subjectList": "Subject List",
+  "subjectCount": "{count} Subjects",
+  "@subjectCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "assessmentDataCount": "{count} assessment data",
+  "@assessmentDataCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "extracurricular": "Extracurricular",
+  "merit": "Merit",
+  "demerit": "Demerit",
+  "settings": "Settings",
+  "personalization": "Personalization",
+  "support": "Support",
+  "appTheme": "App Theme",
+  "helpCenter": "Help Center",
+  "privacyPolicy": "Privacy Policy",
+  "appVersion": "v {version}",
+  "@appVersion": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "language": "Language",
+  "indonesian": "Indonesian",
+  "english": "English",
+  "theme": "Theme",
+  "systemTheme": "System",
+  "lightTheme": "Light",
+  "darkTheme": "Dark",
+  "name": "Name",
+  "emptyName": "Who are you exactly?",
+  "classRoom": "Class",
+  "classRoomValue": "Class: {classRoom}",
+  "@classRoomValue": {
+    "placeholders": {
+      "classRoom": {
+        "type": "String"
+      }
+    }
+  },
+  "goodMorning": "Good morning!",
+  "goodAfternoon": "Good afternoon!",
+  "goodEvening": "Good evening!",
+  "goodNight": "Good night!",
+  "underMaintenance": "Upgrading in Progress",
+  "underMaintenanceDesc": "We’re improving the system for a better experience. Hang tight and try again soon!",
+  "tryAgain": "Try again",
+  "close": "Close",
+  "notNow": "Not now",
+  "notifications": "Notifications",
+  "noNotifications": "No notifications yet.",
+  "noNotificationsDesc": "School updates and important reminders will appear here.",
+  "today": "Today",
+  "yesterday": "Yesterday",
+  "unread": "Unread",
+  "markAllAsRead": "Mark all read",
+  "notificationPermissionTitle": "Turn on notifications",
+  "notificationPermissionDesc": "Get school updates, attendance reminders, and important announcements on this device.",
+  "notificationPermissionLoadingTitle": "Turning notifications on",
+  "notificationPermissionLoadingDesc": "Please wait while we connect this device.",
+  "enableNotifications": "Enable notifications",
+  "notificationPermissionEnabledTitle": "Notifications are on",
+  "notificationPermissionEnabledDesc": "This device is ready to receive updates from MyBL.",
+  "notificationPermissionDeniedTitle": "Notifications are off",
+  "notificationPermissionDeniedDesc": "You can still use the app. Notifications can be enabled later from device settings.",
+  "notificationPermissionFailedTitle": "Couldn’t turn on notifications",
+  "notificationPermissionFailedDesc": "Something went wrong while connecting this device. Please try again.",
+  "notificationSettings": "Notification settings",
+  "notificationSettingsDesc": "Alerts, reminders, and school updates",
+  "notificationStatusActive": "Active",
+  "notificationStatusInactive": "Inactive",
+  "notificationStatusChecking": "Checking status",
+  "refreshQrCode": "Refresh QR code",
+  "qrCodeRefreshesAutomatically": "Refreshes automatically every 55 seconds.",
+  "qrCodeExpiresIn": "Expires in {time}",
+  "@qrCodeExpiresIn": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "qrCodeLoading": "Preparing QR code...",
+  "nextMonth": "Next month",
+  "previousMonth": "Previous month",
+  "monday": "Monday",
+  "tuesday": "Tuesday",
+  "wednesday": "Wednesday",
+  "thursday": "Thursday",
+  "friday": "Friday",
+  "saturday": "Saturday",
+  "sunday": "Sunday",
+  "present": "Present",
+  "late": "Late",
+  "excused": "Excused",
+  "absent": "Absent",
+  "thisMonthlyAttendance": "Attendance this month",
+  "noAttendanceData": "No attendance yet.",
+  "noAttendanceDetailData": "No detail attendance yet.",
+  "days": "Days",
+  "noData": "No data.",
+  "noExtracurricularData": "No extracurricular data yet.",
+  "schoolYear": "School year",
+  "allSchoolYears": "All school years",
+  "semester": "Semester",
+  "allSemesters": "All semesters",
+  "score": "Score",
+  "id": "ID",
+  "subject": "Subject",
+  "average": "Average",
+  "sumativeAverage": "Summative average",
+  "reportAverage": "Report average",
+  "semesterReportAverage": "Semester report average",
+  "totalAssessment": "Total assessment",
+  "assessmentAspect": "Assessment aspect",
+  "scoreSequence": "Assessment number",
+  "scoreType": "Score type",
+  "remedial": "Remedial",
+  "description": "Description",
+  "point": "Point",
+  "defaultPoint": "Default point",
+  "totalPoint": "Total point",
+  "noDisciplineData": "No merit or demerit data yet.",
+  "disciplineActivityLog": "Activity Log",
+  "dataCount": "{count} data",
+  "@dataCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "disciplineStatusExcellent": "Excellent standing. Keep making good choices.",
+  "disciplineStatusGood": "Good standing. Stay consistent.",
+  "disciplineStatusNeedsAttention": "Needs attention. Small improvements matter.",
+  "disciplineStatusCritical": "Critical standing. Take it one day at a time.",
+  "unit": "Unit",
+  "teacher": "Teacher",
+  "date": "Date",
+  "checkIn": "Check in",
+  "checkOut": "Check out",
+  "totalPresent": "Total present",
+  "totalAbsent": "Total absent",
+  "westernIndonesiaTime": "WIB",
+  "reason": "Reason",
+  "personalInfo": "Personal info",
+  "personalInfoDesc": "Name, email, phone, address",
+  "totalMeritPoint": "Total Merit Point",
+  "profileAttendance": "Attendance",
+  "profileAverageScore": "Average Score",
+  "dateOfBirth": "Date of birth",
+  "gender": "Gender",
+  "religion": "Religion",
+  "classNumber": "Class number",
+  "address": "Address",
+  "phoneNumber": "Phone number",
+  "fatherName": "Father name",
+  "motherName": "Mother name",
+  "father": "Father",
+  "mother": "Mother",
+  "guardian": "Guardian",
+  "guardianName": "Guardian name",
+  "occupation": "Occupation",
+  "lastEducation": "Last education",
+  "contactAndAddress": "Contact and address",
+  "parentPhoneNumber": "Parent phone number",
+  "guardianPhoneNumber": "Guardian phone number",
+  "parentAddress": "Parent address",
+  "guardianAddress": "Guardian address",
+  "admissionDate": "Admission date",
+  "status": "Status",
+  "detailProfileNotes": "If you find any incorrect information, please report it to your respective administration office for correction."
+}

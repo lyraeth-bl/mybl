@@ -1,0 +1,267 @@
+{
+  "@@locale": "id",
+  "dioNetworkError": "Internet kamu kurang bagus nih, coba cek koneksi dulu ya.",
+  "dioServerError": "Server error, tetap tenang, coba lagi nanti ya.",
+  "dioUnauthorizedError": "Oops siapa kamu?, coba login lagi ya, biar kita kenal.",
+  "dioForbiddenError": "Oops siapa nih?, kamu ga punya akses kesini.",
+  "dioBadRequestError": "Input yang kamu kirim ada yang salah, check lagi sebelum kirim ya.",
+  "dioSerializationError": "Kita gagal proses data dari server, bukan salah kamu kok.",
+  "dioCancelledError": "Request nya dibatalin, tenang aja ya.",
+  "dioRateLimitedError": "Kamu udah kebanyakan permintaan nih, santai dulu ga sih.",
+  "dioTimeoutError": "Response dari servernya kelamaan, coba ulang lagi ya.",
+  "dioUnexpectedError": "Ada yang aneh, coba ulang lagi ya.",
+  "nis": "NIS",
+  "pleaseEnterNis": "NIS tidak boleh kosong, isi dulu ya...",
+  "password": "Password",
+  "pleaseEnterPassword": "Password juga tidak boleh kosong ya...",
+  "letsSignIn": "Ayo Masuk",
+  "logout": "Keluar",
+  "welcomeBack": "Selamat Datang Kembali",
+  "youHaveBeenMissed": "Kami merindukanmu!",
+  "signIn": "Masuk",
+  "rememberMyNis": "Ingat NIS saya?",
+  "forgetPassword": "Lupa password anda?",
+  "schoolName": "Sekolah Budi Luhur",
+  "schoolSlogan": "Cerdas Berbudi Luhur",
+  "home": "Beranda",
+  "menu": "Menu",
+  "quickMenu": "Menu Cepat",
+  "emptyMenu": "Menu belum tersedia.",
+  "profile": "Profil",
+  "dailyAttendance": "Absensi Harian",
+  "qrCode": "QR",
+  "attendanceQrCode": "QR Code Absensi",
+  "attendanceSummary": "Ringkasan Absensi",
+  "attendanceCalendar": "Kalender Absensi",
+  "attendanceLog": "Riwayat Absensi",
+  "attendanceDateFilter": "Filter tanggal absensi",
+  "fromDate": "Dari tanggal",
+  "toDate": "Sampai tanggal",
+  "last3Days": "3 hari terakhir",
+  "last7Days": "7 hari terakhir",
+  "thisMonth": "Bulan ini",
+  "attendanceDurationHoursMinutes": "{hours} jam {minutes} menit",
+  "@attendanceDurationHoursMinutes": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "attendanceChart": "Grafik Absensi",
+  "navigation": "Navigasi",
+  "all": "Semua",
+  "seeAll": "Lihat Semua",
+  "timeTable": "Jadwal Pelajaran",
+  "enjoyYourHoliday": "Selamat menikmati hari libur kamu.",
+  "enjoyYourHolidaySubtitle": "Tidak ada jadwal pelajaran hari ini.",
+  "todayScheduleFinished": "Hari ini sudah selesai.",
+  "todayScheduleFinishedSubtitle": "Semua pelajaran hari ini sudah berakhir.",
+  "ongoingNow": "Sedang berlangsung",
+  "scheduleDurationMinutes": "{minutes} menit",
+  "@scheduleDurationMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "guardianDetails": "Detail Orang Tua",
+  "meritAndDemerit": "Merit & Demerit",
+  "academicCalendar": "Kalendar Akademik",
+  "academicCalendarLog": "Riwayat Kalendar Akademik",
+  "upcoming": "Mendatang",
+  "exam": "Ujian",
+  "academic": "Akademik",
+  "holiday": "Libur",
+  "event": "Event",
+  "academicResult": "Hasil Akademik",
+  "currentSemesterScore": "Nilai semester ini",
+  "subjectList": "Daftar Mata Pelajaran",
+  "subjectCount": "{count} Mata Pelajaran",
+  "@subjectCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "assessmentDataCount": "{count} data penilaian",
+  "@assessmentDataCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "extracurricular": "Ekstrakulikuler",
+  "merit": "Merit",
+  "demerit": "Demerit",
+  "settings": "Pengaturan",
+  "personalization": "Personalisasi",
+  "support": "Dukungan",
+  "appTheme": "Tema Aplikasi",
+  "helpCenter": "Pusat Bantuan",
+  "privacyPolicy": "Kebijakan Privasi",
+  "appVersion": "v {version}",
+  "@appVersion": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "language": "Bahasa",
+  "indonesian": "Indonesia",
+  "english": "Inggris",
+  "theme": "Tema",
+  "systemTheme": "Sistem",
+  "lightTheme": "Terang",
+  "darkTheme": "Gelap",
+  "name": "Nama",
+  "emptyName": "Ini siapa ya?",
+  "classRoom": "Kelas",
+  "classRoomValue": "Kelas: {classRoom}",
+  "@classRoomValue": {
+    "placeholders": {
+      "classRoom": {
+        "type": "String"
+      }
+    }
+  },
+  "goodMorning": "Selamat pagi!",
+  "goodAfternoon": "Selamat siang!",
+  "goodEvening": "Selamat sore!",
+  "goodNight": "Selamat malam!",
+  "underMaintenance": "Aplikasi lagi di update",
+  "underMaintenanceDesc": "Kami lagi upgrade sistem biar pengalaman kamu makin oke. Tunggu sebentar, ya!",
+  "tryAgain": "Coba lagi",
+  "close": "Tutup",
+  "notNow": "Nanti saja",
+  "notifications": "Notifikasi",
+  "noNotifications": "Belum ada notifikasi.",
+  "noNotificationsDesc": "Update sekolah dan pengingat penting akan muncul di sini.",
+  "today": "Hari ini",
+  "yesterday": "Kemarin",
+  "unread": "Belum dibaca",
+  "markAllAsRead": "Tandai dibaca",
+  "notificationPermissionTitle": "Aktifkan notifikasi",
+  "notificationPermissionDesc": "Dapatkan update sekolah, pengingat absensi, dan pengumuman penting di perangkat ini.",
+  "notificationPermissionLoadingTitle": "Mengaktifkan notifikasi",
+  "notificationPermissionLoadingDesc": "Tunggu sebentar, perangkat ini sedang kami hubungkan.",
+  "enableNotifications": "Aktifkan notifikasi",
+  "notificationPermissionEnabledTitle": "Notifikasi aktif",
+  "notificationPermissionEnabledDesc": "Perangkat ini sudah siap menerima update dari MyBL.",
+  "notificationPermissionDeniedTitle": "Notifikasi tidak aktif",
+  "notificationPermissionDeniedDesc": "Aplikasi tetap bisa digunakan. Notifikasi bisa diaktifkan nanti dari pengaturan perangkat.",
+  "notificationPermissionFailedTitle": "Notifikasi gagal diaktifkan",
+  "notificationPermissionFailedDesc": "Ada kendala saat menghubungkan perangkat ini. Coba lagi ya.",
+  "notificationSettings": "Pengaturan notifikasi",
+  "notificationSettingsDesc": "Peringatan, pengingat, dan update sekolah",
+  "notificationStatusActive": "Aktif",
+  "notificationStatusInactive": "Tidak aktif",
+  "notificationStatusChecking": "Mengecek status",
+  "refreshQrCode": "Perbarui QR code",
+  "qrCodeRefreshesAutomatically": "Refresh otomatis setiap 55 detik.",
+  "qrCodeExpiresIn": "Kedaluwarsa dalam {time}",
+  "@qrCodeExpiresIn": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "qrCodeLoading": "Menyiapkan QR code...",
+  "nextMonth": "Bulan selanjutnya",
+  "previousMonth": "Bulan sebelumnya",
+  "monday": "Senin",
+  "tuesday": "Selasa",
+  "wednesday": "Rabu",
+  "thursday": "Kamis",
+  "friday": "Jumat",
+  "saturday": "Sabtu",
+  "sunday": "Minggu",
+  "present": "Hadir",
+  "late": "Terlambat",
+  "excused": "Izin",
+  "absent": "Absen",
+  "thisMonthlyAttendance": "Absensi bulan ini",
+  "noAttendanceData": "Tidak ada data absensi.",
+  "noAttendanceDetailData": "Tidak ada detail absensi.",
+  "days": "Hari",
+  "noData": "Tidak ada data.",
+  "noExtracurricularData": "Belum ada data ekstrakurikuler.",
+  "schoolYear": "Tajaran",
+  "allSchoolYears": "Semua tajaran",
+  "semester": "Semester",
+  "allSemesters": "Semua semester",
+  "score": "Nilai",
+  "id": "ID",
+  "subject": "Mata pelajaran",
+  "average": "Rata-rata",
+  "sumativeAverage": "Rata-rata sumatif",
+  "reportAverage": "Rata-rata rapor",
+  "semesterReportAverage": "Rata-rata rapor semester",
+  "totalAssessment": "Total penilaian",
+  "assessmentAspect": "Aspek nilai",
+  "scoreSequence": "Penilaian ke",
+  "scoreType": "Jenis nilai",
+  "remedial": "Remedial",
+  "description": "Keterangan",
+  "point": "Poin",
+  "defaultPoint": "Poin awal",
+  "totalPoint": "Total poin",
+  "noDisciplineData": "Belum ada data merit atau demerit.",
+  "disciplineActivityLog": "Riwayat Kedisiplinan",
+  "dataCount": "{count} data",
+  "@dataCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "disciplineStatusExcellent": "Sangat baik. Pertahankan kebiasaan positifmu.",
+  "disciplineStatusGood": "Baik. Tetap konsisten ya.",
+  "disciplineStatusNeedsAttention": "Perlu perhatian. Perbaikan kecil tetap berarti.",
+  "disciplineStatusCritical": "Kritis. Mulai perbaiki pelan-pelan.",
+  "unit": "Unit",
+  "teacher": "Guru",
+  "date": "Tanggal",
+  "checkIn": "Jam masuk",
+  "checkOut": "Jam keluar",
+  "totalPresent": "Total presensi",
+  "totalAbsent": "Total absen",
+  "westernIndonesiaTime": "WIB",
+  "reason": "Alasan",
+  "personalInfo": "Informasi pribadi",
+  "personalInfoDesc": "Nama, email, nomor, alamat",
+  "totalMeritPoint": "Total Merit Point",
+  "profileAttendance": "Kehadiran",
+  "profileAverageScore": "Rata-rata Nilai",
+  "dateOfBirth": "Tanggal lahir",
+  "gender": "Jenis kelamin",
+  "religion": "Agama",
+  "classNumber": "Nomor kelas",
+  "address": "Alamat",
+  "phoneNumber": "Nomor telepon",
+  "fatherName": "Nama ayah",
+  "motherName": "Nama ibu",
+  "father": "Ayah",
+  "mother": "Ibu",
+  "guardian": "Wali",
+  "guardianName": "Nama wali",
+  "occupation": "Pekerjaan",
+  "lastEducation": "Pendidikan terakhir",
+  "contactAndAddress": "Kontak dan alamat",
+  "parentPhoneNumber": "Nomor HP orang tua",
+  "guardianPhoneNumber": "Nomor HP wali",
+  "parentAddress": "Alamat orang tua",
+  "guardianAddress": "Alamat wali",
+  "admissionDate": "Tanggal masuk",
+  "status": "Status",
+  "detailProfileNotes": "Jika terdapat ketidaksesuaian data, segera laporkan ke TU unit masing-masing untuk dilakukan perbaikan."
+}
