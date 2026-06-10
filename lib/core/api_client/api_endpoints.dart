@@ -4,9 +4,6 @@
 
 part of 'api_client.dart';
 
-final String _envErrorMessage =
-    "Ada yang lupa setup .env nih, setup dulu ya dengan copy .env.example";
-
 const String _baseSanctum = String.fromEnvironment(
   'BASE_URL',
   defaultValue: 'https://laravel.jh-beon.cloud/api_spo_sanctum/public',

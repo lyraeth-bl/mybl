@@ -35,10 +35,13 @@ class UserLocalDataSourceImpl implements UserLocalDataSource {
 
   @override
   Future<Unit> save(StudentModel data) async {
+    // Strip password fields sebelum disimpen ke Hive
+    final safeData = data.copyWith(passsword: null, passwordOrangTua: '');
+
     // Simpen datanya ke box Hive dalam bentuk JSON biar awet.
     await _hiveInterface
         .box(HiveStorageBoxNames.userBoxKey)
-        .put(HiveStorageNames.studentDetailKey, data.toJson());
+        .put(HiveStorageNames.studentDetailKey, safeData.toJson());
 
     return unit;
   }

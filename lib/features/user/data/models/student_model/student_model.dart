@@ -77,7 +77,7 @@ abstract class StudentModel with _$StudentModel {
     @JsonKey(name: "TelpWali") required String noTeleponWali,
     @JsonKey(name: "PekerjaanWali") required String pekerjaanWali,
     @JsonKey(name: "Email") String? email,
-    @JsonKey(name: "Password") String? passsword,
+    @JsonKey(name: "Password", includeToJson: false) String? passsword,
     @JsonKey(name: "KelasSaatIni") String? kelasSaatIni,
     @JsonKey(name: "NomorKelasSaatIni") String? noKelasSaatIni,
     @JsonKey(name: "TahunLulus") required String tahunLulus,
@@ -146,7 +146,8 @@ abstract class StudentModel with _$StudentModel {
     @JsonKey(name: "Aktif") String? aktif,
     @JsonKey(name: "StatNaik") required String statusNaik,
     @JsonKey(name: "UnameOrtu") required String usernameOrangTua,
-    @JsonKey(name: "OrtuPass") required String passwordOrangTua,
+    @JsonKey(name: "OrtuPass", includeToJson: false)
+    required String passwordOrangTua,
     @JsonKey(name: "StatUjian") String? statusUjian,
     @JsonKey(name: "foto") String? profileImageUrl,
     @JsonKey(name: "unit") String? unit,
