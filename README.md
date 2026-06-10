@@ -77,16 +77,6 @@ akses ke fitur-fitur akademik.
 
 ## Integrasi
 
-MyBL menggunakan dua base URL utama yang disimpan melalui file `.env`.
-
-```env
-BASE_URL=
-BASE_URL_INTERNAL=
-```
-
-`BASE_URL` digunakan untuk layanan utama SPO, sedangkan `BASE_URL_INTERNAL`
-digunakan untuk endpoint internal seperti jadwal pelajaran.
-
 Beberapa integrasi penting di aplikasi:
 
 - REST API untuk data akademik dan profil siswa
@@ -132,12 +122,6 @@ Install dependency:
 
 ```bash
 flutter pub get
-```
-
-Buat file `.env` dari contoh yang tersedia:
-
-```bash
-cp .env.example .env
 ```
 
 Generate file yang dibutuhkan oleh Freezed, JSON Serializable, dan Hive:
