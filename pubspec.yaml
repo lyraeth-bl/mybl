@@ -38,6 +38,7 @@ dependencies:
   awesome_notifications: ^0.11.0
   firebase_core: ^4.9.0
   timeago: ^3.7.1
+  flutter_native_splash: ^2.4.7
 
 dev_dependencies:
   flutter_test:
@@ -54,6 +55,12 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
+
+flutter_native_splash:
+  color: "#FFFFFF"
+  image: assets/images/bl_logo.png
+  android: true
+  ios: false
 
 flutter_launcher_icons:
   android: true
