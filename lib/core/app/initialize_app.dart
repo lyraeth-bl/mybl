@@ -9,7 +9,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import '../../features/academic_calendar/di.dart';
 import '../../features/academic_result/di.dart';
@@ -40,8 +39,6 @@ import 'app_bloc_observer.dart';
 import 'app_di.dart';
 
 Future<void> initializeApp() async {
-  await dotenv.load(fileName: ".env");
-
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   if (kDebugMode) {

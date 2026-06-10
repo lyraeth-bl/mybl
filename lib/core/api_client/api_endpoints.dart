@@ -7,11 +7,14 @@ part of 'api_client.dart';
 final String _envErrorMessage =
     "Ada yang lupa setup .env nih, setup dulu ya dengan copy .env.example";
 
-final String _baseSanctum =
-    dotenv.env['BASE_URL'] ?? (throw Exception(_envErrorMessage));
-
-final String _baseInternal =
-    dotenv.env['BASE_URL_INTERNAL'] ?? (throw Exception(_envErrorMessage));
+const String _baseSanctum = String.fromEnvironment(
+  'BASE_URL',
+  defaultValue: 'https://laravel.jh-beon.cloud/api_spo_sanctum/public',
+);
+const String _baseInternal = String.fromEnvironment(
+  'BASE_URL_INTERNAL',
+  defaultValue: 'https://sekolahbudiluhur.sch.id/internal/dc_dispo_ok',
+);
 
 final String _databaseUrl = "$_baseSanctum/api";
 

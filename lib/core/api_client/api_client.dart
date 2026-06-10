@@ -3,7 +3,6 @@
 // that can be found in the LICENSE file.
 
 import 'package:dio/dio.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:fpdart/fpdart.dart';
 
 import '../failure/failure.dart';
