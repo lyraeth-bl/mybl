@@ -48,3 +48,6 @@ app.*.map.json
 stubs/
 lib/firebase_options.dart
 google-services.json
+*.freezed.dart
+*.g.dart
+lib/l10n/app_localizations*.dart
