@@ -39,6 +39,7 @@ dependencies:
   firebase_core: ^4.9.0
   timeago: ^3.7.1
   flutter_native_splash: ^2.4.7
+  toastification: ^3.2.0
 
 dev_dependencies:
   flutter_test:

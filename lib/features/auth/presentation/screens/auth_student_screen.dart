@@ -7,16 +7,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/di/get_it_constant.dart';
+import '../../../../core/widgets/app_button.dart';
+import '../../../../core/widgets/app_text_field.dart';
+import '../../../../core/widgets/app_toast.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../sessions/presentation/bloc/session_bloc.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/remember_me/remember_me_cubit.dart';
-import '../widgets/auth_text_field.dart';
 
-/// [AuthStudentScreen] itu pintu masuk utama buat halaman login siswa.
-///
-/// Di sini kita nge-inject [AuthBloc] pake [BlocProvider] biar semua widget
-/// di bawahnya bisa akses logic auth tanpa ribet.
 class AuthStudentScreen extends StatelessWidget {
   const AuthStudentScreen({super.key});
 
@@ -34,19 +32,13 @@ class AuthStudentScreen extends StatelessWidget {
   }
 }
 
-/// [_AuthStudentView] adalah wadah utama buat semua komponen UI di screen ini.
-///
-/// Dia yang nyusun [Scaffold], background animasi, sama form login biar tampilannya estetik.
 class _AuthStudentView extends StatelessWidget {
   const _AuthStudentView();
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
     return _ErrorHandlingListener(
       child: Scaffold(
-        backgroundColor: colorScheme.surface,
         resizeToAvoidBottomInset: false,
         body: Stack(children: [_BuildPatternAnimate(), _LoginForm()]),
       ),
@@ -54,10 +46,6 @@ class _AuthStudentView extends StatelessWidget {
   }
 }
 
-/// [_ErrorHandlingListener] itu si "satpam" yang jagain [AuthBloc].
-///
-/// Tugasnya simpel: dengerin state. Kalo login berhasil atau malah error,
-/// dia yang bakal munculin [SnackBar] buat ngasih tau user apa yang terjadi.
 class _ErrorHandlingListener extends StatelessWidget {
   const _ErrorHandlingListener({required this.child});
 
@@ -71,12 +59,10 @@ class _ErrorHandlingListener extends StatelessWidget {
       listener: (context, state) {
         state.whenOrNull(
           failure: (failure) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  failure.errorMessage ?? failure.localizedMessage(l10n),
-                ),
-              ),
+            AppToast.error(
+              context,
+              failure.errorMessage ?? failure.localizedMessage(l10n),
+              showProgressBar: false,
             );
           },
         );
@@ -86,10 +72,6 @@ class _ErrorHandlingListener extends StatelessWidget {
   }
 }
 
-/// [_BuildPatternAnimate] itu si tukang dekor yang bikin screen jadi lebih idup.
-///
-/// Dia nampilin pola-pola SVG di pojok atas sama bawah dengan animasi [FadeTransition]
-/// dan [SlideTransition] pas screen baru dibuka.
 class _BuildPatternAnimate extends StatefulWidget {
   const _BuildPatternAnimate();
 
@@ -151,10 +133,6 @@ class _BuildPatternAnimateState extends State<_BuildPatternAnimate>
   }
 }
 
-/// [_LoginForm] adalah tempat user beraksi buat masuk ke akun mereka.
-///
-/// Di sini ada field buat NIS sama password, plus validasi receh biar user nggak
-/// lupa ngisi datanya sebelum mencet tombol login.
 class _LoginForm extends StatefulWidget {
   const _LoginForm();
 
@@ -177,28 +155,21 @@ class _LoginFormState extends State<_LoginForm>
   final TextEditingController _nisController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  /// [hidePassword] ini state buat nentuin passwordnya lagi ngumpet (pake bintang-bintang) atau keliatan.
-  bool hidePassword = true;
-
-  /// [_onSignIn] itu fungsi buat eksekusi login pas tombol dipencet.
-  ///
-  /// Dia bakal ngecek dulu inputan user, kalo oke baru deh kirim event
-  /// [AuthEvent.loginRequested] ke [AuthBloc].
   void _onSignIn(BuildContext context, AppLocalizations l10n) {
     final nis = _nisController.text.trim();
     final password = _passwordController.text.trim();
 
     if (nis.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(l10n.pleaseEnterNis)));
+      AppToast.warning(context, l10n.pleaseEnterNis, showProgressBar: false);
       return;
     }
 
     if (password.isEmpty) {
-      ScaffoldMessenger.of(
+      AppToast.warning(
         context,
-      ).showSnackBar(SnackBar(content: Text(l10n.pleaseEnterPassword)));
+        l10n.pleaseEnterPassword,
+        showProgressBar: false,
+      );
       return;
     }
 
@@ -209,9 +180,6 @@ class _LoginFormState extends State<_LoginForm>
     );
   }
 
-  /// [getSavedNIS] itu fungsinya buat narik NIS yang udah pernah disimpen di lokal.
-  ///
-  /// Kalo datanya ada di [RememberMeCubit], dia langsung otomatis ngisi field NIS pas screen dibuka.
   void getSavedNIS() {
     final savedNIS = context.read<RememberMeCubit>().state.savedNIS;
 
@@ -220,19 +188,27 @@ class _LoginFormState extends State<_LoginForm>
     }
   }
 
+  bool get _canSubmit =>
+      _nisController.text.trim().isNotEmpty &&
+      _passwordController.text.trim().isNotEmpty;
+
   @override
   void initState() {
     super.initState();
-
-    // Pas screen baru nongol, kita langsung gercep nyari NIS yang kesimpen di memori.
+    _nisController.addListener(_onFieldChanged);
+    _passwordController.addListener(_onFieldChanged);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await context.read<RememberMeCubit>().loadSavedEmail();
       getSavedNIS();
     });
   }
 
+  void _onFieldChanged() => setState(() {});
+
   @override
   void dispose() {
+    _nisController.removeListener(_onFieldChanged);
+    _passwordController.removeListener(_onFieldChanged);
     _animationController.dispose();
     _nisController.dispose();
     _passwordController.dispose();
@@ -280,59 +256,123 @@ class _LoginFormState extends State<_LoginForm>
                   notification.disallowIndicator();
                   return true;
                 },
-                child: SingleChildScrollView(
-                  physics: const ClampingScrollPhysics(),
-                  padding: EdgeInsets.only(
-                    left: screenSize.width * 0.075,
-                    right: screenSize.width * 0.075,
-                    top: screenSize.height * 0.17,
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        l10n.letsSignIn,
-                        style: textTheme.headlineLarge!.copyWith(
-                          color: colorScheme.onSurface,
-                          fontWeight: FontWeight.bold,
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    return SingleChildScrollView(
+                      physics: const ClampingScrollPhysics(),
+                      padding: const EdgeInsets.fromLTRB(24, 124, 24, 24),
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          minHeight: constraints.maxHeight > 148
+                              ? constraints.maxHeight - 148
+                              : 0,
+                        ),
+                        child: IntrinsicHeight(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                l10n.letsSignIn,
+                                style: textTheme.headlineLarge!.copyWith(
+                                  color: colorScheme.onSurface,
+                                  fontWeight: .bold,
+                                ),
+                              ),
+
+                              const SizedBox(height: 12),
+
+                              Text(
+                                '${l10n.welcomeBack},\n${l10n.youHaveBeenMissed}',
+                                style: textTheme.headlineSmall!.copyWith(
+                                  color: colorScheme.onSurfaceVariant,
+                                  height: 1.5,
+                                ),
+                              ),
+
+                              const SizedBox(height: 32),
+
+                              AppTextField(
+                                controller: _nisController,
+                                decoration: InputDecoration(hintText: l10n.nis),
+                                focusedSide: BorderSide(
+                                  color: colorScheme.primary,
+                                  width: 2,
+                                ),
+                                style: TextStyle(
+                                  color: colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+
+                              const SizedBox(height: 16),
+
+                              AppTextField(
+                                controller: _passwordController,
+                                decoration: InputDecoration(
+                                  hintText: l10n.password,
+                                ),
+                                style: TextStyle(
+                                  color: colorScheme.onSurfaceVariant,
+                                ),
+                                obscureText: true,
+                                focusedSide: BorderSide(
+                                  color: colorScheme.primary,
+                                  width: 2,
+                                ),
+                              ),
+
+                              const SizedBox(height: 16),
+
+                              _RememberMeRow(),
+
+                              const SizedBox(height: 24),
+
+                              BlocBuilder<AuthBloc, AuthState>(
+                                buildWhen: (prev, curr) {
+                                  final prevLoading = prev.maybeWhen(
+                                    loading: () => true,
+                                    orElse: () => false,
+                                  );
+                                  final currLoading = curr.maybeWhen(
+                                    loading: () => true,
+                                    orElse: () => false,
+                                  );
+                                  return prevLoading != currLoading;
+                                },
+                                builder: (context, state) {
+                                  final isLoading = state.maybeWhen(
+                                    loading: () => true,
+                                    orElse: () => false,
+                                  );
+
+                                  return AppButton(
+                                    loading: isLoading,
+                                    onPressed: _canSubmit && !isLoading
+                                        ? () => _onSignIn(context, l10n)
+                                        : null,
+                                    progressIndicatorSize: 28,
+                                    child: Text(l10n.signIn),
+                                  );
+                                },
+                              ),
+
+                              const SizedBox(height: 32),
+
+                              Center(
+                                child: Text(
+                                  l10n.loginHelpNotice,
+                                  textAlign: TextAlign.center,
+                                  style: textTheme.bodyMedium?.copyWith(
+                                    color: colorScheme.onSurfaceVariant,
+                                    height: 1.4,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-
-                      const SizedBox(height: 16),
-
-                      Text(
-                        '${l10n.welcomeBack},\n${l10n.youHaveBeenMissed}',
-                        style: textTheme.headlineSmall!.copyWith(
-                          color: colorScheme.onSurfaceVariant,
-                          height: 1.5,
-                        ),
-                      ),
-
-                      const SizedBox(height: 24),
-
-                      AuthTextField(
-                        textEditingController: _nisController,
-                        hintText: l10n.nis,
-                      ),
-
-                      const SizedBox(height: 24),
-
-                      AuthTextField(
-                        textEditingController: _passwordController,
-                        hintText: l10n.password,
-                        isPassword: hidePassword,
-                      ),
-
-                      const SizedBox(height: 24),
-
-                      _RememberMeRow(),
-
-                      const SizedBox(height: 48),
-
-                      _SignInButton(onPressed: () => _onSignIn(context, l10n)),
-                    ],
-                  ),
+                    );
+                  },
                 ),
               ),
             ),
@@ -343,55 +383,6 @@ class _LoginFormState extends State<_LoginForm>
   }
 }
 
-/// [_SignInButton] itu tombol eksekusi buat login.
-///
-/// Dia pinter banget, bisa tau kapan harus nampilin teks "Sign In" atau
-/// spinner loading pas lagi nunggu respon dari server lewat [AuthBloc].
-class _SignInButton extends StatelessWidget {
-  const _SignInButton({required this.onPressed});
-
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-
-    return BlocBuilder<AuthBloc, AuthState>(
-      buildWhen: (prev, curr) {
-        final prevLoading = prev.maybeWhen(
-          loading: () => true,
-          orElse: () => false,
-        );
-        final currLoading = curr.maybeWhen(
-          loading: () => true,
-          orElse: () => false,
-        );
-        return prevLoading != currLoading;
-      },
-      builder: (context, state) {
-        final isLoading = state.maybeWhen(
-          loading: () => true,
-          orElse: () => false,
-        );
-
-        return FilledButton(
-          style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(48)),
-          onPressed: isLoading ? null : onPressed,
-          child: isLoading
-              ? const SizedBox.square(
-                  dimension: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
-              : Text(l10n.signIn),
-        );
-      },
-    );
-  }
-}
-
-/// [_RememberMeRow] itu barisan buat checkbox "Remember Me" sama tombol "Lupa Password".
-///
-/// Di sini user bisa milih mau disimpen atau nggak NIS-nya buat login selanjutnya.
 class _RememberMeRow extends StatelessWidget {
   const _RememberMeRow();
 
@@ -404,45 +395,95 @@ class _RememberMeRow extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        GestureDetector(
-          onTap: () => context.read<RememberMeCubit>().toggleCheckBox(
-            !context.read<RememberMeCubit>().state.isChecked,
-          ),
-          child: Row(
-            children: [
-              BlocBuilder<RememberMeCubit, RememberMeState>(
-                buildWhen: (prev, curr) => prev.isChecked != curr.isChecked,
-                builder: (context, state) {
-                  return Checkbox(
-                    value: state.isChecked,
-                    // Null karena udah di handle di GestureDetector.
-                    onChanged: null,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadiusGeometry.circular(16),
-                    ),
-                  );
-                },
-              ),
-              Text(
-                l10n.rememberMyNis,
-                style: textTheme.labelMedium?.copyWith(
-                  color: colorScheme.onSurface,
-                ),
-              ),
-            ],
-          ),
+        _RememberMeCheckbox(
+          colorScheme: colorScheme,
+          textTheme: textTheme,
+          l10n: l10n,
         ),
-        TextButton(
-          onPressed: () {},
-          child: Text(
-            l10n.forgetPassword,
-            style: textTheme.labelMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: colorScheme.primary,
-            ),
-          ),
+        _ForgotPasswordButton(
+          colorScheme: colorScheme,
+          textTheme: textTheme,
+          l10n: l10n,
         ),
       ],
+    );
+  }
+}
+
+class _RememberMeCheckbox extends StatelessWidget {
+  const _RememberMeCheckbox({
+    required this.colorScheme,
+    required this.textTheme,
+    required this.l10n,
+  });
+
+  final ColorScheme colorScheme;
+  final TextTheme textTheme;
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<RememberMeCubit, RememberMeState>(
+      buildWhen: (prev, curr) => prev.isChecked != curr.isChecked,
+      builder: (context, state) {
+        return InkWell(
+          onTap: () =>
+              context.read<RememberMeCubit>().toggleCheckBox(!state.isChecked),
+          borderRadius: BorderRadius.circular(8),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: Row(
+              children: [
+                Checkbox(
+                  value: state.isChecked,
+                  activeColor: colorScheme.primary,
+                  checkColor: colorScheme.onPrimary,
+                  side: BorderSide(color: colorScheme.outline, width: 1.5),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  onChanged: (val) => context
+                      .read<RememberMeCubit>()
+                      .toggleCheckBox(val ?? false),
+                ),
+                Text(
+                  l10n.rememberMyNis,
+                  style: textTheme.labelMedium?.copyWith(
+                    color: colorScheme.onSurface,
+                  ),
+                ),
+                const SizedBox(width: 4),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _ForgotPasswordButton extends StatelessWidget {
+  const _ForgotPasswordButton({
+    required this.colorScheme,
+    required this.textTheme,
+    required this.l10n,
+  });
+
+  final ColorScheme colorScheme;
+  final TextTheme textTheme;
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextButton(
+      onPressed: () {},
+      child: Text(
+        l10n.forgetPassword,
+        style: textTheme.labelMedium?.copyWith(
+          fontWeight: FontWeight.bold,
+          color: colorScheme.primary,
+        ),
+      ),
     );
   }
 }

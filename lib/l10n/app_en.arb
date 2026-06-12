@@ -18,6 +18,7 @@
   "welcomeBack": "Welcome Back",
   "youHaveBeenMissed": "You've been missed!",
   "signIn": "Sign in",
+  "loginHelpNotice": "Having trouble signing in? Please contact the school administration office for help.",
   "logout": "Logout",
   "rememberMyNis": "Remember my NIS?",
   "forgetPassword": "Forget your password?",
