@@ -11,6 +11,7 @@ import 'data/datasources/user_remote_data_source.dart';
 import 'data/repositories/user_repository_impl.dart';
 import 'domain/repositories/user_repository.dart';
 import 'domain/usecases/fetch_student_use_case.dart';
+import 'presentation/bloc/parent_bloc/parent_bloc.dart';
 import 'presentation/bloc/user_bloc.dart';
 
 void initUserDI() {
@@ -34,4 +35,5 @@ void initUserDI() {
   );
 
   di.registerLazySingleton<UserBloc>(() => UserBloc(di<FetchStudentUseCase>()));
+  di.registerLazySingleton<ParentBloc>(() => ParentBloc());
 }

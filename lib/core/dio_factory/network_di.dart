@@ -6,15 +6,19 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
 import '../../features/sessions/presentation/bloc/session_bloc.dart';
+import '../../features/user/presentation/bloc/parent_bloc/parent_bloc.dart';
 import '../api_client/api_client.dart';
 import '../di/get_it_constant.dart';
+import '../enums/user_role.dart';
 import '../token_provider/token_provider.dart';
 import 'dio_factory.dart';
+import 'interceptors/student_nis_interceptor.dart';
 
 void _initNetworkDI({
   required String baseUrl,
   Future<String?> Function()? tokenProvider,
   Future<void> Function()? onUnauthorized,
+  List<Interceptor> extraInterceptors = const [],
 }) async {
   final dio = DioFactory().buildDioClient(
     baseUrl: baseUrl,
@@ -41,6 +45,7 @@ void _initNetworkDI({
           handler.next(error);
         },
       ),
+      ...extraInterceptors,
     ],
   );
 
@@ -54,4 +59,10 @@ void initNetworkDI() => _initNetworkDI(
     di<TokenProvider>().clearAccessToken();
     di<SessionBloc>().add(const SessionEvent.loggedOut());
   },
+  extraInterceptors: [
+    StudentNisInterceptor(
+      parentBloc: di<ParentBloc>(),
+      getRoleCallback: () => UserRole.student,
+    ),
+  ],
 );
