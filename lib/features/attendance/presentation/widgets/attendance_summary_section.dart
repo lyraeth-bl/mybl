@@ -10,6 +10,7 @@ import '../../../../core/internal/src/extensions/extensions.dart';
 import '../../../../core/widgets/app_chip_container.dart';
 import '../../../../core/widgets/app_container.dart';
 import '../../../../core/widgets/app_sliver_group.dart';
+import '../../../../core/widgets/app_toast.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/attendance_summary/attendance_summary.dart';
 import '../bloc/monthly_attendance_bloc/monthly_attendance_bloc.dart';
@@ -27,7 +28,11 @@ class AttendanceSummarySection extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final locale = Localizations.localeOf(context).toString();
 
-    return BlocBuilder<MonthlyAttendanceBloc, MonthlyAttendanceState>(
+    return BlocConsumer<MonthlyAttendanceBloc, MonthlyAttendanceState>(
+      listener: (context, state) => state.whenOrNull(
+        failure: (failure) =>
+            AppToast.error(context, failure.localizedMessage(l10n)),
+      ),
       buildWhen: (prev, curr) {
         final prevData = (
           month: prev.maybeWhen(

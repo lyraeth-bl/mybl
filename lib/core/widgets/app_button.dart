@@ -189,7 +189,7 @@ class AppButton extends StatelessWidget {
     return SizedBox.square(
       dimension: progressIndicatorSize,
       child: CircularProgressIndicator(
-        color: foregroundColor ?? colorScheme.onPrimary,
+        color: foregroundColor ?? colorScheme.onSurface,
         strokeWidth: progressIndicatorStrokeWidth,
         // ignore: deprecated_member_use
         year2023: false,

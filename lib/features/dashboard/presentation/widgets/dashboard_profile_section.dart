@@ -9,6 +9,7 @@ import '../../../../core/internal/src/extensions/extensions.dart';
 import '../../../../core/widgets/app_container.dart';
 import '../../../../core/widgets/app_profile_picture.dart';
 import '../../../../core/widgets/app_sliver_group.dart';
+import '../../../../core/widgets/app_toast.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../user/presentation/bloc/user_bloc.dart';
 
@@ -33,7 +34,11 @@ class DashboardProfileSection extends StatelessWidget {
         margin: EdgeInsets.zero,
         elevation: 0,
         borderRadius: BorderRadius.circular(16),
-        child: BlocBuilder<UserBloc, UserState>(
+        child: BlocConsumer<UserBloc, UserState>(
+          listener: (context, state) => state.whenOrNull(
+            failure: (failure) =>
+                AppToast.error(context, failure.localizedMessage(l10n)),
+          ),
           builder: (context, state) {
             final isLoading = state.maybeWhen(
               loading: () => true,
