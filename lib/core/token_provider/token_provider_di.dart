@@ -4,10 +4,15 @@
 
 import '../../features/sessions/data/datasources/session_local_data_source.dart';
 import '../di/get_it_constant.dart';
+import 'parent_token_provider.dart';
 import 'token_provider.dart';
 
 void initTokenProviderDI() {
   di.registerLazySingleton<TokenProvider>(
     () => TokenProviderImpl(di<SessionLocalDataSource>()),
+  );
+
+  di.registerLazySingleton<ParentTokenProvider>(
+    () => ParentTokenProviderImpl(di<SessionLocalDataSource>()),
   );
 }

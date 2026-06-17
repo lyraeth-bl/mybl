@@ -6,7 +6,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../../core/failure/failure.dart';
+import '../../../user/domain/entities/child_entity/child_entity.dart';
 import '../../domain/entities/login_params/login_params.dart';
+import '../../domain/usecases/login_parent_use_case.dart';
 import '../../domain/usecases/login_use_case.dart';
 import '../../domain/usecases/logout_use_case.dart';
 
@@ -15,13 +17,15 @@ part 'auth_event.dart';
 part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  AuthBloc(this._loginUseCase, this._logoutUseCase)
+  AuthBloc(this._loginUseCase, this._logoutUseCase, this._loginParentUseCase)
     : super(const AuthState.initial()) {
     on<_LoginRequested>(_onLoginRequested);
+    on<_LoginParentRequested>(_onLoginParentRequested);
     on<_LogoutRequested>(_onLogoutRequested);
   }
 
   final LoginUseCase _loginUseCase;
+  final LoginParentUseCase _loginParentUseCase;
   final LogoutUseCase _logoutUseCase;
 
   Future<void> _onLoginRequested(
@@ -40,6 +44,30 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         AuthState.successLogin(
           accessToken: response.accessToken,
           expiresAt: response.expiresAt,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _onLoginParentRequested(
+    _LoginParentRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(const AuthState.loading());
+
+    final result = await _loginParentUseCase(
+      nis: event.nis,
+      password: event.password,
+    );
+
+    return result.match(
+      (failure) => emit(AuthState.failure(failure)),
+      (response) => emit(
+        AuthState.successParentLogin(
+          accessToken: response.accessToken,
+          expiresAt: response.expiresAt,
+          nama: response.nama,
+          children: response.children,
         ),
       ),
     );

@@ -10,6 +10,7 @@ import '../../features/user/presentation/bloc/parent_bloc/parent_bloc.dart';
 import '../api_client/api_client.dart';
 import '../di/get_it_constant.dart';
 import '../enums/user_role.dart';
+import '../token_provider/parent_token_provider.dart';
 import '../token_provider/token_provider.dart';
 import 'dio_factory.dart';
 import 'interceptors/student_nis_interceptor.dart';
@@ -54,15 +55,48 @@ void _initNetworkDI({
 
 void initNetworkDI() => _initNetworkDI(
   baseUrl: ApiEndpoints.baseUrl,
-  tokenProvider: () => di<TokenProvider>().readAccessToken(),
+  tokenProvider: () {
+    final sessionState = di<SessionBloc>().state;
+    final isAuthenticated = sessionState.maybeWhen(
+      authenticated: (_, _) => true,
+      orElse: () => false,
+    );
+    final isParent = sessionState.maybeWhen(
+      authenticated: (_, role) => role == UserRole.parent,
+      orElse: () => false,
+    );
+
+    if (isAuthenticated && isParent) {
+      return di<ParentTokenProvider>().readParentAccessToken();
+    }
+
+    return di<TokenProvider>().readAccessToken();
+  },
   onUnauthorized: () async {
-    di<TokenProvider>().clearAccessToken();
+    final sessionState = di<SessionBloc>().state;
+    final isAuthenticated = sessionState.maybeWhen(
+      authenticated: (_, _) => true,
+      orElse: () => false,
+    );
+    final isParent = sessionState.maybeWhen(
+      authenticated: (_, role) => role == UserRole.parent,
+      orElse: () => false,
+    );
+
+    if (isAuthenticated && isParent) {
+      di<ParentTokenProvider>().clearParentAccessToken();
+    } else {
+      di<TokenProvider>().clearAccessToken();
+    }
     di<SessionBloc>().add(const SessionEvent.loggedOut());
   },
   extraInterceptors: [
     StudentNisInterceptor(
       parentBloc: di<ParentBloc>(),
-      getRoleCallback: () => UserRole.student,
+      getRoleCallback: () => di<SessionBloc>().state.maybeWhen(
+        authenticated: (_, role) => role,
+        orElse: () => UserRole.student,
+      ),
     ),
   ],
 );
