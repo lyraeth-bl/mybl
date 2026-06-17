@@ -61,6 +61,7 @@ Future<void> initializeApp() async {
   initAppDI();
   initTokenProviderDI();
   initApiClientDI();
+  initUserDI();
   initNetworkDI();
   initAuthDI();
   initDeviceTokenDI();
@@ -68,7 +69,6 @@ Future<void> initializeApp() async {
   initFCMServiceDI();
   initSessionsDI();
   initAppConfigurationDI();
-  initUserDI();
   initAttendanceDI();
   initTimeTableDI();
   initExtracurricularDI();

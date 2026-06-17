@@ -11,9 +11,6 @@ import '../../../../core/app_router/app_router.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../sessions/presentation/bloc/session_bloc.dart';
 
-/// [SplashScreen] itu pintu gerbang utama pas aplikasi baru pertama kali dibuka.
-/// Isinya simpel banget, cuma jembatan buat nampilin [_SplashScreenView] biar
-/// struktur kodenya tetep rapi dan enak dibaca.
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
 
@@ -23,9 +20,6 @@ class SplashScreen extends StatelessWidget {
   }
 }
 
-/// [_SplashScreenView] ini si paling sibuk pas awal-awal.
-/// Dia yang tanggung jawab buat nampilin visual logo yang estetik pake animasi,
-/// sekaligus jadi tempat buat ngecek apakah lo udah login atau belum.
 class _SplashScreenView extends StatefulWidget {
   const _SplashScreenView();
 
@@ -33,13 +27,7 @@ class _SplashScreenView extends StatefulWidget {
   State<_SplashScreenView> createState() => _SplashScreenViewState();
 }
 
-/// [_SplashScreenViewState] adalah otak di balik layar splash.
-/// Di sini kita mainin delay dikit biar user sempet liat logo keren kita,
-/// sebelum akhirnya kita tanya ke [SessionBloc] soal status autentikasi lo.
 class _SplashScreenViewState extends State<_SplashScreenView> {
-  /// [_sessionsChecker] itu tukang colek [SessionBloc].
-  /// Fungsinya buat ngasih tau BLoC kalo aplikasi udah siap dan butuh info
-  /// soal status session user sekarang.
   void _sessionsChecker() {
     context.read<SessionBloc>().add(const SessionEvent.started());
   }
@@ -72,7 +60,7 @@ class _SplashScreenViewState extends State<_SplashScreenView> {
 
           // Kalo udah login, langsung di lempar ke dashboard, biar ga cape
           // login lagi.
-          authenticated: (_) => context.go(RouteNames.dashboard),
+          authenticated: (_, _) => context.go(RouteNames.dashboard),
         );
       },
       child: Scaffold(

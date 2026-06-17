@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class AuthPattern extends StatefulWidget {
-  const AuthPattern({super.key});
+class AuthPatternAnimate extends StatefulWidget {
+  const AuthPatternAnimate({super.key});
 
   @override
-  State<AuthPattern> createState() => _AuthPattern();
+  State<AuthPatternAnimate> createState() => _AuthPatternAnimate();
 }
 
-class _AuthPattern extends State<AuthPattern>
+class _AuthPatternAnimate extends State<AuthPatternAnimate>
     with SingleTickerProviderStateMixin {
   late final AnimationController _animationController = AnimationController(
     vsync: this,
