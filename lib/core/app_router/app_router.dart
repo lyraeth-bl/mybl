@@ -10,6 +10,8 @@ import '../../features/academic_result/presentation/screens/academic_result_scre
 import '../../features/attendance/presentation/screens/attendance_screen.dart';
 import '../../features/auth/presentation/screens/auth_parent_screen.dart';
 import '../../features/auth/presentation/screens/auth_student_screen.dart';
+import '../../features/auth/presentation/screens/parent_child_selector_screen.dart';
+import '../../features/user/presentation/bloc/parent_bloc/parent_bloc.dart';
 import '../../features/welcome/presentation/screens/welcome_screen.dart';
 import '../../features/dashboard/presentation/screens/dashboard_screen.dart';
 import '../../features/dashboard/presentation/widgets/main_shell.dart';
@@ -23,19 +25,24 @@ import '../../features/sessions/presentation/bloc/session_bloc.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
 import '../../features/splash/presentation/screens/splash_screen.dart';
 import '../../features/time_table/presentation/screens/time_table_screen.dart';
+import '../enums/user_role.dart';
 import 'go_router_refresh_stream.dart';
 
 part 'route_names.dart';
 
 class AppRouter {
-  AppRouter(this._sessionBloc);
+  AppRouter(this._sessionBloc, this._parentBloc);
 
   final SessionBloc _sessionBloc;
+  final ParentBloc _parentBloc;
 
   late final GoRouter goRouter = GoRouter(
     initialLocation: RouteNames.splash,
 
-    refreshListenable: GoRouterRefreshStream(_sessionBloc.stream),
+    refreshListenable: GoRouterRefreshStream.merged([
+      _sessionBloc.stream,
+      _parentBloc.stream,
+    ]),
 
     redirect: (context, state) {
       final sessionState = _sessionBloc.state;
@@ -53,17 +60,40 @@ class AppRouter {
         orElse: () => false,
       );
 
+      final isParent = sessionState.maybeWhen(
+        authenticated: (_, role) => role == UserRole.parent,
+        orElse: () => false,
+      );
+
+      final hasSelectedChild = _parentBloc.state.maybeWhen(
+        active: (_) => true,
+        orElse: () => false,
+      );
+
       final isOnSplashScreen = state.matchedLocation == RouteNames.splash;
+
       final isOnAuthScreen =
           state.matchedLocation == RouteNames.welcome ||
           state.matchedLocation == RouteNames.authStudent ||
           state.matchedLocation == RouteNames.authParent;
 
+      final isOnParentFlow =
+          state.matchedLocation == RouteNames.parentChildSelector ||
+          state.matchedLocation == RouteNames.parentDashboard;
+
       if (isOnSplashScreen) return null;
 
       if (!isLoggedIn && !isOnAuthScreen) return RouteNames.welcome;
 
-      if (isLoggedIn && isOnAuthScreen) return RouteNames.dashboard;
+      if (isLoggedIn && isOnAuthScreen) {
+        return isParent ? RouteNames.parentChildSelector : RouteNames.dashboard;
+      }
+
+      if (isLoggedIn && isParent) {
+        if (!hasSelectedChild && !isOnParentFlow) {
+          return RouteNames.parentChildSelector;
+        }
+      }
 
       return null;
     },
@@ -87,6 +117,11 @@ class AppRouter {
       GoRoute(
         path: RouteNames.authParent,
         builder: (context, state) => const AuthParentScreen(),
+      ),
+
+      GoRoute(
+        path: RouteNames.parentChildSelector,
+        builder: (context, state) => const ParentChildSelectorScreen(),
       ),
 
       GoRoute(

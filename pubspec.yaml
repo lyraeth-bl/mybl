@@ -1,6 +1,6 @@
 name: my_bl
 description: "A Budi Luhur App."
-publish_to: 'none'
+publish_to: "none"
 version: 1.0.0+1
 
 environment:
@@ -40,6 +40,7 @@ dependencies:
   timeago: ^3.7.1
   flutter_native_splash: ^2.4.7
   toastification: ^3.2.0
+  async: ^2.13.1
 
 dev_dependencies:
   flutter_test:

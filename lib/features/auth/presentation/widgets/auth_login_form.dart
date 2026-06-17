@@ -11,7 +11,6 @@ import '../../../../core/widgets/app_text_field.dart';
 import '../../../../core/widgets/app_toast.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../sessions/presentation/bloc/session_bloc.dart';
-import '../../../user/domain/entities/child_entity/child_entity.dart';
 import '../../../user/domain/entities/parent_entity/parent_entity.dart';
 import '../../../user/presentation/bloc/parent_bloc/parent_bloc.dart';
 import '../bloc/auth_bloc.dart';

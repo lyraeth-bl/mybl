@@ -19,8 +19,14 @@ class RouteNames {
   // Auth Parent Screen
   static const String authParent = "/auth/parent";
 
+  // Parent Child Selector
+  static const String parentChildSelector = "/parent/select-child";
+
   // Dashboard
   static const String dashboard = "/dashboard";
+
+  // Parent Dashboard
+  static const String parentDashboard = "/parent/dashboard";
 
   // Attendance
   static const String attendance = "/attendance";
