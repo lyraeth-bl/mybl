@@ -8,7 +8,9 @@ import 'package:go_router/go_router.dart';
 import '../../features/academic_calendar/presentation/screens/academic_calendar_screen.dart';
 import '../../features/academic_result/presentation/screens/academic_result_screen.dart';
 import '../../features/attendance/presentation/screens/attendance_screen.dart';
+import '../../features/auth/presentation/screens/auth_parent_screen.dart';
 import '../../features/auth/presentation/screens/auth_student_screen.dart';
+import '../../features/welcome/presentation/screens/welcome_screen.dart';
 import '../../features/dashboard/presentation/screens/dashboard_screen.dart';
 import '../../features/dashboard/presentation/widgets/main_shell.dart';
 import '../../features/discipline/presentation/screens/merit_demerit_screen.dart';
@@ -52,15 +54,16 @@ class AppRouter {
       );
 
       final isOnSplashScreen = state.matchedLocation == RouteNames.splash;
-      final isOnLoginScreen = state.matchedLocation == RouteNames.authStudent;
+      final isOnAuthScreen =
+          state.matchedLocation == RouteNames.welcome ||
+          state.matchedLocation == RouteNames.authStudent ||
+          state.matchedLocation == RouteNames.authParent;
 
       if (isOnSplashScreen) return null;
 
-      if (!isLoggedIn && !isOnLoginScreen) {
-        return RouteNames.authStudent;
-      }
+      if (!isLoggedIn && !isOnAuthScreen) return RouteNames.welcome;
 
-      if (isLoggedIn && (isOnLoginScreen)) return RouteNames.dashboard;
+      if (isLoggedIn && isOnAuthScreen) return RouteNames.dashboard;
 
       return null;
     },
@@ -72,8 +75,18 @@ class AppRouter {
       ),
 
       GoRoute(
+        path: RouteNames.welcome,
+        builder: (context, state) => const WelcomeScreen(),
+      ),
+
+      GoRoute(
         path: RouteNames.authStudent,
         builder: (context, state) => const AuthStudentScreen(),
+      ),
+
+      GoRoute(
+        path: RouteNames.authParent,
+        builder: (context, state) => const AuthParentScreen(),
       ),
 
       GoRoute(

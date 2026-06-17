@@ -23,7 +23,10 @@ class ParentRemoteDataSourceImpl implements ParentRemoteDataSource {
     required String nis,
     required String password,
   }) async => await _httpRequest
-      .post(ApiEndpoints.loginParent, data: {'nis': nis, 'password': password})
+      .post(
+        ApiEndpoints.loginParent,
+        data: {'username': nis, 'password': password},
+      )
       .then(
         (value) =>
             ParentResponseModel.fromJson(Map<String, dynamic>.from(value)),

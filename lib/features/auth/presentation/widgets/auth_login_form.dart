@@ -11,13 +11,17 @@ import '../../../../core/widgets/app_text_field.dart';
 import '../../../../core/widgets/app_toast.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../sessions/presentation/bloc/session_bloc.dart';
+import '../../../user/domain/entities/child_entity/child_entity.dart';
+import '../../../user/domain/entities/parent_entity/parent_entity.dart';
+import '../../../user/presentation/bloc/parent_bloc/parent_bloc.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/remember_me/remember_me_cubit.dart';
 
 class AuthLoginForm extends StatefulWidget {
-  const AuthLoginForm({super.key, required this.role});
+  const AuthLoginForm({super.key, required this.role, this.accentColor});
 
   final UserRole role;
+  final Color? accentColor;
 
   @override
   State<AuthLoginForm> createState() => _AuthLoginFormState();
@@ -58,9 +62,15 @@ class _AuthLoginFormState extends State<AuthLoginForm>
 
     FocusScope.of(context).unfocus();
 
-    context.read<AuthBloc>().add(
-      AuthEvent.loginRequested(nis: nis, password: password),
-    );
+    if (widget.role == UserRole.parent) {
+      context.read<AuthBloc>().add(
+        AuthEvent.loginParentRequested(nis: nis, password: password),
+      );
+    } else {
+      context.read<AuthBloc>().add(
+        AuthEvent.loginRequested(nis: nis, password: password),
+      );
+    }
   }
 
   void _getSavedNIS() {
@@ -104,10 +114,14 @@ class _AuthLoginFormState extends State<AuthLoginForm>
     final screenSize = MediaQuery.sizeOf(context);
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    final accentColor = widget.accentColor ?? colorScheme.primary;
 
     return BlocListener<AuthBloc, AuthState>(
-      listenWhen: (previous, current) =>
-          current.maybeWhen(successLogin: (_, _) => true, orElse: () => false),
+      listenWhen: (previous, current) => current.maybeWhen(
+        successLogin: (_, _) => true,
+        successParentLogin: (_, _, _, _) => true,
+        orElse: () => false,
+      ),
       listener: (context, state) {
         state.whenOrNull(
           successLogin: (accessToken, expiresAt) {
@@ -119,7 +133,30 @@ class _AuthLoginFormState extends State<AuthLoginForm>
               SessionEvent.loggedIn(
                 accessToken: accessToken,
                 expiresAt: expiresAt,
-                role: widget.role,
+                role: UserRole.student,
+              ),
+            );
+          },
+          successParentLogin: (accessToken, expiresAt, nama, children) {
+            context.read<RememberMeCubit>().onLoginSuccess(
+              _nisController.text.trim(),
+            );
+
+            context.read<ParentBloc>().add(
+              ParentEvent.initialized(
+                ParentEntity(
+                  nama: nama,
+                  children: children,
+                  selectedChild: children.first,
+                ),
+              ),
+            );
+
+            context.read<SessionBloc>().add(
+              SessionEvent.loggedIn(
+                accessToken: accessToken,
+                expiresAt: expiresAt,
+                role: UserRole.parent,
               ),
             );
           },
@@ -179,7 +216,7 @@ class _AuthLoginFormState extends State<AuthLoginForm>
                                 controller: _nisController,
                                 decoration: InputDecoration(hintText: l10n.nis),
                                 focusedSide: BorderSide(
-                                  color: colorScheme.primary,
+                                  color: accentColor,
                                   width: 2,
                                 ),
                                 style: TextStyle(
@@ -199,14 +236,14 @@ class _AuthLoginFormState extends State<AuthLoginForm>
                                 ),
                                 obscureText: true,
                                 focusedSide: BorderSide(
-                                  color: colorScheme.primary,
+                                  color: accentColor,
                                   width: 2,
                                 ),
                               ),
 
                               const SizedBox(height: 16),
 
-                              _RememberMeRow(),
+                              _RememberMeRow(accentColor: accentColor),
 
                               const SizedBox(height: 24),
 
@@ -268,7 +305,9 @@ class _AuthLoginFormState extends State<AuthLoginForm>
 }
 
 class _RememberMeRow extends StatelessWidget {
-  const _RememberMeRow();
+  const _RememberMeRow({required this.accentColor});
+
+  final Color accentColor;
 
   @override
   Widget build(BuildContext context) {
@@ -280,6 +319,7 @@ class _RememberMeRow extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         _RememberMeCheckbox(
+          accentColor: accentColor,
           colorScheme: colorScheme,
           textTheme: textTheme,
           l10n: l10n,
@@ -296,11 +336,13 @@ class _RememberMeRow extends StatelessWidget {
 
 class _RememberMeCheckbox extends StatelessWidget {
   const _RememberMeCheckbox({
+    required this.accentColor,
     required this.colorScheme,
     required this.textTheme,
     required this.l10n,
   });
 
+  final Color accentColor;
   final ColorScheme colorScheme;
   final TextTheme textTheme;
   final AppLocalizations l10n;
@@ -320,8 +362,8 @@ class _RememberMeCheckbox extends StatelessWidget {
               children: [
                 Checkbox(
                   value: state.isChecked,
-                  activeColor: colorScheme.primary,
-                  checkColor: colorScheme.onPrimary,
+                  activeColor: accentColor,
+                  checkColor: colorScheme.surface,
                   side: BorderSide(color: colorScheme.outline, width: 1.5),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(4),

@@ -8,9 +8,9 @@ part 'child_model.g.dart';
 @freezed
 abstract class ChildModel with _$ChildModel {
   const factory ChildModel({
-    @JsonKey(name: 'NIS') required String nis,
-    @JsonKey(name: 'Nama') required String nama,
-    @JsonKey(name: 'KelasSaatIni') required String kelas,
+    required String nis,
+    required String nama,
+    required String kelas,
     @JsonKey(name: 'foto') String? profileImageUrl,
   }) = _ChildModel;
 

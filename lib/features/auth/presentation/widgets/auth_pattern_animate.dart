@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class AuthPatternAnimate extends StatefulWidget {
-  const AuthPatternAnimate({super.key});
+  const AuthPatternAnimate({super.key, this.color});
+
+  final Color? color;
 
   @override
   State<AuthPatternAnimate> createState() => _AuthPatternAnimate();
@@ -28,6 +30,10 @@ class _AuthPatternAnimate extends State<AuthPatternAnimate>
 
   @override
   Widget build(BuildContext context) {
+    final colorFilter = widget.color != null
+        ? ColorFilter.mode(widget.color!, BlendMode.srcIn)
+        : null;
+
     return Stack(
       children: [
         // Upper pattern
@@ -39,7 +45,10 @@ class _AuthPatternAnimate extends State<AuthPatternAnimate>
               position: _opacity.drive(
                 Tween<Offset>(begin: const Offset(0.0, -1.0), end: Offset.zero),
               ),
-              child: SvgPicture.asset('assets/images/upper_pattern.svg'),
+              child: SvgPicture.asset(
+                'assets/images/upper_pattern.svg',
+                colorFilter: colorFilter,
+              ),
             ),
           ),
         ),
@@ -53,7 +62,10 @@ class _AuthPatternAnimate extends State<AuthPatternAnimate>
               position: _opacity.drive(
                 Tween<Offset>(begin: const Offset(0.0, 1.0), end: Offset.zero),
               ),
-              child: SvgPicture.asset('assets/images/lower_pattern.svg'),
+              child: SvgPicture.asset(
+                'assets/images/lower_pattern.svg',
+                colorFilter: colorFilter,
+              ),
             ),
           ),
         ),

@@ -10,8 +10,14 @@ class RouteNames {
   // Splash Route
   static const String splash = "/";
 
+  // Welcome Screen
+  static const String welcome = "/welcome";
+
   // Auth Student Screen
   static const String authStudent = "/auth/student";
+
+  // Auth Parent Screen
+  static const String authParent = "/auth/parent";
 
   // Dashboard
   static const String dashboard = "/dashboard";

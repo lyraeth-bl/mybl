@@ -36,13 +36,15 @@ class _AuthParentView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final accentColor = Theme.of(context).colorScheme.tertiary;
+
     return _ErrorHandlingListener(
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         body: Stack(
           children: [
-            const AuthPatternAnimate(),
-            AuthLoginForm(role: UserRole.parent),
+            AuthPatternAnimate(color: accentColor),
+            AuthLoginForm(role: UserRole.parent, accentColor: accentColor),
           ],
         ),
       ),

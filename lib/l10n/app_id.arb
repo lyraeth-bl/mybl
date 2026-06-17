@@ -264,5 +264,8 @@
   "guardianAddress": "Alamat wali",
   "admissionDate": "Tanggal masuk",
   "status": "Status",
-  "detailProfileNotes": "Jika terdapat ketidaksesuaian data, segera laporkan ke TU unit masing-masing untuk dilakukan perbaikan."
+  "detailProfileNotes": "Jika terdapat ketidaksesuaian data, segera laporkan ke TU unit masing-masing untuk dilakukan perbaikan.",
+  "loginAs": "Login sebagai siapa?",
+  "student": "Siswa",
+  "parent": "Orang Tua / Wali"
 }

@@ -264,5 +264,8 @@
   "guardianAddress": "Guardian address",
   "admissionDate": "Admission date",
   "status": "Status",
-  "detailProfileNotes": "If you find any incorrect information, please report it to your respective administration office for correction."
+  "detailProfileNotes": "If you find any incorrect information, please report it to your respective administration office for correction.",
+  "loginAs": "Who are you logging in as?",
+  "student": "Student",
+  "parent": "Parent / Guardian"
 }

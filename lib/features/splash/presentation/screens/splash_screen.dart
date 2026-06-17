@@ -56,7 +56,7 @@ class _SplashScreenViewState extends State<_SplashScreenView> {
         state.whenOrNull(
           // Kalo ternyata lo belum login (unauthenticated), langsung kita
           // oper ke halaman login biar gak nyasar.
-          unauthenticated: () => context.go(RouteNames.authStudent),
+          unauthenticated: () => context.go(RouteNames.welcome),
 
           // Kalo udah login, langsung di lempar ke dashboard, biar ga cape
           // login lagi.
