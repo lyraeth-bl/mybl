@@ -106,7 +106,7 @@ class _ChildSelectorContent extends StatelessWidget {
               Expanded(
                 child: ListView.separated(
                   itemCount: parent.children.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 12),
+                  separatorBuilder: (_, _) => const SizedBox(height: 12),
                   itemBuilder: (context, index) {
                     final child = parent.children[index];
                     final isSelected = child.nis == parent.selectedChild.nis;

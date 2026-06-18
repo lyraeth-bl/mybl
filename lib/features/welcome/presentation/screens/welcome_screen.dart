@@ -178,12 +178,7 @@ class _RoleCard extends StatelessWidget {
           child: Icon(icon, color: iconColor),
         ),
         const SizedBox(width: 16),
-        Text(
-          label,
-          style: textTheme.titleMedium!.copyWith(
-            color: labelColor,
-          ),
-        ),
+        Text(label, style: textTheme.titleMedium!.copyWith(color: labelColor)),
         const Spacer(),
         Icon(Icons.arrow_forward_ios_rounded, size: 16, color: arrowColor),
       ],

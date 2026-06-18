@@ -394,9 +394,6 @@ class _ForgotPasswordButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextButton(
-      onPressed: null,
-      child: Text(l10n.forgetPassword),
-    );
+    return TextButton(onPressed: null, child: Text(l10n.forgetPassword));
   }
 }
