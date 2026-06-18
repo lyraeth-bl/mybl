@@ -213,20 +213,13 @@ class _AttendanceSummaryCard extends StatelessWidget {
         children: [
           AnimatedSwitcher(
             duration: const Duration(milliseconds: 200),
-            child:
-                Text(
-                  value,
-                  style: textTheme.titleLarge?.copyWith(
-                    color: colorScheme.onSurface,
-                    fontWeight: .bold,
-                  ),
-                ).toShimmer(
-                  context,
-                  alignment: Alignment.center,
-                  width: 24,
-                  height: 28,
-                  isLoading: isLoading,
-                ),
+            child: Text(
+              value,
+              style: textTheme.titleLarge?.copyWith(
+                color: colorScheme.onSurface,
+                fontWeight: .bold,
+              ),
+            ).toShimmer(context, width: 24, height: 28, isLoading: isLoading),
           ),
           const SizedBox(height: 4),
           Text(

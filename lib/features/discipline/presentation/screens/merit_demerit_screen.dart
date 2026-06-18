@@ -428,7 +428,6 @@ class _DisciplineSummarySection extends StatelessWidget {
                         isLoading: isLoading,
                         width: 56,
                         height: 42,
-                        alignment: Alignment.center,
                       ),
                       Padding(
                         padding: const EdgeInsets.only(bottom: 8),
@@ -486,7 +485,6 @@ class _DisciplineSummarySection extends StatelessWidget {
                     isLoading: isLoading,
                     width: 140,
                     height: 14,
-                    alignment: Alignment.center,
                     borderRadius: BorderRadius.circular(999),
                   ),
                 ],
@@ -597,13 +595,7 @@ class _DisciplineStatCard extends StatelessWidget {
                 ),
               );
             },
-          ).toShimmer(
-            context,
-            isLoading: isLoading,
-            width: 72,
-            height: 28,
-            alignment: Alignment.center,
-          ),
+          ).toShimmer(context, isLoading: isLoading, width: 72, height: 28),
         ],
       ),
     );
@@ -708,7 +700,6 @@ class _DisciplineFilterGroup extends StatelessWidget {
                   isLoading: isLoading,
                   width: 48,
                   height: 12,
-                  alignment: Alignment.center,
                   borderRadius: BorderRadius.circular(999),
                 ),
           ),
@@ -777,7 +768,6 @@ class _FilterChipButton extends StatelessWidget {
                   isLoading: isLoading,
                   width: 84,
                   height: 12,
-                  alignment: Alignment.center,
                   borderRadius: BorderRadius.circular(999),
                 ),
           ),
@@ -959,13 +949,7 @@ class _DisciplineActivityCard extends StatelessWidget {
                 ),
               );
             },
-          ).toShimmer(
-            context,
-            isLoading: isLoading,
-            width: 28,
-            height: 14,
-            alignment: Alignment.centerRight,
-          ),
+          ).toShimmer(context, isLoading: isLoading, width: 28, height: 14),
         ],
       ),
     );

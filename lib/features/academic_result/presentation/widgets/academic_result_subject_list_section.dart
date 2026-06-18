@@ -40,11 +40,10 @@ class AcademicResultSubjectListSection extends StatelessWidget {
         fontWeight: FontWeight.bold,
       ),
       action: isLoading
-          ? const SizedBox(width: 82, height: 32).toShimmer(
-              context,
-              borderRadius: BorderRadius.circular(999),
-              alignment: Alignment.centerRight,
-            )
+          ? const SizedBox(
+              width: 82,
+              height: 32,
+            ).toShimmer(context, borderRadius: BorderRadius.circular(999))
           : AppChipContainer(
               backgroundColor: colorScheme.primaryContainer,
               foregroundColor: colorScheme.onPrimaryContainer,
@@ -181,7 +180,6 @@ class _SubjectCard extends StatelessWidget {
                     isLoading: isLoading,
                     width: 28,
                     height: 28,
-                    alignment: Alignment.centerRight,
                   ),
                   AppChipContainer(
                     padding: const EdgeInsets.symmetric(
