@@ -30,12 +30,12 @@ class _AuthLoginFormState extends State<AuthLoginForm>
     with SingleTickerProviderStateMixin {
   late final AnimationController _animationController = AnimationController(
     vsync: this,
-    duration: const Duration(milliseconds: 500),
-  )..forward();
+    duration: const Duration(milliseconds: 300),
+  );
 
   late final Animation<double> _fadeInAnimation = CurvedAnimation(
     parent: _animationController,
-    curve: Curves.easeIn,
+    curve: Curves.easeOut,
   );
 
   final TextEditingController _nisController = TextEditingController();
@@ -90,6 +90,11 @@ class _AuthLoginFormState extends State<AuthLoginForm>
     _nisController.addListener(_onFieldChanged);
     _passwordController.addListener(_onFieldChanged);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (MediaQuery.of(context).disableAnimations) {
+        _animationController.value = 1.0;
+      } else {
+        _animationController.forward();
+      }
       await context.read<RememberMeCubit>().loadSavedEmail();
       _getSavedNIS();
     });
@@ -180,7 +185,7 @@ class _AuthLoginFormState extends State<AuthLoginForm>
                   builder: (context, constraints) {
                     return SingleChildScrollView(
                       physics: const ClampingScrollPhysics(),
-                      padding: const EdgeInsets.fromLTRB(24, 124, 24, 24),
+                      padding: const EdgeInsets.fromLTRB(24, 120, 24, 24),
                       child: ConstrainedBox(
                         constraints: BoxConstraints(
                           minHeight: constraints.maxHeight > 148
@@ -195,11 +200,10 @@ class _AuthLoginFormState extends State<AuthLoginForm>
                                 l10n.letsSignIn,
                                 style: textTheme.headlineLarge!.copyWith(
                                   color: colorScheme.onSurface,
-                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
 
-                              const SizedBox(height: 12),
+                              const SizedBox(height: 8),
 
                               Text(
                                 '${l10n.welcomeBack},\n${l10n.youHaveBeenMissed}',
@@ -244,7 +248,7 @@ class _AuthLoginFormState extends State<AuthLoginForm>
 
                               _RememberMeRow(accentColor: accentColor),
 
-                              const SizedBox(height: 24),
+                              const Spacer(),
 
                               BlocBuilder<AuthBloc, AuthState>(
                                 buildWhen: (prev, curr) {
@@ -323,11 +327,7 @@ class _RememberMeRow extends StatelessWidget {
           textTheme: textTheme,
           l10n: l10n,
         ),
-        _ForgotPasswordButton(
-          colorScheme: colorScheme,
-          textTheme: textTheme,
-          l10n: l10n,
-        ),
+        _ForgotPasswordButton(l10n: l10n),
       ],
     );
   }
@@ -356,7 +356,7 @@ class _RememberMeCheckbox extends StatelessWidget {
               context.read<RememberMeCubit>().toggleCheckBox(!state.isChecked),
           borderRadius: BorderRadius.circular(8),
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4),
+            padding: const EdgeInsets.symmetric(vertical: 12),
             child: Row(
               children: [
                 Checkbox(
@@ -388,27 +388,15 @@ class _RememberMeCheckbox extends StatelessWidget {
 }
 
 class _ForgotPasswordButton extends StatelessWidget {
-  const _ForgotPasswordButton({
-    required this.colorScheme,
-    required this.textTheme,
-    required this.l10n,
-  });
+  const _ForgotPasswordButton({required this.l10n});
 
-  final ColorScheme colorScheme;
-  final TextTheme textTheme;
   final AppLocalizations l10n;
 
   @override
   Widget build(BuildContext context) {
     return TextButton(
-      onPressed: () {},
-      child: Text(
-        l10n.forgetPassword,
-        style: textTheme.labelMedium?.copyWith(
-          fontWeight: FontWeight.bold,
-          color: colorScheme.primary,
-        ),
-      ),
+      onPressed: null,
+      child: Text(l10n.forgetPassword),
     );
   }
 }

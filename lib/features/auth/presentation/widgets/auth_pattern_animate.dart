@@ -14,13 +14,25 @@ class _AuthPatternAnimate extends State<AuthPatternAnimate>
     with SingleTickerProviderStateMixin {
   late final AnimationController _animationController = AnimationController(
     vsync: this,
-    duration: const Duration(milliseconds: 500),
-  )..forward();
+    duration: const Duration(milliseconds: 250),
+  );
 
   late final Animation<double> _opacity = CurvedAnimation(
     parent: _animationController,
-    curve: Curves.easeIn,
+    curve: Curves.easeOut,
   );
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (MediaQuery.of(context).disableAnimations) {
+        _animationController.value = 1.0;
+      } else {
+        _animationController.forward();
+      }
+    });
+  }
 
   @override
   void dispose() {
