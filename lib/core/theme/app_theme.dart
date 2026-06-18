@@ -108,16 +108,76 @@ class MyBlTheme {
   /// - `#20A1DB` untuk versi HEX.
   static final Color _baseColor = Color.fromARGB(255, 32, 161, 219);
 
-  /// Definisi Tema Terang (Light Mode).
+  /// Typography: Nunito (display/headlines) + Plus Jakarta Sans (body/labels).
   ///
-  /// Menggunakan [_baseColor] sebagai warna dasar (seed color) dan
-  /// font Poppins untuk keseluruhan teks.
+  /// Weights in use: w400 · w500 · w600 · w700 — max 4 per mobile-ui-ux rules.
+  static TextTheme _buildTextTheme() {
+    final base = GoogleFonts.plusJakartaSansTextTheme();
+    return base.copyWith(
+      // --- Headlines: Nunito ---
+      headlineLarge: GoogleFonts.nunito(
+        textStyle: base.headlineLarge,
+        fontWeight: FontWeight.w700,
+      ),
+      headlineMedium: GoogleFonts.nunito(
+        textStyle: base.headlineMedium,
+        fontWeight: FontWeight.w700,
+      ),
+      headlineSmall: GoogleFonts.nunito(
+        textStyle: base.headlineSmall,
+        fontWeight: FontWeight.w600,
+      ),
+      // --- Titles: Plus Jakarta Sans ---
+      titleLarge: GoogleFonts.plusJakartaSans(
+        textStyle: base.titleLarge,
+        fontWeight: FontWeight.w600,
+      ),
+      titleMedium: GoogleFonts.plusJakartaSans(
+        textStyle: base.titleMedium,
+        fontWeight: FontWeight.w600,
+      ),
+      titleSmall: GoogleFonts.plusJakartaSans(
+        textStyle: base.titleSmall,
+        fontWeight: FontWeight.w500,
+      ),
+      // --- Body: Plus Jakarta Sans ---
+      bodyLarge: GoogleFonts.plusJakartaSans(
+        textStyle: base.bodyLarge,
+        fontWeight: FontWeight.w400,
+      ),
+      bodyMedium: GoogleFonts.plusJakartaSans(
+        textStyle: base.bodyMedium,
+        fontWeight: FontWeight.w400,
+      ),
+      bodySmall: GoogleFonts.plusJakartaSans(
+        textStyle: base.bodySmall,
+        fontWeight: FontWeight.w400,
+      ),
+      // --- Labels: Plus Jakarta Sans ---
+      labelLarge: GoogleFonts.plusJakartaSans(
+        textStyle: base.labelLarge,
+        fontWeight: FontWeight.w500,
+      ),
+      labelMedium: GoogleFonts.plusJakartaSans(
+        textStyle: base.labelMedium,
+        fontWeight: FontWeight.w500,
+      ),
+      labelSmall: GoogleFonts.plusJakartaSans(
+        textStyle: base.labelSmall,
+        fontWeight: FontWeight.w400,
+      ),
+    );
+  }
+
+  static final TextTheme _textTheme = _buildTextTheme();
+
+  /// Definisi Tema Terang (Light Mode).
   static final ThemeData lightTheme = ThemeData(
     colorScheme: ColorScheme.fromSeed(
       seedColor: _baseColor,
       brightness: Brightness.light,
     ),
-    textTheme: GoogleFonts.plusJakartaSansTextTheme(),
+    textTheme: _textTheme,
     useMaterial3: true,
     extensions: const <ThemeExtension<dynamic>>[
       AppColors(success: Colors.green, warning: Colors.yellow),
@@ -125,18 +185,15 @@ class MyBlTheme {
   );
 
   /// Definisi Tema Gelap (Dark Mode).
-  ///
-  /// Memiliki konfigurasi yang sama dengan [lightTheme] namun dengan
-  /// kecerahan (brightness) yang diatur ke gelap.
   static final ThemeData darkTheme = ThemeData(
     colorScheme: ColorScheme.fromSeed(
       seedColor: _baseColor,
       brightness: Brightness.dark,
     ),
-    textTheme: GoogleFonts.plusJakartaSansTextTheme(),
+    textTheme: _textTheme,
+    useMaterial3: true,
     extensions: const <ThemeExtension<dynamic>>[
       AppColors(success: Colors.greenAccent, warning: Colors.yellowAccent),
     ],
-    useMaterial3: true,
   );
 }
