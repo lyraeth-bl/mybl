@@ -282,5 +282,10 @@
         "type": "String"
       }
     }
-  }
+  },
+  "welcomeRoleSelectorDescription": "Pilih peran Anda untuk melanjutkan ke halaman masuk.",
+  "welcomePortalLabel": "PORTAL SEKOLAH",
+  "welcomeTitle": "Sekolah\nBudi Luhur",
+  "welcomeDescription": "Akses terpadu untuk seluruh layanan Sekolah Budi Luhur. Pilih peran Anda di bawah untuk masuk dan menggunakan fitur yang tersedia.",
+  "welcomeGetStarted": "MULAI"
 }

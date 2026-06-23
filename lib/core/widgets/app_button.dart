@@ -4,14 +4,15 @@
 
 import 'package:flutter/material.dart';
 
-/// A reusable Material 3 filled button with an optional loading state.
+enum _AppButtonVariant { filled, outlined }
+
+/// A reusable Material 3 button with filled and outlined variants.
 ///
-/// Use [AppButton] for primary actions that should share consistent sizing,
-/// shape, and progress feedback while keeping an API close to Flutter's button
-/// widgets.
+/// Use [AppButton] for primary actions and [AppButton.outlined] for secondary
+/// actions. Both share consistent sizing, shape, and progress feedback.
 @immutable
 class AppButton extends StatelessWidget {
-  /// Creates an app-styled primary button.
+  /// Creates an app-styled primary filled button.
   const AppButton({
     super.key,
     required this.child,
@@ -42,7 +43,8 @@ class AppButton extends StatelessWidget {
     this.progressIndicatorStrokeWidth = 2,
     this.onPressed,
     this.onLongPress,
-  }) : assert(
+  }) : _variant = _AppButtonVariant.filled,
+       assert(
          progressIndicatorSize > 0,
          'progressIndicatorSize must be greater than zero.',
        ),
@@ -50,6 +52,49 @@ class AppButton extends StatelessWidget {
          progressIndicatorStrokeWidth > 0,
          'progressIndicatorStrokeWidth must be greater than zero.',
        );
+
+  /// Creates an app-styled secondary outlined button.
+  const AppButton.outlined({
+    super.key,
+    required this.child,
+    this.loading = false,
+    this.loadingChild,
+    this.style,
+    this.padding,
+    this.minimumSize,
+    this.fixedSize,
+    this.maximumSize,
+    this.borderRadius,
+    this.backgroundColor,
+    this.foregroundColor,
+    this.disabledBackgroundColor,
+    this.disabledForegroundColor,
+    this.elevation,
+    this.shadowColor,
+    this.surfaceTintColor,
+    this.side,
+    this.textStyle,
+    this.visualDensity,
+    this.tapTargetSize,
+    this.animationDuration,
+    this.clipBehavior = Clip.none,
+    this.autofocus = false,
+    this.focusNode,
+    this.progressIndicatorSize = 20,
+    this.progressIndicatorStrokeWidth = 2,
+    this.onPressed,
+    this.onLongPress,
+  }) : _variant = _AppButtonVariant.outlined,
+       assert(
+         progressIndicatorSize > 0,
+         'progressIndicatorSize must be greater than zero.',
+       ),
+       assert(
+         progressIndicatorStrokeWidth > 0,
+         'progressIndicatorStrokeWidth must be greater than zero.',
+       );
+
+  final _AppButtonVariant _variant;
 
   /// The widget below this button in the tree.
   final Widget child;
@@ -148,39 +193,72 @@ class AppButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ButtonStyle effectiveStyle =
-        style ??
-        FilledButton.styleFrom(
-          backgroundColor: backgroundColor,
-          foregroundColor: foregroundColor,
-          disabledBackgroundColor: disabledBackgroundColor,
-          disabledForegroundColor: disabledForegroundColor,
-          elevation: elevation,
-          shadowColor: shadowColor,
-          surfaceTintColor: surfaceTintColor,
-          side: side,
-          textStyle: textStyle,
-          padding: padding,
-          minimumSize: minimumSize ?? _defaultMinimumSize,
-          fixedSize: fixedSize,
-          maximumSize: maximumSize,
-          shape: borderRadius == null
-              ? _defaultShape
-              : RoundedRectangleBorder(borderRadius: borderRadius!),
-          visualDensity: visualDensity,
-          tapTargetSize: tapTargetSize,
-          animationDuration: animationDuration,
-        );
+    final OutlinedBorder shape = borderRadius == null
+        ? _defaultShape
+        : RoundedRectangleBorder(borderRadius: borderRadius!);
+    final Widget effectiveChild =
+        loading ? loadingChild ?? _buildProgressIndicator(context) : child;
 
-    return FilledButton(
-      onPressed: loading ? null : onPressed,
-      onLongPress: loading ? null : onLongPress,
-      style: effectiveStyle,
-      focusNode: focusNode,
-      autofocus: autofocus,
-      clipBehavior: clipBehavior,
-      child: loading ? loadingChild ?? _buildProgressIndicator(context) : child,
-    );
+    return switch (_variant) {
+      _AppButtonVariant.filled => FilledButton(
+        onPressed: loading ? null : onPressed,
+        onLongPress: loading ? null : onLongPress,
+        style:
+            style ??
+            FilledButton.styleFrom(
+              backgroundColor: backgroundColor,
+              foregroundColor: foregroundColor,
+              disabledBackgroundColor: disabledBackgroundColor,
+              disabledForegroundColor: disabledForegroundColor,
+              elevation: elevation,
+              shadowColor: shadowColor,
+              surfaceTintColor: surfaceTintColor,
+              side: side,
+              textStyle: textStyle,
+              padding: padding,
+              minimumSize: minimumSize ?? _defaultMinimumSize,
+              fixedSize: fixedSize,
+              maximumSize: maximumSize,
+              shape: shape,
+              visualDensity: visualDensity,
+              tapTargetSize: tapTargetSize,
+              animationDuration: animationDuration,
+            ),
+        focusNode: focusNode,
+        autofocus: autofocus,
+        clipBehavior: clipBehavior,
+        child: effectiveChild,
+      ),
+      _AppButtonVariant.outlined => OutlinedButton(
+        onPressed: loading ? null : onPressed,
+        onLongPress: loading ? null : onLongPress,
+        style:
+            style ??
+            OutlinedButton.styleFrom(
+              backgroundColor: backgroundColor,
+              foregroundColor: foregroundColor,
+              disabledBackgroundColor: disabledBackgroundColor,
+              disabledForegroundColor: disabledForegroundColor,
+              elevation: elevation,
+              shadowColor: shadowColor,
+              surfaceTintColor: surfaceTintColor,
+              side: side,
+              textStyle: textStyle,
+              padding: padding,
+              minimumSize: minimumSize ?? _defaultMinimumSize,
+              fixedSize: fixedSize,
+              maximumSize: maximumSize,
+              shape: shape,
+              visualDensity: visualDensity,
+              tapTargetSize: tapTargetSize,
+              animationDuration: animationDuration,
+            ),
+        focusNode: focusNode,
+        autofocus: autofocus,
+        clipBehavior: clipBehavior,
+        child: effectiveChild,
+      ),
+    };
   }
 
   Widget _buildProgressIndicator(BuildContext context) {

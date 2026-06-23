@@ -6,8 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/app_router/app_router.dart';
+import '../../../../core/internal/src/extensions/extensions.dart';
+import '../../../../core/widgets/app_button.dart';
+import '../../../../core/widgets/app_responsive_container.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../../auth/presentation/widgets/auth_pattern_animate.dart';
+import '../widgets/decorated_background.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -25,97 +28,78 @@ class _WelcomeView extends StatefulWidget {
   State<_WelcomeView> createState() => _WelcomeViewState();
 }
 
-class _WelcomeViewState extends State<_WelcomeView>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _animationController = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 250),
-  );
-
-  late final Animation<double> _fadeInAnimation = CurvedAnimation(
-    parent: _animationController,
-    curve: Curves.easeOut,
-  );
-
+class _WelcomeViewState extends State<_WelcomeView> {
   @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (MediaQuery.of(context).disableAnimations) {
-        _animationController.value = 1.0;
-      } else {
-        _animationController.forward();
-      }
-    });
-  }
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
 
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
+    return Scaffold(
+      appBar: AppBar(
+        title: Image.asset("assets/images/sekolah_budi_luhur.png", scale: 6),
+        backgroundColor: colorScheme.primaryContainer,
+      ),
+      body: const _WelcomeViewContent(),
+    );
   }
+}
+
+void _showRoleSelector(BuildContext context) {
+  showModalBottomSheet<void>(
+    context: context,
+    useRootNavigator: true,
+    useSafeArea: true,
+    enableDrag: true,
+    showDragHandle: true,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+    ),
+    builder: (_) => _WelcomeRoleSelectorSheet(),
+  );
+}
+
+class _WelcomeRoleSelectorSheet extends StatelessWidget {
+  const _WelcomeRoleSelectorSheet();
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
 
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: Stack(
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          const AuthPatternAnimate(),
           Align(
-            alignment: Alignment.topCenter,
-            child: FadeTransition(
-              opacity: _fadeInAnimation,
-              child: SafeArea(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 96, 24, 24),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        l10n.welcomeBack,
-                        style: textTheme.headlineLarge!.copyWith(
-                          color: colorScheme.onSurface,
-                        ),
-                      ),
-
-                      const SizedBox(height: 12),
-
-                      Text(
-                        l10n.loginAs,
-                        style: textTheme.headlineSmall!.copyWith(
-                          color: colorScheme.onSurfaceVariant,
-                          height: 1.5,
-                        ),
-                      ),
-
-                      const Spacer(),
-
-                      _RoleCard(
-                        icon: Icons.school_rounded,
-                        label: l10n.student,
-                        isPrimary: true,
-                        onTap: () => context.push(RouteNames.authStudent),
-                      ),
-
-                      const SizedBox(height: 16),
-
-                      _RoleCard(
-                        icon: Icons.supervisor_account_rounded,
-                        label: l10n.parent,
-                        onTap: () => context.push(RouteNames.authParent),
-                      ),
-
-                      const SizedBox(height: 48),
-                    ],
-                  ),
-                ),
+            alignment: Alignment.centerLeft,
+            child: Text(l10n.loginAs, style: textTheme.titleLarge),
+          ),
+          8.h,
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              l10n.welcomeRoleSelectorDescription,
+              style: textTheme.bodyMedium!.copyWith(
+                color: colorScheme.onSurfaceVariant,
               ),
             ),
+          ),
+          24.h,
+          AppButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              context.push(RouteNames.authStudent);
+            },
+            child: Text(l10n.student),
+          ),
+          12.h,
+          AppButton.outlined(
+            onPressed: () {
+              Navigator.of(context).pop();
+              context.push(RouteNames.authParent);
+            },
+            child: Text(l10n.parent),
           ),
         ],
       ),
@@ -123,70 +107,55 @@ class _WelcomeViewState extends State<_WelcomeView>
   }
 }
 
-class _RoleCard extends StatelessWidget {
-  const _RoleCard({
-    required this.icon,
-    required this.label,
-    required this.onTap,
-    this.isPrimary = false,
-  });
-
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
-  final bool isPrimary;
+class _WelcomeViewContent extends StatelessWidget {
+  const _WelcomeViewContent();
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    final l10n = AppLocalizations.of(context)!;
 
-    final iconBgColor = isPrimary
-        ? colorScheme.onPrimary.withValues(alpha: 0.2)
-        : colorScheme.primaryContainer;
-    final iconColor = isPrimary
-        ? colorScheme.onPrimary
-        : colorScheme.onPrimaryContainer;
-    final labelColor = isPrimary
-        ? colorScheme.onPrimary
-        : colorScheme.onSurface;
-    final arrowColor = isPrimary
-        ? colorScheme.onPrimary.withValues(alpha: 0.7)
-        : colorScheme.onSurfaceVariant;
-
-    final buttonStyle = ButtonStyle(
-      minimumSize: const WidgetStatePropertyAll(Size(double.infinity, 0)),
-      padding: const WidgetStatePropertyAll(
-        EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-      ),
-      shape: const WidgetStatePropertyAll(
-        RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(16)),
-        ),
-      ),
-    );
-
-    final child = Row(
-      children: [
-        Container(
-          width: 48,
-          height: 48,
-          decoration: BoxDecoration(
-            color: iconBgColor,
-            borderRadius: BorderRadius.circular(12),
+    return DecoratedBackground(
+      child: SafeArea(
+        child: AppResponsiveContainer(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+            child: Column(
+              crossAxisAlignment: .start,
+              children: [
+                const Spacer(),
+                Text(
+                  l10n.welcomePortalLabel,
+                  style: textTheme.titleMedium!.copyWith(
+                    color: colorScheme.onPrimaryContainer.withValues(alpha: .7),
+                    letterSpacing: 1.1,
+                  ),
+                ),
+                4.h,
+                Text(
+                  l10n.welcomeTitle,
+                  style: textTheme.headlineLarge!.copyWith(
+                    color: colorScheme.onPrimaryContainer,
+                  ),
+                ),
+                12.h,
+                Text(
+                  l10n.welcomeDescription,
+                  style: textTheme.bodyMedium!.copyWith(
+                    color: colorScheme.onPrimaryContainer.withValues(alpha: .7),
+                  ),
+                ),
+                const Spacer(),
+                AppButton(
+                  onPressed: () => _showRoleSelector(context),
+                  child: Text(l10n.welcomeGetStarted),
+                ),
+              ],
+            ),
           ),
-          child: Icon(icon, color: iconColor),
         ),
-        const SizedBox(width: 16),
-        Text(label, style: textTheme.titleMedium!.copyWith(color: labelColor)),
-        const Spacer(),
-        Icon(Icons.arrow_forward_ios_rounded, size: 16, color: arrowColor),
-      ],
+      ),
     );
-
-    if (isPrimary) {
-      return FilledButton(style: buttonStyle, onPressed: onTap, child: child);
-    }
-    return OutlinedButton(style: buttonStyle, onPressed: onTap, child: child);
   }
 }

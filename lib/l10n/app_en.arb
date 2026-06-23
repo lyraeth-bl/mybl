@@ -282,5 +282,10 @@
         "type": "String"
       }
     }
-  }
+  },
+  "welcomeRoleSelectorDescription": "Select your role to continue to the sign in page.",
+  "welcomePortalLabel": "PORTAL SEKOLAH",
+  "welcomeTitle": "Sekolah\nBudi Luhur",
+  "welcomeDescription": "Your unified gateway to all school services. Select your role below to sign in and access your personalized dashboard.",
+  "welcomeGetStarted": "GET STARTED"
 }
