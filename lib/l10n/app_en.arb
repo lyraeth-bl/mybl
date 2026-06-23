@@ -267,5 +267,20 @@
   "detailProfileNotes": "If you find any incorrect information, please report it to your respective administration office for correction.",
   "loginAs": "Who are you logging in as?",
   "student": "Student",
-  "parent": "Parent / Guardian"
+  "parent": "Parent / Guardian",
+  "parentChildSelectorSingleChild": "Your child's data",
+  "parentChildSelectorMultipleChildren": "Select a child to monitor",
+  "parentChildSelectorNoChildren": "No children registered",
+  "parentChildSelectorNoChildrenDesc": "Contact the school administration if this is incorrect.",
+  "parentChildSelectorSelectLabel": "Select {name}, class {classroom}",
+  "@parentChildSelectorSelectLabel": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "classroom": {
+        "type": "String"
+      }
+    }
+  }
 }

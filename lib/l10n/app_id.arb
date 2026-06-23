@@ -267,5 +267,20 @@
   "detailProfileNotes": "Jika terdapat ketidaksesuaian data, segera laporkan ke TU unit masing-masing untuk dilakukan perbaikan.",
   "loginAs": "Login sebagai siapa?",
   "student": "Siswa",
-  "parent": "Orang Tua / Wali"
+  "parent": "Orang Tua / Wali",
+  "parentChildSelectorSingleChild": "Data anak Anda",
+  "parentChildSelectorMultipleChildren": "Pilih data anak yang ingin dipantau",
+  "parentChildSelectorNoChildren": "Tidak ada anak yang terdaftar",
+  "parentChildSelectorNoChildrenDesc": "Hubungi administrasi sekolah jika data ini tidak sesuai.",
+  "parentChildSelectorSelectLabel": "Pilih {name}, kelas {classroom}",
+  "@parentChildSelectorSelectLabel": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "classroom": {
+        "type": "String"
+      }
+    }
+  }
 }
