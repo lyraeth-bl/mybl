@@ -14,6 +14,7 @@ import '../../features/auth/presentation/screens/parent_child_selector_screen.da
 import '../../features/user/presentation/bloc/parent_bloc/parent_bloc.dart';
 import '../../features/welcome/presentation/screens/welcome_screen.dart';
 import '../../features/dashboard/presentation/screens/dashboard_screen.dart';
+import '../../features/dashboard/presentation/screens/parent_dashboard_screen.dart';
 import '../../features/dashboard/presentation/widgets/main_shell.dart';
 import '../../features/discipline/presentation/screens/merit_demerit_screen.dart';
 import '../../features/extracurricular/presentation/screens/extracurricular_screen.dart';
@@ -65,11 +66,6 @@ class AppRouter {
         orElse: () => false,
       );
 
-      final hasSelectedChild = _parentBloc.state.maybeWhen(
-        active: (_) => true,
-        orElse: () => false,
-      );
-
       final isOnSplashScreen = state.matchedLocation == RouteNames.splash;
 
       final isOnAuthScreen =
@@ -77,25 +73,54 @@ class AppRouter {
           state.matchedLocation == RouteNames.authStudent ||
           state.matchedLocation == RouteNames.authParent;
 
-      final isOnParentFlow =
-          state.matchedLocation == RouteNames.parentChildSelector ||
-          state.matchedLocation == RouteNames.parentDashboard;
+      final isOnChildSelector =
+          state.matchedLocation == RouteNames.parentChildSelector;
 
       if (isOnSplashScreen) return null;
 
-      if (!isLoggedIn && !isOnAuthScreen) return RouteNames.welcome;
-
-      if (isLoggedIn && isOnAuthScreen) {
-        return isParent ? RouteNames.parentChildSelector : RouteNames.dashboard;
+      // Belum login.
+      if (!isLoggedIn) {
+        return isOnAuthScreen ? null : RouteNames.welcome;
       }
 
-      if (isLoggedIn && isParent) {
-        if (!hasSelectedChild && !isOnParentFlow) {
-          return RouteNames.parentChildSelector;
-        }
+      // Login sebagai student.
+      if (!isParent) {
+        return isOnAuthScreen ? RouteNames.dashboard : null;
       }
 
-      return null;
+      // Login sebagai parent — keputusan rute menunggu ParentBloc selesai
+      // hidrasi (baca profil + anak + anak terpilih dari storage).
+      final parentState = _parentBloc.state;
+
+      final isParentHydrating = parentState.maybeWhen(
+        ready: (_, _, _) => false,
+        failure: (_) => false,
+        orElse: () => true,
+      );
+
+      if (isParentHydrating) {
+        // Pindahkan dari auth screen ke selector (yang menampilkan loading);
+        // selain itu diam di tempat sampai hidrasi selesai.
+        return isOnAuthScreen ? RouteNames.parentChildSelector : null;
+      }
+
+      final hasSelectedChild = parentState.maybeWhen(
+        ready: (_, _, selectedChild) => selectedChild != null,
+        orElse: () => false,
+      );
+
+      if (hasSelectedChild) {
+        // Parent diarahkan ke dashboard parent (placeholder), bukan dashboard
+        // student — supaya tidak menembak endpoint student-only.
+        final mustLeave =
+            isOnAuthScreen ||
+            isOnChildSelector ||
+            state.matchedLocation == RouteNames.dashboard;
+        return mustLeave ? RouteNames.parentDashboard : null;
+      }
+
+      // Parent sudah ter-hidrasi tapi belum memilih anak.
+      return isOnChildSelector ? null : RouteNames.parentChildSelector;
     },
 
     routes: [
@@ -122,6 +147,11 @@ class AppRouter {
       GoRoute(
         path: RouteNames.parentChildSelector,
         builder: (context, state) => const ParentChildSelectorScreen(),
+      ),
+
+      GoRoute(
+        path: RouteNames.parentDashboard,
+        builder: (context, state) => const ParentDashboardScreen(),
       ),
 
       GoRoute(

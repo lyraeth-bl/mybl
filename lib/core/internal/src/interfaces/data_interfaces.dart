@@ -7,7 +7,7 @@ import 'package:fpdart/fpdart.dart';
 import '../types.dart';
 
 abstract interface class ItemFetcher<T> {
-  Future<Result<T>> fetch([bool forceRefresh = false]);
+  Future<Result<T>> fetch({bool forceRefresh = false});
 }
 
 abstract interface class ListFetcher<T> {
@@ -190,4 +190,18 @@ abstract interface class DeviceTokenRegistrar {
   Future<Result<Unit>> registerDeviceToken({required String fcmToken});
 
   Future<Result<Unit>> revokeDeviceToken({required String fcmToken});
+}
+
+abstract interface class ParentLocalManager<P, C> {
+  Future<Unit> saveParentProfile(P data);
+
+  P? readParentProfile();
+
+  Future<Unit> saveChildren(List<C> children);
+
+  List<C>? readChildren();
+
+  Future<Unit> saveSelectedChild(C child);
+
+  C? readSelectedChild();
 }

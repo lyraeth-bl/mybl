@@ -31,6 +31,8 @@ class ApiEndpoints {
 
   static final String me = "/me";
 
+  static final String parentMe = "/parent/me";
+
   static final String attendance = "/absensi-harian";
 
   static final String todayAttendance = "/absensi-harian/today";

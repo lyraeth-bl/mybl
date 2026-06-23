@@ -20,16 +20,41 @@ String _toTitleCase(String text) => text
     .map((w) => w.isNotEmpty ? '${w[0].toUpperCase()}${w.substring(1)}' : w)
     .join(' ');
 
-class ParentChildSelectorScreen extends StatelessWidget {
+class ParentChildSelectorScreen extends StatefulWidget {
   const ParentChildSelectorScreen({super.key});
+
+  @override
+  State<ParentChildSelectorScreen> createState() =>
+      _ParentChildSelectorScreenState();
+}
+
+class _ParentChildSelectorScreenState extends State<ParentChildSelectorScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Hidrasi konteks parent saat restart. Kalau sudah ter-hidrasi lewat
+    // login (state bukan initial), tidak perlu fetch ulang.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final isInitial = context.read<ParentBloc>().state.maybeWhen(
+        initial: () => true,
+        orElse: () => false,
+      );
+      if (isInitial) {
+        context.read<ParentBloc>().add(const ParentEvent.started());
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ParentBloc, ParentState>(
       builder: (context, state) => state.maybeWhen(
-        initial: () =>
-            const Scaffold(body: Center(child: CircularProgressIndicator())),
-        active: (parent) => _ChildSelectorContent(parent: parent),
+        ready: (parent, children, selectedChild) => _ChildSelectorContent(
+          parent: parent,
+          children: children,
+          selectedChild: selectedChild,
+        ),
+        failure: (_) => const _ChildSelectorError(),
         orElse: () =>
             const Scaffold(body: Center(child: CircularProgressIndicator())),
       ),
@@ -38,9 +63,15 @@ class ParentChildSelectorScreen extends StatelessWidget {
 }
 
 class _ChildSelectorContent extends StatelessWidget {
-  const _ChildSelectorContent({required this.parent});
+  const _ChildSelectorContent({
+    required this.parent,
+    required this.children,
+    required this.selectedChild,
+  });
 
   final ParentEntity parent;
+  final List<ChildEntity> children;
+  final ChildEntity? selectedChild;
 
   String _greeting(AppLocalizations l10n) {
     final hour = DateTime.now().hour;
@@ -96,7 +127,7 @@ class _ChildSelectorContent extends StatelessWidget {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    parent.children.length == 1
+                    children.length == 1
                         ? l10n.parentChildSelectorSingleChild
                         : l10n.parentChildSelectorMultipleChildren,
                     style: textTheme.titleSmall?.copyWith(
@@ -109,17 +140,16 @@ class _ChildSelectorContent extends StatelessWidget {
 
               const SizedBox(height: 16),
 
-              if (parent.children.isEmpty)
+              if (children.isEmpty)
                 Expanded(child: _EmptyChildrenState())
               else
                 Expanded(
                   child: ListView.separated(
-                    itemCount: parent.children.length,
+                    itemCount: children.length,
                     separatorBuilder: (_, _) => const SizedBox(height: 16),
                     itemBuilder: (context, index) {
-                      final child = parent.children[index];
-                      final isSelected =
-                          child.nis == parent.selectedChild.nis;
+                      final child = children[index];
+                      final isSelected = child.nis == selectedChild?.nis;
                       return _ChildCard(
                         child: child,
                         isSelected: isSelected,
@@ -127,7 +157,7 @@ class _ChildSelectorContent extends StatelessWidget {
                           context.read<ParentBloc>().add(
                             ParentEvent.childSelected(child),
                           );
-                          context.go(RouteNames.dashboard);
+                          context.go(RouteNames.parentDashboard);
                         },
                       );
                     },
@@ -176,6 +206,53 @@ class _EmptyChildrenState extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _ChildSelectorError extends StatelessWidget {
+  const _ChildSelectorError();
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final l10n = AppLocalizations.of(context)!;
+
+    return Scaffold(
+      backgroundColor: colorScheme.surface,
+      body: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.error_outline_rounded,
+                  size: 48,
+                  color: colorScheme.error,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  l10n.dioUnexpectedError,
+                  style: textTheme.titleMedium?.copyWith(
+                    color: colorScheme.onSurface,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                FilledButton(
+                  onPressed: () => context.read<ParentBloc>().add(
+                    const ParentEvent.started(forceRefresh: true),
+                  ),
+                  child: Text(l10n.tryAgain),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

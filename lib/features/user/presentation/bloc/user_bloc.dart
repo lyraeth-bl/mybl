@@ -36,7 +36,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
   ) async {
     emit(const UserState.loading());
 
-    final result = await _fetchStudentUseCase(event.forceRefresh);
+    final result = await _fetchStudentUseCase(forceRefresh: event.forceRefresh);
 
     return result.match(
       (failure) => emit(UserState.failure(failure)),

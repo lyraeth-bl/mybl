@@ -1,18 +1,23 @@
+// Copyright (c) 2026 Mahsa Nurfarhan Hidayat / Yayasan Pakarti Luhur. All rights reserved.
+// Use of this source code is governed by a MIT License
+// that can be found in the LICENSE file.
+
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../domain/entities/parent_entity/parent_entity.dart';
-import '../child_model/child_model.dart';
 
 part 'parent_model.freezed.dart';
 part 'parent_model.g.dart';
 
+/// [ParentModel] adalah wujud data profil parent dari endpoint `/parent/me`.
+/// Mirip [StudentModel] yang berasal dari `/me`.
 @freezed
 abstract class ParentModel with _$ParentModel {
   const factory ParentModel({
-    @JsonKey(name: 'token') required String token,
+    @JsonKey(name: 'id') required int id,
     @JsonKey(name: 'nama') required String nama,
-    @JsonKey(name: 'role') required String role,
-    @JsonKey(name: 'children') required List<ChildModel> children,
+    @JsonKey(name: 'username') required String username,
+    @JsonKey(name: 'telpon') required String telpon,
   }) = _ParentModel;
 
   factory ParentModel.fromJson(Map<String, dynamic> json) =>
@@ -20,12 +25,6 @@ abstract class ParentModel with _$ParentModel {
 }
 
 extension ParentModelMapper on ParentModel {
-  ParentEntity toEntity() {
-    final childEntities = children.map((c) => c.toEntity()).toList();
-    return ParentEntity(
-      nama: nama,
-      children: childEntities,
-      selectedChild: childEntities.first,
-    );
-  }
+  ParentEntity toEntity() =>
+      ParentEntity(id: id, nama: nama, username: username, telpon: telpon);
 }

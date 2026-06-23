@@ -8,6 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/app_router/app_router.dart';
+import '../../../../core/enums/user_role.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../sessions/presentation/bloc/session_bloc.dart';
 
@@ -58,9 +59,14 @@ class _SplashScreenViewState extends State<_SplashScreenView> {
           // oper ke halaman login biar gak nyasar.
           unauthenticated: () => context.go(RouteNames.welcome),
 
-          // Kalo udah login, langsung di lempar ke dashboard, biar ga cape
-          // login lagi.
-          authenticated: (_, _) => context.go(RouteNames.dashboard),
+          // Kalo udah login: parent diarahkan ke child selector (yang akan
+          // menghidrasi konteks parent lalu router yang nentuin lanjut ke
+          // dashboard atau tetap di selector). Student langsung ke dashboard.
+          authenticated: (_, role) => context.go(
+            role == UserRole.parent
+                ? RouteNames.parentChildSelector
+                : RouteNames.dashboard,
+          ),
         );
       },
       child: Scaffold(

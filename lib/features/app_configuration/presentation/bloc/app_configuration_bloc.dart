@@ -35,7 +35,9 @@ class AppConfigurationBloc
   ) async {
     emit(const AppConfigurationState.loading());
 
-    final result = await _appConfigUseCase.call(event.forceRefresh);
+    final result = await _appConfigUseCase.call(
+      forceRefresh: event.forceRefresh,
+    );
 
     return result.match(
       (failure) => emit(AppConfigurationState.failure(failure)),

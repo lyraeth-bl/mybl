@@ -92,7 +92,7 @@ void initNetworkDI() => _initNetworkDI(
   },
   extraInterceptors: [
     StudentNisInterceptor(
-      parentBloc: di<ParentBloc>(),
+      parentBloc: () => di<ParentBloc>(),
       getRoleCallback: () => di<SessionBloc>().state.maybeWhen(
         authenticated: (_, role) => role,
         orElse: () => UserRole.student,

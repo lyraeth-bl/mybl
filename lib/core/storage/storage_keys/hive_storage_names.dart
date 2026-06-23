@@ -35,6 +35,15 @@ class HiveStorageNames {
   // Data student.
   static const String studentDetailKey = "studentDetail";
 
+  // Data profil parent (dari /parent/me).
+  static const String parentDetailKey = "parentDetail";
+
+  // Daftar anak milik parent (dari response login).
+  static const String parentChildrenKey = "parentChildren";
+
+  // Anak yang terakhir dipilih parent.
+  static const String parentSelectedChildKey = "parentSelectedChild";
+
   // Data absensi bulanan.
   static const String userMonthlyAttendanceKey = "userMonthlyAttendance";
 

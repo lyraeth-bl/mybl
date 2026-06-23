@@ -4,22 +4,22 @@
 
 import '../../../../core/api_client/api_client.dart';
 import '../../../../core/internal/src/interfaces/data_interfaces.dart';
-import '../models/student_response/student_response.dart';
+import '../models/parent_response/parent_response.dart';
 
-abstract class UserRemoteDataSource {
-  Future<StudentResponse> fetch();
+abstract class ParentRemoteDataSource {
+  Future<ParentResponse> fetch();
 }
 
-class UserRemoteDataSourceImpl implements UserRemoteDataSource {
-  UserRemoteDataSourceImpl(this._httpRequest);
+class ParentRemoteDataSourceImpl implements ParentRemoteDataSource {
+  ParentRemoteDataSourceImpl(this._httpRequest);
 
   final HTTPRequest _httpRequest;
 
   @override
-  Future<StudentResponse> fetch() async => _httpRequest
-      .get(ApiEndpoints.me)
+  Future<ParentResponse> fetch() async => _httpRequest
+      .get(ApiEndpoints.parentMe)
       .then(
         (response) =>
-            StudentResponse.fromJson(Map<String, dynamic>.from(response)),
+            ParentResponse.fromJson(Map<String, dynamic>.from(response)),
       );
 }

@@ -8,6 +8,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import '../../../../core/di/get_it_constant.dart';
 import '../../../../core/enums/user_role.dart';
 import '../../../../core/storage/domain/usecases/clear_all_boxes_use_case.dart';
+import '../../../../core/token_provider/parent_token_provider.dart';
 import '../../../../core/token_provider/token_provider.dart';
 import '../../domain/usecases/clear_access_token_use_case.dart';
 import '../../domain/usecases/read_access_token_use_case.dart';
@@ -60,6 +61,8 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
       await _clearAccessTokenUseCase();
       di<TokenProvider>().clearAccessToken();
       await di<TokenProvider>().clearRole();
+      await di<ParentTokenProvider>().clearParentAccessToken();
+      await di<ParentTokenProvider>().clearParentTokenExpiresAt();
       emit(const SessionState.unauthenticated());
 
       return;
@@ -84,6 +87,13 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
     await di<TokenProvider>().saveTokenExpiresAt(event.expiresAt);
     await di<TokenProvider>().saveRole(event.role);
     di<TokenProvider>().saveAccessToken(event.accessToken);
+
+    // Untuk parent, token juga disimpan di [ParentTokenProvider] karena
+    // interceptor membaca token parent dari sana saat menembak API.
+    if (event.role == UserRole.parent) {
+      await di<ParentTokenProvider>().saveParentAccessToken(event.accessToken);
+      await di<ParentTokenProvider>().saveParentTokenExpiresAt(event.expiresAt);
+    }
 
     emit(
       SessionState.authenticated(
@@ -112,6 +122,9 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
     await di<TokenProvider>().clearRole();
 
     di<TokenProvider>().clearAccessToken();
+
+    await di<ParentTokenProvider>().clearParentAccessToken();
+    await di<ParentTokenProvider>().clearParentTokenExpiresAt();
 
     emit(const SessionState.unauthenticated());
   }

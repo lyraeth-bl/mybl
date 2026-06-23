@@ -18,6 +18,7 @@ class ParentTokenProviderImpl implements ParentTokenProvider {
   @override
   Future<Unit> saveParentAccessToken(String accessToken) async {
     _cachedToken = accessToken;
+    await _sessionLocalDataSource.saveParentAccessToken(accessToken);
     return unit;
   }
 

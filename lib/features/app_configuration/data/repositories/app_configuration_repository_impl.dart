@@ -25,9 +25,9 @@ class AppConfigurationRepositoryImpl implements AppConfigurationRepository {
   final AppConfigurationRemoteDataSource _remoteDataSource;
 
   @override
-  Future<Result<AppConfigurationEntity>> fetch([
+  Future<Result<AppConfigurationEntity>> fetch({
     bool forceRefresh = false,
-  ]) async {
+  }) async {
     // Kalau nggak dipaksa refresh, coba intip dulu di lokal ada nggak.
     if (!forceRefresh) {
       final storedData = _localDataSource.read();

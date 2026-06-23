@@ -20,6 +20,6 @@ class FetchAppConfigUseCase {
   ///
   /// Pake [forceRefresh] kalau lo mau bener-bener ambil yang paling fresh
   /// dari server, nggak mau pake yang ada di cache.
-  Future<Result<AppConfigurationEntity>> call([bool forceRefresh = false]) =>
-      _appConfigurationRepository.fetch(forceRefresh);
+  Future<Result<AppConfigurationEntity>> call({bool forceRefresh = false}) =>
+      _appConfigurationRepository.fetch(forceRefresh: forceRefresh);
 }

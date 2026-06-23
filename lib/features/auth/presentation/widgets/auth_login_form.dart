@@ -12,7 +12,6 @@ import '../../../../core/widgets/app_text_field.dart';
 import '../../../../core/widgets/app_toast.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../sessions/presentation/bloc/session_bloc.dart';
-import '../../../user/domain/entities/parent_entity/parent_entity.dart';
 import '../../../user/presentation/bloc/parent_bloc/parent_bloc.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/remember_me/remember_me_cubit.dart';
@@ -150,22 +149,16 @@ class _AuthLoginFormState extends State<AuthLoginForm>
               _nisController.text.trim(),
             );
 
-            context.read<ParentBloc>().add(
-              ParentEvent.initialized(
-                ParentEntity(
-                  nama: nama,
-                  children: children,
-                  selectedChild: children.first,
-                ),
-              ),
-            );
-
             context.read<SessionBloc>().add(
               SessionEvent.loggedIn(
                 accessToken: accessToken,
                 expiresAt: expiresAt,
                 role: UserRole.parent,
               ),
+            );
+
+            context.read<ParentBloc>().add(
+              ParentEvent.loginSucceeded(nama: nama, children: children),
             );
           },
         );

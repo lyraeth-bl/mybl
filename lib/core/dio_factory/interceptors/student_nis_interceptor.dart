@@ -4,7 +4,9 @@ import '../../../features/user/presentation/bloc/parent_bloc/parent_bloc.dart';
 import '../../enums/user_role.dart';
 
 class StudentNisInterceptor extends Interceptor {
-  final ParentBloc parentBloc;
+  /// Resolusi [ParentBloc] ditunda (lazy) supaya tidak memaksa membangun
+  /// graf dependensinya saat interceptor dibuat di tahap network DI.
+  final ParentBloc Function() parentBloc;
   final UserRole Function() getRoleCallback;
 
   StudentNisInterceptor({
@@ -15,7 +17,7 @@ class StudentNisInterceptor extends Interceptor {
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     if (getRoleCallback() == UserRole.parent) {
-      final nis = parentBloc.activeNis;
+      final nis = parentBloc().activeNis;
       if (nis != null) {
         options.headers['X-Student-NIS'] = nis;
       }
