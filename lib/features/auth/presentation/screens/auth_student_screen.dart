@@ -8,10 +8,9 @@ import 'package:my_bl/core/enums/user_role.dart';
 
 import '../../../../core/di/get_it_constant.dart';
 import '../../../../core/widgets/app_responsive_container.dart';
-import '../../../../core/widgets/app_toast.dart';
-import '../../../../l10n/app_localizations.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/remember_me/remember_me_cubit.dart';
+import '../widgets/auth_error_listener.dart';
 import '../widgets/auth_login_form.dart';
 import '../widgets/auth_pattern_animate.dart';
 
@@ -37,7 +36,7 @@ class _AuthStudentView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _ErrorHandlingListener(
+    return AuthErrorListener(
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         body: AppResponsiveContainer(
@@ -49,32 +48,6 @@ class _AuthStudentView extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-class _ErrorHandlingListener extends StatelessWidget {
-  const _ErrorHandlingListener({required this.child});
-
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-
-    return BlocListener<AuthBloc, AuthState>(
-      listener: (context, state) {
-        state.whenOrNull(
-          failure: (failure) {
-            AppToast.error(
-              context,
-              failure.errorMessage ?? failure.localizedMessage(l10n),
-              showProgressBar: false,
-            );
-          },
-        );
-      },
-      child: child,
     );
   }
 }

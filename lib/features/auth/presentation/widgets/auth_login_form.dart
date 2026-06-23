@@ -47,7 +47,10 @@ class _AuthLoginFormState extends State<AuthLoginForm>
     final password = _passwordController.text.trim();
 
     if (nis.isEmpty) {
-      AppToast.warning(context, l10n.pleaseEnterNis, showProgressBar: false);
+      final message = widget.role == UserRole.parent
+          ? l10n.pleaseEnterUsername
+          : l10n.pleaseEnterNis;
+      AppToast.warning(context, message, showProgressBar: false);
       return;
     }
 
@@ -184,13 +187,16 @@ class _AuthLoginFormState extends State<AuthLoginForm>
                 },
                 child: LayoutBuilder(
                   builder: (context, constraints) {
+                    // Top scroll padding (120) + bottom padding (24) + extra (4) = 148
+                    const scrollVerticalPadding = 148.0;
                     return SingleChildScrollView(
                       physics: const ClampingScrollPhysics(),
                       padding: const EdgeInsets.fromLTRB(24, 120, 24, 24),
                       child: ConstrainedBox(
                         constraints: BoxConstraints(
-                          minHeight: constraints.maxHeight > 148
-                              ? constraints.maxHeight - 148
+                          minHeight:
+                              constraints.maxHeight > scrollVerticalPadding
+                              ? constraints.maxHeight - scrollVerticalPadding
                               : 0,
                         ),
                         child: IntrinsicHeight(
@@ -208,46 +214,90 @@ class _AuthLoginFormState extends State<AuthLoginForm>
 
                               Text(
                                 '${l10n.welcomeBack},\n${l10n.youHaveBeenMissed}',
-                                style: textTheme.headlineSmall!.copyWith(
+                                style: textTheme.titleMedium!.copyWith(
                                   color: colorScheme.onSurfaceVariant,
                                   height: 1.5,
                                 ),
                               ),
 
-                              const SizedBox(height: 32),
+                              32.h,
 
-                              AppTextField(
-                                controller: _nisController,
-                                decoration: InputDecoration(hintText: l10n.nis),
-                                focusedSide: BorderSide(
-                                  color: accentColor,
-                                  width: 2,
-                                ),
-                                style: TextStyle(
-                                  color: colorScheme.onSurfaceVariant,
+                              Text(
+                                widget.role == UserRole.parent
+                                    ? l10n.username
+                                    : l10n.nis,
+                                style: textTheme.titleSmall!.copyWith(
+                                  color: colorScheme.onSurface,
                                 ),
                               ),
 
-                              const SizedBox(height: 16),
+                              12.h,
+
+                              AppTextField(
+                                keyboardType: widget.role == UserRole.parent
+                                    ? TextInputType.text
+                                    : TextInputType.number,
+                                controller: _nisController,
+                                decoration: InputDecoration(
+                                  hintText: widget.role == UserRole.parent
+                                      ? l10n.usernameHint
+                                      : l10n.nisHint,
+                                ),
+                                side: BorderSide(
+                                  color: colorScheme.outlineVariant,
+                                ),
+                                backgroundColor: colorScheme.surface,
+                                style: TextStyle(
+                                  color: colorScheme.onSurfaceVariant,
+                                ),
+                                focusedSide: BorderSide(
+                                  color: accentColor,
+                                  width: 1.5,
+                                ),
+                                focusedBackgroundColor: colorScheme.surface,
+                                populatedBackgroundColor: colorScheme.surface,
+                              ),
+
+                              16.h,
+
+                              Text(
+                                l10n.password,
+                                style: textTheme.titleSmall!.copyWith(
+                                  color: colorScheme.onSurface,
+                                ),
+                              ),
+
+                              12.h,
 
                               AppTextField(
                                 controller: _passwordController,
                                 decoration: InputDecoration(
-                                  hintText: l10n.password,
+                                  hintText: l10n.passwordHint,
                                 ),
+                                obscureText: true,
+                                side: BorderSide(
+                                  color: colorScheme.outlineVariant,
+                                ),
+                                backgroundColor: colorScheme.surface,
                                 style: TextStyle(
                                   color: colorScheme.onSurfaceVariant,
                                 ),
-                                obscureText: true,
                                 focusedSide: BorderSide(
                                   color: accentColor,
-                                  width: 2,
+                                  width: 1.5,
                                 ),
+                                focusedBackgroundColor: colorScheme.surface,
+                                populatedBackgroundColor: colorScheme.surface,
                               ),
 
-                              const SizedBox(height: 16),
+                              16.h,
 
-                              _RememberMeRow(accentColor: accentColor),
+                              _RememberMeCheckbox(
+                                accentColor: accentColor,
+                                colorScheme: colorScheme,
+                                textTheme: textTheme,
+                                l10n: l10n,
+                              ),
 
                               const Spacer(),
 
@@ -308,32 +358,6 @@ class _AuthLoginFormState extends State<AuthLoginForm>
   }
 }
 
-class _RememberMeRow extends StatelessWidget {
-  const _RememberMeRow({required this.accentColor});
-
-  final Color accentColor;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        _RememberMeCheckbox(
-          accentColor: accentColor,
-          colorScheme: colorScheme,
-          textTheme: textTheme,
-          l10n: l10n,
-        ),
-        _ForgotPasswordButton(l10n: l10n),
-      ],
-    );
-  }
-}
-
 class _RememberMeCheckbox extends StatelessWidget {
   const _RememberMeCheckbox({
     required this.accentColor,
@@ -352,49 +376,44 @@ class _RememberMeCheckbox extends StatelessWidget {
     return BlocBuilder<RememberMeCubit, RememberMeState>(
       buildWhen: (prev, curr) => prev.isChecked != curr.isChecked,
       builder: (context, state) {
-        return InkWell(
-          onTap: () =>
-              context.read<RememberMeCubit>().toggleCheckBox(!state.isChecked),
-          borderRadius: BorderRadius.circular(8),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            child: Row(
-              children: [
-                Checkbox(
-                  value: state.isChecked,
-                  activeColor: accentColor,
-                  checkColor: colorScheme.surface,
-                  side: BorderSide(color: colorScheme.outline, width: 1.5),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(4),
+        return Semantics(
+          label: l10n.rememberMe,
+          checked: state.isChecked,
+          child: InkWell(
+            onTap: () => context.read<RememberMeCubit>().toggleCheckBox(
+              !state.isChecked,
+            ),
+            borderRadius: BorderRadius.circular(8),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: Row(
+                children: [
+                  ExcludeSemantics(
+                    child: Checkbox(
+                      value: state.isChecked,
+                      activeColor: accentColor,
+                      checkColor: colorScheme.surface,
+                      side: BorderSide(color: colorScheme.outline, width: 1.5),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      onChanged: (val) => context
+                          .read<RememberMeCubit>()
+                          .toggleCheckBox(val ?? false),
+                    ),
                   ),
-                  onChanged: (val) => context
-                      .read<RememberMeCubit>()
-                      .toggleCheckBox(val ?? false),
-                ),
-                Text(
-                  l10n.rememberMyNis,
-                  style: textTheme.labelMedium?.copyWith(
-                    color: colorScheme.onSurface,
+                  Text(
+                    l10n.rememberMe,
+                    style: textTheme.labelMedium?.copyWith(
+                      color: colorScheme.onSurface,
+                    ),
                   ),
-                ),
-                const SizedBox(width: 4),
-              ],
+                ],
+              ),
             ),
           ),
         );
       },
     );
-  }
-}
-
-class _ForgotPasswordButton extends StatelessWidget {
-  const _ForgotPasswordButton({required this.l10n});
-
-  final AppLocalizations l10n;
-
-  @override
-  Widget build(BuildContext context) {
-    return TextButton(onPressed: null, child: Text(l10n.forgetPassword));
   }
 }
