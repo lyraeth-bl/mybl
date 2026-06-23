@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:my_bl/core/enums/user_role.dart';
 
 import '../../../../core/di/get_it_constant.dart';
+import '../../../../core/widgets/app_responsive_container.dart';
 import '../../../../core/widgets/app_toast.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../bloc/auth_bloc.dart';
@@ -39,11 +40,13 @@ class _AuthStudentView extends StatelessWidget {
     return _ErrorHandlingListener(
       child: Scaffold(
         resizeToAvoidBottomInset: false,
-        body: Stack(
-          children: [
-            const AuthPatternAnimate(),
-            AuthLoginForm(role: UserRole.student),
-          ],
+        body: AppResponsiveContainer(
+          child: Stack(
+            children: [
+              const AuthPatternAnimate(),
+              AuthLoginForm(role: UserRole.student),
+            ],
+          ),
         ),
       ),
     );

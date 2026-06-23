@@ -3,6 +3,7 @@
 // that can be found in the LICENSE file.
 
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/app_router/app_router.dart';
@@ -21,14 +22,9 @@ class WelcomeScreen extends StatelessWidget {
   }
 }
 
-class _WelcomeView extends StatefulWidget {
+class _WelcomeView extends StatelessWidget {
   const _WelcomeView();
 
-  @override
-  State<_WelcomeView> createState() => _WelcomeViewState();
-}
-
-class _WelcomeViewState extends State<_WelcomeView> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -53,7 +49,7 @@ void _showRoleSelector(BuildContext context) {
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
     ),
-    builder: (_) => _WelcomeRoleSelectorSheet(),
+    builder: (_) => const _WelcomeRoleSelectorSheet(),
   );
 }
 
@@ -131,26 +127,26 @@ class _WelcomeViewContent extends StatelessWidget {
                     color: colorScheme.onPrimaryContainer.withValues(alpha: .7),
                     letterSpacing: 1.1,
                   ),
-                ),
+                ).makeAnimate(delay: 100.ms),
                 4.h,
                 Text(
                   l10n.welcomeTitle,
                   style: textTheme.headlineLarge!.copyWith(
                     color: colorScheme.onPrimaryContainer,
                   ),
-                ),
+                ).makeAnimate(delay: 180.ms),
                 12.h,
                 Text(
                   l10n.welcomeDescription,
                   style: textTheme.bodyMedium!.copyWith(
                     color: colorScheme.onPrimaryContainer.withValues(alpha: .7),
                   ),
-                ),
+                ).makeAnimate(delay: 260.ms),
                 const Spacer(),
                 AppButton(
                   onPressed: () => _showRoleSelector(context),
                   child: Text(l10n.welcomeGetStarted),
-                ),
+                ).makeAnimate(delay: 360.ms),
               ],
             ),
           ),

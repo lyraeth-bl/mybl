@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:my_bl/core/enums/user_role.dart';
 
+import '../../../../core/internal/src/extensions/extensions.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../../../../core/widgets/app_toast.dart';
@@ -203,7 +204,7 @@ class _AuthLoginFormState extends State<AuthLoginForm>
                                 ),
                               ),
 
-                              const SizedBox(height: 8),
+                              8.h,
 
                               Text(
                                 '${l10n.welcomeBack},\n${l10n.youHaveBeenMissed}',
