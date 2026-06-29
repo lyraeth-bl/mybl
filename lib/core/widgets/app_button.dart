@@ -196,8 +196,9 @@ class AppButton extends StatelessWidget {
     final OutlinedBorder shape = borderRadius == null
         ? _defaultShape
         : RoundedRectangleBorder(borderRadius: borderRadius!);
-    final Widget effectiveChild =
-        loading ? loadingChild ?? _buildProgressIndicator(context) : child;
+    final Widget effectiveChild = loading
+        ? loadingChild ?? _buildProgressIndicator(context)
+        : child;
 
     return switch (_variant) {
       _AppButtonVariant.filled => FilledButton(
