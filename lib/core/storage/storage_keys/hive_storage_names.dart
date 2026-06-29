@@ -32,6 +32,9 @@ class HiveStorageNames {
   // NIS user jika user mengaktifkan fitur [RememberMe].
   static const String authNISKey = "authNIS";
 
+  // Username user jika user mengaktifkan fitur [RememberMe].
+  static const String authUsernameKey = "authUsername";
+
   // Data student.
   static const String studentDetailKey = "studentDetail";
 
