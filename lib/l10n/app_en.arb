@@ -309,5 +309,6 @@
       }
     }
   },
-  "reload": "Reload"
+  "reload": "Reload",
+  "comingSoon": "Coming soon"
 }

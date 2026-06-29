@@ -19,7 +19,7 @@ class ParentProfileScreen extends StatelessWidget {
       backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
       body: Center(
         child: Text(
-          'Coming soon',
+          AppLocalizations.of(context)!.comingSoon,
           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                 color: Theme.of(
                   context,
