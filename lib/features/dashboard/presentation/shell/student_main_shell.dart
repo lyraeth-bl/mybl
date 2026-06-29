@@ -11,10 +11,10 @@ import '../../../../core/notifications/fcm_service.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../app_configuration/presentation/bloc/app_configuration_bloc.dart';
 import '../../../attendance/presentation/widgets/attendance_qr_bottom_sheet.dart';
-import 'app_under_maintenance_container.dart';
+import '../widgets/app_under_maintenance_container.dart';
 
-class MainShell extends StatelessWidget {
-  const MainShell({super.key, required this.navigationShell});
+class StudentMainShell extends StatelessWidget {
+  const StudentMainShell({super.key, required this.navigationShell});
 
   final StatefulNavigationShell navigationShell;
 
@@ -27,21 +27,21 @@ class MainShell extends StatelessWidget {
             forceRefresh: true,
           ),
         ),
-      child: _MainShellView(navigationShell: navigationShell),
+      child: _StudentMainShellView(navigationShell: navigationShell),
     );
   }
 }
 
-class _MainShellView extends StatefulWidget {
-  const _MainShellView({required this.navigationShell});
+class _StudentMainShellView extends StatefulWidget {
+  const _StudentMainShellView({required this.navigationShell});
 
   final StatefulNavigationShell navigationShell;
 
   @override
-  State<_MainShellView> createState() => _MainShellViewState();
+  State<_StudentMainShellView> createState() => _StudentMainShellViewState();
 }
 
-class _MainShellViewState extends State<_MainShellView> {
+class _StudentMainShellViewState extends State<_StudentMainShellView> {
   @override
   void initState() {
     super.initState();
