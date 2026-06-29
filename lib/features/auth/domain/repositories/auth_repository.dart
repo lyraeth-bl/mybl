@@ -6,4 +6,4 @@ import '../../../../core/internal/src/interfaces/data_interfaces.dart';
 import '../entities/auth_response_entity/auth_response_entity.dart';
 
 abstract class AuthRepository
-    implements Authenticator<AuthResponseEntity>, RememberMeStorage {}
+    implements Authenticator<AuthResponseEntity>, StudentRememberMeStorage {}

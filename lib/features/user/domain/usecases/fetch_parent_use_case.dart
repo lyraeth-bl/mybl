@@ -12,5 +12,5 @@ class FetchParentUseCase {
   final ParentRepository _parentRepository;
 
   Future<Result<ParentEntity>> call({bool forceRefresh = false}) =>
-      _parentRepository.fetch(forceRefresh: forceRefresh);
+      _parentRepository.fetchParent(forceRefresh: forceRefresh);
 }

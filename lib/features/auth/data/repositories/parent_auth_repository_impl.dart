@@ -4,14 +4,14 @@ import '../../../../core/failure/failure.dart';
 import '../../../../core/internal/internal.dart';
 import '../../domain/entities/parent_response_entity/parent_response_entity.dart';
 import '../../domain/repositories/parent_auth_repository.dart';
-import '../datasources/auth_local_data_source.dart';
+import '../datasources/parent_local_data_source.dart';
 import '../datasources/parent_remote_data_source.dart';
 import '../models/parent_response_model/parent_response_model.dart';
 
 class ParentAuthRepositoryImpl implements ParentAuthRepository {
   ParentAuthRepositoryImpl(this._remoteDataSource, this._localDataSource);
 
-  final AuthLocalDataSource _localDataSource;
+  final ParentLocalDataSource _localDataSource;
   final ParentRemoteDataSource _remoteDataSource;
 
   @override
@@ -42,8 +42,9 @@ class ParentAuthRepositoryImpl implements ParentAuthRepository {
   }
 
   @override
-  Future<String?> readNIS() => _localDataSource.readNIS();
+  Future<String?> readUsername() => _localDataSource.readUsername();
 
   @override
-  Future<Unit> saveNIS(String nis) => _localDataSource.saveNIS(nis);
+  Future<Unit> saveUsername(String username) =>
+      _localDataSource.saveUsername(username);
 }

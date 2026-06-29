@@ -86,12 +86,7 @@ class ParentBloc extends Bloc<ParentEvent, ParentState> {
 
     emit(
       ParentState.ready(
-        parent: ParentEntity(
-          id: 0,
-          nama: event.nama,
-          username: '',
-          telpon: '',
-        ),
+        parent: ParentEntity(id: 0, nama: event.nama, username: '', telpon: ''),
         children: event.children,
         selectedChild: selectedChild,
       ),

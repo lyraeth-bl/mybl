@@ -7,13 +7,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/app_router/app_router.dart';
+import '../../../../core/internal/src/extensions/extensions.dart';
+import '../../../../core/widgets/app_container.dart';
+import '../../../../core/widgets/app_profile_picture.dart';
+import '../../../../core/widgets/app_top_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../sessions/presentation/bloc/session_bloc.dart';
 import '../../../user/presentation/bloc/parent_bloc/parent_bloc.dart';
 
-/// Placeholder dashboard untuk parent. Sengaja kosong supaya parent tidak
-/// menembak endpoint student-only (yang masih menolak token parent di BE).
-/// Nantinya halaman ini diisi data anak yang dipilih.
 class ParentDashboardScreen extends StatelessWidget {
   const ParentDashboardScreen({super.key});
 
@@ -31,90 +32,169 @@ class ParentDashboardScreen extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
     final l10n = AppLocalizations.of(context)!;
 
-    return Scaffold(
-      backgroundColor: colorScheme.surface,
-      body: SafeArea(
-        child: BlocBuilder<ParentBloc, ParentState>(
-          builder: (context, state) {
-            final record = state.maybeWhen(
-              ready: (parent, children, selectedChild) => (
-                nama: parent.nama,
-                child: selectedChild,
-                hasMultipleChildren: children.length > 1,
-              ),
-              orElse: () => (nama: '', child: null, hasMultipleChildren: false),
-            );
+    return BlocBuilder<ParentBloc, ParentState>(
+      builder: (context, state) {
+        final record = state.maybeWhen(
+          ready: (parent, children, selectedChild) => (
+            nama: parent.nama,
+            child: selectedChild,
+            hasMultipleChildren: children.length > 1,
+          ),
+          orElse: () => (nama: '', child: null, hasMultipleChildren: false),
+        );
 
-            return Padding(
-              padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    _greeting(l10n),
-                    style: textTheme.bodyLarge?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    record.nama,
-                    style: textTheme.headlineSmall?.copyWith(
-                      color: colorScheme.onSurface,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 32),
-                  if (record.child != null)
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: colorScheme.surfaceContainerLow,
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: colorScheme.outlineVariant),
-                      ),
+        return Scaffold(
+          appBar: AppTopBar(
+            toolbarHeight: 80,
+            actions: [Icon(Icons.person)],
+            centerTitle: false,
+            title: Column(
+              crossAxisAlignment: .start,
+              children: [
+                Row(
+                  children: [
+                    Icon(Icons.waving_hand, color: colorScheme.onSurface),
+                    Expanded(
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: .start,
                         children: [
                           Text(
-                            record.child!.nama,
-                            style: textTheme.titleMedium?.copyWith(
-                              color: colorScheme.onSurface,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            '${record.child!.kelas} · ${record.child!.nis}',
-                            style: textTheme.bodySmall?.copyWith(
+                            _greeting(l10n),
+                            style: textTheme.bodyMedium?.copyWith(
                               color: colorScheme.onSurfaceVariant,
                             ),
                           ),
-                        ],
+                          BlocSelector<ParentBloc, ParentState, String>(
+                            selector: (state) => state.maybeWhen(
+                              ready: (parent, _, _) => parent.nama,
+                              orElse: () => '',
+                            ),
+                            builder: (context, name) {
+                              return Text(
+                                l10n.parentGreetingName(
+                                  name.capitalizeEveryWord,
+                                ),
+                                style: textTheme.titleMedium?.copyWith(
+                                  color: colorScheme.onSurface,
+                                ),
+                              );
+                            },
+                          ),
+                        ].separatedBy(2.h),
                       ),
                     ),
-                  const Spacer(),
-                  if (record.hasMultipleChildren)
-                    OutlinedButton(
-                      onPressed: () =>
-                          context.go(RouteNames.parentChildSelector),
-                      child: Text(l10n.parentChildSelectorMultipleChildren),
-                    ),
-                  if (record.hasMultipleChildren) const SizedBox(height: 12),
-                  FilledButton(
-                    onPressed: () => context.read<SessionBloc>().add(
-                      const SessionEvent.loggedOut(),
-                    ),
-                    child: Text(l10n.logout),
+                  ].separatedBy(8.w),
+                ),
+              ],
+            ),
+          ),
+          backgroundColor: colorScheme.surfaceContainer,
+          body: SafeArea(
+            child: BlocBuilder<ParentBloc, ParentState>(
+              builder: (context, state) {
+                return Padding(
+                  padding: const .fromLTRB(16, 24, 16, 24),
+                  child: Column(
+                    crossAxisAlignment: .start,
+                    children: [
+                      if (record.child != null)
+                        AppFramedContainer(
+                          margin: .zero,
+                          innerPadding: .zero,
+                          gap: .zero,
+                          innerColor: colorScheme.surface,
+                          borderRadius: .circular(16),
+                          innerBorderRadius: .circular(12),
+                          title: Text(l10n.parentChildSelectorSingleChild),
+                          titleTextStyle: textTheme.titleSmall!.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                          trailing: Icon(
+                            Icons.chevron_right,
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                          child: ListTile(
+                            leading: AppProfilePicture(
+                              backgroundColor: colorScheme.inverseSurface,
+                              foregroundColor: colorScheme.onInverseSurface,
+                              radius: 22,
+                            ),
+                            title: Text(
+                              record.child!.nama.capitalizeEveryWord,
+                              style: textTheme.titleMedium!.copyWith(
+                                color: colorScheme.onSurface,
+                              ),
+                            ),
+                            subtitle: Padding(
+                              padding: const .only(top: 4.0),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.badge_outlined,
+                                    size: 14,
+                                    color: colorScheme.onSurfaceVariant,
+                                  ),
+                                  Text(record.child!.nis),
+                                  Text("-"),
+                                  Icon(
+                                    Icons.school_outlined,
+                                    size: 14,
+                                    color: colorScheme.onSurfaceVariant,
+                                  ),
+                                  Text(record.child!.kelas),
+                                ].separatedBy(4.w),
+                              ),
+                            ),
+                          ),
+                        ),
+                      32.h,
+                      AppFramedContainer(
+                        onTap: () => {},
+                        margin: .zero,
+                        gap: .zero,
+                        borderRadius: .circular(16),
+                        innerBorderRadius: .circular(12),
+                        innerColor: colorScheme.surface,
+                        title: Text(l10n.dailyAttendance),
+                        titleTextStyle: textTheme.titleSmall!.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                        trailing: Icon(
+                          Icons.chevron_right,
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                        child: AppNoData(
+                          title: l10n.noAttendanceData,
+                          message: l10n.parentDailyAttendanceNoDataDesc(
+                            record.child!.nama.takeFirstWordAndCapitalize,
+                          ),
+                          icon: Icons.calendar_today,
+                          actionLabel: l10n.reload,
+                          onAction: () => {},
+                        ),
+                      ),
+                      const Spacer(),
+                      if (record.hasMultipleChildren)
+                        OutlinedButton(
+                          onPressed: () =>
+                              context.go(RouteNames.parentChildSelector),
+                          child: Text(l10n.parentChildSelectorMultipleChildren),
+                        ),
+                      if (record.hasMultipleChildren) 12.h,
+                      FilledButton(
+                        onPressed: () => context.read<SessionBloc>().add(
+                          const SessionEvent.loggedOut(),
+                        ),
+                        child: Text(l10n.logout),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            );
-          },
-        ),
-      ),
+                );
+              },
+            ),
+          ),
+        );
+      },
     );
   }
 }

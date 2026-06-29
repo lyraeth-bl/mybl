@@ -75,11 +75,14 @@ class _AuthLoginFormState extends State<AuthLoginForm>
     }
   }
 
-  void _getSavedNIS() {
-    final savedNIS = context.read<RememberMeCubit>().state.savedNIS;
+  void _getSavedIdentifier() {
+    final savedIdentifier = context
+        .read<RememberMeCubit>()
+        .state
+        .savedIdentifier;
 
-    if (savedNIS.isNotEmpty) {
-      _nisController.text = savedNIS;
+    if (savedIdentifier.isNotEmpty) {
+      _nisController.text = savedIdentifier;
     }
   }
 
@@ -98,8 +101,8 @@ class _AuthLoginFormState extends State<AuthLoginForm>
       } else {
         _animationController.forward();
       }
-      await context.read<RememberMeCubit>().loadSavedEmail();
-      _getSavedNIS();
+      await context.read<RememberMeCubit>().loadSavedIdentifier(widget.role);
+      _getSavedIdentifier();
     });
   }
 
@@ -133,6 +136,7 @@ class _AuthLoginFormState extends State<AuthLoginForm>
         state.whenOrNull(
           successLogin: (accessToken, expiresAt) {
             context.read<RememberMeCubit>().onLoginSuccess(
+              widget.role,
               _nisController.text.trim(),
             );
 
@@ -146,6 +150,7 @@ class _AuthLoginFormState extends State<AuthLoginForm>
           },
           successParentLogin: (accessToken, expiresAt, nama, children) {
             context.read<RememberMeCubit>().onLoginSuccess(
+              widget.role,
               _nisController.text.trim(),
             );
 

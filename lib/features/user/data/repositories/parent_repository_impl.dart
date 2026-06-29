@@ -24,7 +24,7 @@ class ParentRepositoryImpl implements ParentRepository {
   final ParentRemoteDataSource _remoteDataSource;
 
   @override
-  Future<Result<ParentEntity>> fetch({bool forceRefresh = false}) async {
+  Future<Result<ParentEntity>> fetchParent({bool forceRefresh = false}) async {
     if (!forceRefresh) {
       final storedData = _localDataSource.readParentProfile();
 

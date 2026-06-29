@@ -4,56 +4,46 @@
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:my_bl/core/enums/user_role.dart';
 
 import '../../../domain/usecases/read_nis_use_case.dart';
+import '../../../domain/usecases/read_username_use_case.dart';
 import '../../../domain/usecases/save_nis_use_case.dart';
+import '../../../domain/usecases/save_username_use_case.dart';
 
 part 'remember_me_cubit.freezed.dart';
 part 'remember_me_state.dart';
 
-/// [RememberMeCubit] itu jembatan andalan buat ngurusin fitur "Remember Me" pas login.
-///
-/// Si cubit ini tugasnya simpel tapi penting: inget-inget NIS user biar mereka nggak
-/// capek ngetik ulang tiap kali mau masuk. Dia nge-manage [RememberMeState] yang
-/// isinya status checkbox (centang apa nggak) sama data NIS yang udah kesimpen.
 class RememberMeCubit extends Cubit<RememberMeState> {
-  /// Constructor buat inisialisasi [RememberMeCubit].
-  ///
-  /// Di sini kita butuh [_readNisUseCase] buat ambil data lama dan [_saveNisUseCase]
-  /// buat nyimpen data baru.
-  RememberMeCubit(this._readNisUseCase, this._saveNisUseCase)
-    : super(const RememberMeState());
+  RememberMeCubit(
+    this._readNisUseCase,
+    this._saveNisUseCase,
+    this._readUsernameUseCase,
+    this._saveUsernameUseCase,
+  ) : super(const RememberMeState());
 
   final ReadNisUseCase _readNisUseCase;
   final SaveNisUseCase _saveNisUseCase;
+  final ReadUsernameUseCase _readUsernameUseCase;
+  final SaveUsernameUseCase _saveUsernameUseCase;
 
-  /// Panggil [loadSavedEmail] pas screen login baru dibuka.
-  ///
-  /// Method ini bakal nanya ke [_readNisUseCase] apakah ada NIS yang pernah
-  /// disimpen sebelumnya. Kalo ada, langsung di-update ke [RememberMeState.savedNIS].
-  Future<void> loadSavedEmail() async {
-    final email = await _readNisUseCase();
-    emit(state.copyWith(savedNIS: email ?? ''));
+  Future<void> loadSavedIdentifier(UserRole role) async {
+    final identifier = role == UserRole.parent
+        ? await _readUsernameUseCase()
+        : await _readNisUseCase();
+    emit(state.copyWith(savedIdentifier: identifier ?? ''));
   }
 
-  /// [toggleCheckBox] dipake tiap kali user nge-tap checkbox "Ingat Saya".
-  ///
-  /// Tinggal masukin [value] barunya (true/false), terus status [RememberMeState.isChecked]
-  /// bakal otomatis berubah.
   void toggleCheckBox(bool value) {
     emit(state.copyWith(isChecked: value));
   }
 
-  /// [onLoginSuccess] ini "si paling sibuk" pas proses login kelar dan berhasil.
-  ///
-  /// Dia bakal ngecek: kalo [RememberMeState.isChecked] itu true, NIS user bakal
-  /// disimpen pake [_saveNisUseCase]. Tapi kalo nggak dicentang, dia bakal
-  /// ngebersihin data NIS yang lama biar nggak kesimpen lagi.
-  Future<void> onLoginSuccess(String nis) async {
-    if (state.isChecked) {
-      await _saveNisUseCase(nis);
+  Future<void> onLoginSuccess(UserRole role, String identifier) async {
+    final value = state.isChecked ? identifier : '';
+    if (role == UserRole.parent) {
+      await _saveUsernameUseCase(value);
     } else {
-      await _saveNisUseCase('');
+      await _saveNisUseCase(value);
     }
   }
 }

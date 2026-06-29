@@ -292,5 +292,22 @@
   "welcomePortalLabel": "PORTAL SEKOLAH",
   "welcomeTitle": "Sekolah\nBudi Luhur",
   "welcomeDescription": "Your unified gateway to all school services. Select your role below to sign in and access your personalized dashboard.",
-  "welcomeGetStarted": "GET STARTED"
+  "welcomeGetStarted": "GET STARTED",
+  "parentGreetingName": "Mr. {name}",
+  "@parentGreetingName": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "parentDailyAttendanceNoDataDesc": "Attendance data for {name} today will appear here.",
+  "@parentDailyAttendanceNoDataDesc": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "reload": "Reload"
 }

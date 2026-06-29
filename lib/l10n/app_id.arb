@@ -292,5 +292,22 @@
   "welcomePortalLabel": "PORTAL SEKOLAH",
   "welcomeTitle": "Sekolah\nBudi Luhur",
   "welcomeDescription": "Akses terpadu untuk seluruh layanan Sekolah Budi Luhur. Pilih peran Anda di bawah untuk masuk dan menggunakan fitur yang tersedia.",
-  "welcomeGetStarted": "MULAI"
+  "welcomeGetStarted": "MULAI",
+  "parentGreetingName": "Bpk. {name}",
+  "@parentGreetingName": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "parentDailyAttendanceNoDataDesc": "Data kehadiran {name} hari ini akan muncul di sini.",
+  "@parentDailyAttendanceNoDataDesc": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "reload": "Muat ulang"
 }
