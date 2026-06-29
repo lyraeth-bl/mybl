@@ -23,12 +23,7 @@ class ParentMainShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<AppConfigurationBloc>.value(
-      value: di<AppConfigurationBloc>()
-        ..add(
-          const AppConfigurationEvent.appConfigurationRequested(
-            forceRefresh: true,
-          ),
-        ),
+      value: di<AppConfigurationBloc>(),
       child: _ParentMainShellView(navigationShell: navigationShell),
     );
   }
@@ -48,8 +43,12 @@ class _ParentMainShellViewState extends State<_ParentMainShellView> {
   @override
   void initState() {
     super.initState();
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<AppConfigurationBloc>().add(
+        const AppConfigurationEvent.appConfigurationRequested(
+          forceRefresh: true,
+        ),
+      );
       _activateNotifications().ignore();
     });
   }

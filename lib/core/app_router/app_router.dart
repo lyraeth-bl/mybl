@@ -87,7 +87,11 @@ class AppRouter {
 
       // Login sebagai student.
       if (!isParent) {
-        return isOnAuthScreen ? RouteNames.dashboard : null;
+        final isOnParentOnlyRoute =
+            state.matchedLocation.startsWith('/parent/');
+        return (isOnAuthScreen || isOnParentOnlyRoute)
+            ? RouteNames.dashboard
+            : null;
       }
 
       // Login sebagai parent — keputusan rute menunggu ParentBloc selesai
