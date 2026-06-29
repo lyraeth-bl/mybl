@@ -28,6 +28,12 @@ class RouteNames {
   // Parent Dashboard
   static const String parentDashboard = "/parent/dashboard";
 
+  // Parent Notification
+  static const String parentNotification = "/parent/notification";
+
+  // Parent Profile
+  static const String parentProfile = "/parent/profile";
+
   // Attendance
   static const String attendance = "/attendance";
 
