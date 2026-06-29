@@ -11,6 +11,8 @@ import '../../features/attendance/presentation/screens/attendance_screen.dart';
 import '../../features/auth/presentation/screens/auth_parent_screen.dart';
 import '../../features/auth/presentation/screens/auth_student_screen.dart';
 import '../../features/auth/presentation/screens/parent_child_selector_screen.dart';
+import '../../features/dashboard/presentation/screens/parent_profile_screen.dart';
+import '../../features/dashboard/presentation/shell/parent_main_shell.dart';
 import '../../features/dashboard/presentation/shell/student_main_shell.dart';
 import '../../features/user/presentation/bloc/parent_bloc/parent_bloc.dart';
 import '../../features/welcome/presentation/screens/welcome_screen.dart';
@@ -149,9 +151,38 @@ class AppRouter {
         builder: (context, state) => const ParentChildSelectorScreen(),
       ),
 
-      GoRoute(
-        path: RouteNames.parentDashboard,
-        builder: (context, state) => const ParentDashboardScreen(),
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) =>
+            ParentMainShell(navigationShell: navigationShell),
+        branches: <StatefulShellBranch>[
+          StatefulShellBranch(
+            routes: <GoRoute>[
+              GoRoute(
+                path: RouteNames.parentDashboard,
+                builder: (context, state) =>
+                    const ParentDashboardScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: <GoRoute>[
+              GoRoute(
+                path: RouteNames.parentNotification,
+                builder: (context, state) =>
+                    const NotificationScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: <GoRoute>[
+              GoRoute(
+                path: RouteNames.parentProfile,
+                builder: (context, state) =>
+                    const ParentProfileScreen(),
+              ),
+            ],
+          ),
+        ],
       ),
 
       GoRoute(
