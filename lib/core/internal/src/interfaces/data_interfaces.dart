@@ -53,10 +53,30 @@ abstract interface class Authenticator<T> {
   Future<Result<Unit>> logout();
 }
 
-abstract interface class RememberMeStorage {
+abstract interface class StudentRememberMeStorage {
   Future<String?> readNIS();
 
   Future<Unit> saveNIS(String nis);
+}
+
+abstract interface class ParentRememberMeStorage {
+  Future<String?> readUsername();
+
+  Future<Unit> saveUsername(String username);
+}
+
+abstract interface class ParentFetcher<T> {
+  Future<Result<T>> fetchParent({bool forceRefresh = false});
+}
+
+abstract interface class ParentChildManager<T> {
+  Future<Result<Unit>> saveChildren(List<T> children);
+
+  Future<Result<List<T>>> readChildren();
+
+  Future<Result<Unit>> saveSelectedChild(T child);
+
+  Future<Result<T?>> readSelectedChild();
 }
 
 abstract interface class TokenStorage {
