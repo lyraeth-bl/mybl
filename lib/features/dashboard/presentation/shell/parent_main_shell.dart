@@ -22,8 +22,8 @@ class ParentMainShell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<AppConfigurationBloc>(
-      create: (context) => di<AppConfigurationBloc>()
+    return BlocProvider<AppConfigurationBloc>.value(
+      value: di<AppConfigurationBloc>()
         ..add(
           const AppConfigurationEvent.appConfigurationRequested(
             forceRefresh: true,
