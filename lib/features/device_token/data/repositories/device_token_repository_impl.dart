@@ -4,6 +4,7 @@
 
 import 'package:fpdart/fpdart.dart';
 
+import '../../../../core/enums/user_role.dart';
 import '../../../../core/failure/failure.dart';
 import '../../../../core/internal/src/types.dart';
 import '../../domain/repositories/repository.dart';
@@ -18,7 +19,10 @@ class DeviceTokenRepositoryImpl implements DeviceTokenRepository {
   final DeviceTokenMetadataProvider _metadataProvider;
 
   @override
-  Future<Result<Unit>> registerDeviceToken({required String fcmToken}) async {
+  Future<Result<Unit>> registerDeviceToken({
+    required String fcmToken,
+    required UserRole role,
+  }) async {
     try {
       final request = DeviceTokenRequest(
         token: fcmToken,
@@ -26,7 +30,7 @@ class DeviceTokenRepositoryImpl implements DeviceTokenRepository {
         appVersion: await _metadataProvider.readAppVersion(),
       );
 
-      await _remoteDataSource.registerDeviceToken(request);
+      await _remoteDataSource.registerDeviceToken(request, role);
 
       return right(unit);
     } catch (e, st) {
@@ -35,9 +39,12 @@ class DeviceTokenRepositoryImpl implements DeviceTokenRepository {
   }
 
   @override
-  Future<Result<Unit>> revokeDeviceToken({required String fcmToken}) async {
+  Future<Result<Unit>> revokeDeviceToken({
+    required String fcmToken,
+    required UserRole role,
+  }) async {
     try {
-      await _remoteDataSource.revokeDeviceToken(fcmToken: fcmToken);
+      await _remoteDataSource.revokeDeviceToken(fcmToken: fcmToken, role: role);
 
       return right(unit);
     } catch (e, st) {

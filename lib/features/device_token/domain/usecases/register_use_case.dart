@@ -4,6 +4,7 @@
 
 import 'package:fpdart/fpdart.dart';
 
+import '../../../../core/enums/user_role.dart';
 import '../../../../core/internal/src/types.dart';
 import '../repositories/repository.dart';
 
@@ -12,6 +13,11 @@ class RegisterDeviceTokenUseCase {
 
   final DeviceTokenRepository _deviceTokenRepository;
 
-  Future<Result<Unit>> call({required String fcmToken}) =>
-      _deviceTokenRepository.registerDeviceToken(fcmToken: fcmToken);
+  Future<Result<Unit>> call({
+    required String fcmToken,
+    required UserRole role,
+  }) => _deviceTokenRepository.registerDeviceToken(
+    fcmToken: fcmToken,
+    role: role,
+  );
 }

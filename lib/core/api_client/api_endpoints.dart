@@ -41,6 +41,8 @@ class ApiEndpoints {
 
   static final String deviceTokens = "/device-tokens";
 
+  static final String parentDeviceTokens = "/parent/device-tokens";
+
   static final String academicCalendar = "/kalender-akademik";
 
   static final String feedback = "/feedback";

@@ -4,6 +4,7 @@
 
 import 'package:fpdart/fpdart.dart';
 
+import '../../../enums/user_role.dart';
 import '../types.dart';
 
 abstract interface class ItemFetcher<T> {
@@ -207,9 +208,15 @@ abstract interface class NotificationLocalManager<T> {
 }
 
 abstract interface class DeviceTokenRegistrar {
-  Future<Result<Unit>> registerDeviceToken({required String fcmToken});
+  Future<Result<Unit>> registerDeviceToken({
+    required String fcmToken,
+    required UserRole role,
+  });
 
-  Future<Result<Unit>> revokeDeviceToken({required String fcmToken});
+  Future<Result<Unit>> revokeDeviceToken({
+    required String fcmToken,
+    required UserRole role,
+  });
 }
 
 abstract interface class ParentLocalManager<P, C> {

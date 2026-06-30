@@ -12,19 +12,22 @@ class ParentProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       appBar: AppTopBar(
-        title: Text(AppLocalizations.of(context)!.profile),
+        backgroundColor: colorScheme.surfaceContainerLow,
+        title: Text(l10n.profile),
       ),
-      backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+      backgroundColor: colorScheme.surfaceContainer,
       body: Center(
         child: Text(
-          AppLocalizations.of(context)!.comingSoon,
-          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: Theme.of(
-                  context,
-                ).colorScheme.onSurfaceVariant,
-              ),
+          l10n.comingSoon,
+          style: textTheme.bodyLarge?.copyWith(
+            color: colorScheme.onSurfaceVariant,
+          ),
         ),
       ),
     );

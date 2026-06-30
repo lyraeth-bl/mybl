@@ -87,8 +87,9 @@ class AppRouter {
 
       // Login sebagai student.
       if (!isParent) {
-        final isOnParentOnlyRoute =
-            state.matchedLocation.startsWith('/parent/');
+        final isOnParentOnlyRoute = state.matchedLocation.startsWith(
+          '/parent/',
+        );
         return (isOnAuthScreen || isOnParentOnlyRoute)
             ? RouteNames.dashboard
             : null;
@@ -163,8 +164,7 @@ class AppRouter {
             routes: <GoRoute>[
               GoRoute(
                 path: RouteNames.parentDashboard,
-                builder: (context, state) =>
-                    const ParentDashboardScreen(),
+                builder: (context, state) => const ParentDashboardScreen(),
               ),
             ],
           ),
@@ -172,8 +172,7 @@ class AppRouter {
             routes: <GoRoute>[
               GoRoute(
                 path: RouteNames.parentNotification,
-                builder: (context, state) =>
-                    const NotificationScreen(),
+                builder: (context, state) => const NotificationScreen(),
               ),
             ],
           ),
@@ -181,8 +180,7 @@ class AppRouter {
             routes: <GoRoute>[
               GoRoute(
                 path: RouteNames.parentProfile,
-                builder: (context, state) =>
-                    const ParentProfileScreen(),
+                builder: (context, state) => const ParentProfileScreen(),
               ),
             ],
           ),

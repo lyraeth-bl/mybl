@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/di/get_it_constant.dart';
+import '../../../../core/enums/user_role.dart';
 import '../../../../core/notifications/fcm_service.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../app_configuration/presentation/bloc/app_configuration_bloc.dart';
@@ -65,7 +66,9 @@ class _StudentMainShellViewState extends State<_StudentMainShellView> {
     if (!mounted) return;
 
     if (!shouldAskPermission) {
-      fcmService.activateSilentlyForAuthenticatedUser().ignore();
+      fcmService
+          .activateSilentlyForAuthenticatedUser(UserRole.student)
+          .ignore();
       return;
     }
 
@@ -141,7 +144,9 @@ class _NotificationPermissionBottomSheetState
   Future<void> _requestPermission() async {
     setState(() => _status = _NotificationPermissionSheetStatus.loading);
 
-    final result = await di<FCMService>().activateForAuthenticatedUser();
+    final result = await di<FCMService>().activateForAuthenticatedUser(
+      UserRole.student,
+    );
 
     if (!mounted) return;
 

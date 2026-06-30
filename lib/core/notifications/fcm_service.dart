@@ -12,6 +12,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:hive_ce_flutter/hive_ce_flutter.dart';
 
 import '../../features/device_token/domain/usecases/register_use_case.dart';
+import '../enums/user_role.dart';
 import '../../features/notifications/data/datasources/notification_local_data_source.dart';
 import '../../features/notifications/data/models/app_notification_model/app_notification_model.dart';
 import '../../firebase_options.dart';
@@ -51,6 +52,7 @@ class FCMService {
   Future<void>? _initialization;
   Future<FCMActivationResult>? _authenticatedActivation;
   StreamSubscription<String>? _tokenRefreshSubscription;
+  UserRole? _userRole;
 
   Future<void> initialize() => _initialization ??= _initialize();
 
@@ -67,14 +69,20 @@ class FCMService {
     return !areNotificationsEnabled;
   }
 
-  Future<FCMActivationResult> activateSilentlyForAuthenticatedUser() async {
+  Future<FCMActivationResult> activateSilentlyForAuthenticatedUser(
+    UserRole role,
+  ) async {
+    _userRole = role;
     final areNotificationsEnabled = await _areNotificationsEnabled();
     if (!areNotificationsEnabled) return FCMActivationResult.denied;
 
     return _registerDeviceTokenForAuthenticatedUser();
   }
 
-  Future<FCMActivationResult> activateForAuthenticatedUser() async {
+  Future<FCMActivationResult> activateForAuthenticatedUser([
+    UserRole? role,
+  ]) async {
+    if (role != null) _userRole = role;
     if (_tokenRefreshSubscription != null) return FCMActivationResult.enabled;
     if (_authenticatedActivation != null) return _authenticatedActivation!;
 
@@ -97,6 +105,7 @@ class FCMService {
     await _tokenRefreshSubscription?.cancel();
     _tokenRefreshSubscription = null;
     _authenticatedActivation = null;
+    _userRole = null;
   }
 
   Future<void> _initialize() async {
@@ -307,7 +316,13 @@ class FCMService {
   }
 
   Future<bool> _registerDeviceToken(String token) async {
-    final result = await _registerDeviceTokenUseCase(fcmToken: token);
+    final role = _userRole;
+    if (role == null) return false;
+
+    final result = await _registerDeviceTokenUseCase(
+      fcmToken: token,
+      role: role,
+    );
 
     return result.match((failure) => false, (unit) => true);
   }

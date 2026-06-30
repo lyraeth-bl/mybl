@@ -7,16 +7,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/di/get_it_constant.dart';
+import '../../../../core/enums/user_role.dart';
 import '../../../../core/notifications/fcm_service.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../app_configuration/presentation/bloc/app_configuration_bloc.dart';
 import '../widgets/app_under_maintenance_container.dart';
 
 class ParentMainShell extends StatelessWidget {
-  const ParentMainShell({
-    super.key,
-    required this.navigationShell,
-  });
+  const ParentMainShell({super.key, required this.navigationShell});
 
   final StatefulNavigationShell navigationShell;
 
@@ -35,8 +33,7 @@ class _ParentMainShellView extends StatefulWidget {
   final StatefulNavigationShell navigationShell;
 
   @override
-  State<_ParentMainShellView> createState() =>
-      _ParentMainShellViewState();
+  State<_ParentMainShellView> createState() => _ParentMainShellViewState();
 }
 
 class _ParentMainShellViewState extends State<_ParentMainShellView> {
@@ -61,13 +58,13 @@ class _ParentMainShellViewState extends State<_ParentMainShellView> {
 
   Future<void> _activateNotifications() async {
     final fcmService = di<FCMService>();
-    final shouldAskPermission =
-        await fcmService.shouldAskNotificationPermission();
+    final shouldAskPermission = await fcmService
+        .shouldAskNotificationPermission();
 
     if (!mounted) return;
 
     if (!shouldAskPermission) {
-      fcmService.activateSilentlyForAuthenticatedUser().ignore();
+      fcmService.activateSilentlyForAuthenticatedUser(UserRole.parent).ignore();
       return;
     }
 
@@ -79,23 +76,20 @@ class _ParentMainShellViewState extends State<_ParentMainShellView> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
-      builder: (sheetContext) =>
-          const _NotificationPermissionBottomSheet(),
+      builder: (sheetContext) => const _NotificationPermissionBottomSheet(),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocSelector<AppConfigurationBloc, AppConfigurationState,
-        bool>(
+    return BlocSelector<AppConfigurationBloc, AppConfigurationState, bool>(
       selector: (state) => state.maybeWhen(
         success: (config) => config.appMaintenance,
         orElse: () => false,
       ),
       builder: (context, isUnderMaintenance) {
         return Scaffold(
-          backgroundColor:
-              Theme.of(context).colorScheme.surfaceContainer,
+          backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
           body: isUnderMaintenance
               ? const AppUnderMaintenanceContainer()
               : widget.navigationShell,
@@ -136,12 +130,11 @@ class _NotificationPermissionBottomSheetState
       _NotificationPermissionSheetStatus.idle;
 
   Future<void> _requestPermission() async {
-    setState(
-      () => _status = _NotificationPermissionSheetStatus.loading,
-    );
+    setState(() => _status = _NotificationPermissionSheetStatus.loading);
 
-    final result =
-        await di<FCMService>().activateForAuthenticatedUser();
+    final result = await di<FCMService>().activateForAuthenticatedUser(
+      UserRole.parent,
+    );
 
     if (!mounted) return;
 
@@ -149,10 +142,8 @@ class _NotificationPermissionBottomSheetState
       _status = switch (result) {
         FCMActivationResult.enabled =>
           _NotificationPermissionSheetStatus.enabled,
-        FCMActivationResult.denied =>
-          _NotificationPermissionSheetStatus.denied,
-        FCMActivationResult.failed =>
-          _NotificationPermissionSheetStatus.failed,
+        FCMActivationResult.denied => _NotificationPermissionSheetStatus.denied,
+        FCMActivationResult.failed => _NotificationPermissionSheetStatus.failed,
       };
     });
   }
@@ -162,8 +153,7 @@ class _NotificationPermissionBottomSheetState
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     final l10n = AppLocalizations.of(context)!;
-    final isLoading =
-        _status == _NotificationPermissionSheetStatus.loading;
+    final isLoading = _status == _NotificationPermissionSheetStatus.loading;
 
     final content = switch (_status) {
       _NotificationPermissionSheetStatus.idle => (
@@ -239,25 +229,20 @@ class _NotificationPermissionBottomSheetState
                       dimension: 18,
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
-                        color: colorScheme.onSurface
-                            .withValues(alpha: 0.38),
+                        color: colorScheme.onSurface.withValues(alpha: 0.38),
                       ),
                     )
                   : Icon(
-                      _status ==
-                              _NotificationPermissionSheetStatus
-                                  .enabled
+                      _status == _NotificationPermissionSheetStatus.enabled
                           ? Icons.check
                           : Icons.notifications_active_outlined,
                     ),
               label: Text(content.buttonLabel),
             ),
-            if (_status ==
-                _NotificationPermissionSheetStatus.idle) ...[
+            if (_status == _NotificationPermissionSheetStatus.idle) ...[
               const SizedBox(height: 8),
               TextButton(
-                onPressed:
-                    isLoading ? null : () => Navigator.of(context).pop(),
+                onPressed: isLoading ? null : () => Navigator.of(context).pop(),
                 child: Text(l10n.notNow),
               ),
             ],
@@ -273,9 +258,7 @@ class _NotificationPermissionBottomSheetState
 // ---------------------------------------------------------------------------
 
 class _ParentShellBottomNavigationBar extends StatelessWidget {
-  const _ParentShellBottomNavigationBar({
-    required this.navigationShell,
-  });
+  const _ParentShellBottomNavigationBar({required this.navigationShell});
 
   final StatefulNavigationShell navigationShell;
 
@@ -311,10 +294,7 @@ class _ParentShellBottomNavigationBar extends StatelessWidget {
       }),
       destinations: [
         NavigationDestination(
-          icon: Icon(
-            Icons.house_outlined,
-            color: colorScheme.onSurfaceVariant,
-          ),
+          icon: Icon(Icons.house_outlined, color: colorScheme.onSurfaceVariant),
           selectedIcon: Icon(
             Icons.house,
             color: colorScheme.onSecondaryContainer,
@@ -333,10 +313,7 @@ class _ParentShellBottomNavigationBar extends StatelessWidget {
           label: l10n.notifications,
         ),
         NavigationDestination(
-          icon: Icon(
-            Icons.person_outline,
-            color: colorScheme.onSurfaceVariant,
-          ),
+          icon: Icon(Icons.person_outline, color: colorScheme.onSurfaceVariant),
           selectedIcon: Icon(
             Icons.person,
             color: colorScheme.onSecondaryContainer,
