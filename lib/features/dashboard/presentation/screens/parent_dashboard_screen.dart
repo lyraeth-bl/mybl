@@ -28,14 +28,23 @@ class ParentDashboardScreen extends StatelessWidget {
             nama: parent.nama,
             child: selectedChild,
             hasMultipleChildren: children.length > 1,
+            children: children,
           ),
-          orElse: () => (nama: '', child: null, hasMultipleChildren: false),
+          orElse: () => (
+            nama: '',
+            child: null,
+            hasMultipleChildren: false,
+            children: <ChildEntity>[],
+          ),
         );
 
         return Scaffold(
           appBar: const _ParentDashboardAppTopBar(),
           backgroundColor: colorScheme.surfaceContainer,
-          body: _ParentDashboardBody(childEntity: record.child),
+          body: _ParentDashboardBody(
+            childEntity: record.child,
+            children: record.children,
+          ),
         );
       },
     );
@@ -45,14 +54,6 @@ class ParentDashboardScreen extends StatelessWidget {
 class _ParentDashboardAppTopBar extends StatelessWidget
     implements PreferredSizeWidget {
   const _ParentDashboardAppTopBar();
-
-  String _greeting(AppLocalizations l10n) {
-    final hour = DateTime.now().hour;
-    if (hour < 11) return l10n.goodMorning;
-    if (hour < 15) return l10n.goodAfternoon;
-    if (hour < 18) return l10n.goodEvening;
-    return l10n.goodNight;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,37 +70,11 @@ class _ParentDashboardAppTopBar extends StatelessWidget
         children: [
           Row(
             children: [
-              Icon(Icons.waving_hand, color: colorScheme.onSurface)
-                  .animate(
-                    onPlay: (controller) => controller.repeat(reverse: true),
-                  )
-                  .rotate(begin: -0.1, end: 0.05, duration: 3.seconds),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: .start,
-                  children: [
-                    Text(
-                      _greeting(l10n),
-                      style: textTheme.bodyMedium?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                    BlocSelector<ParentBloc, ParentState, String>(
-                      selector: (state) => state.maybeWhen(
-                        ready: (parent, _, _) => parent.nama,
-                        orElse: () => '',
-                      ),
-                      builder: (context, name) {
-                        return Text(
-                          l10n.parentGreetingName(name.capitalizeEveryWord),
-                          style: textTheme.titleMedium?.copyWith(
-                            color: colorScheme.onSurface,
-                          ),
-                        );
-                      },
-                    ),
-                  ].separatedBy(2.h),
-                ),
+              _WavingHands(colorScheme: colorScheme),
+              _GreetingAndName(
+                colorScheme: colorScheme,
+                l10n: l10n,
+                textTheme: textTheme,
               ),
             ].separatedBy(8.w),
           ),
@@ -113,14 +88,13 @@ class _ParentDashboardAppTopBar extends StatelessWidget
 }
 
 class _ParentDashboardBody extends StatelessWidget {
-  const _ParentDashboardBody({this.childEntity});
+  const _ParentDashboardBody({this.childEntity, this.children});
 
+  final List<ChildEntity>? children;
   final ChildEntity? childEntity;
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
     final l10n = AppLocalizations.of(context)!;
 
     return SafeArea(
@@ -131,42 +105,24 @@ class _ParentDashboardBody extends StatelessWidget {
             child: Column(
               crossAxisAlignment: .start,
               children: [
-                if (childEntity != null)
+                if (children != null && children!.isNotEmpty)
                   _DashboardOutlineCard(
                     onTap: () => {},
-                    title: Text(l10n.parentChildSelectorSingleChild),
-                    child: ListTile(
-                      leading: AppProfilePicture(
-                        backgroundColor: colorScheme.inverseSurface,
-                        foregroundColor: colorScheme.onInverseSurface,
-                        radius: 22,
-                      ),
-                      title: Text(
-                        childEntity!.nama.capitalizeEveryWord,
-                        style: textTheme.titleMedium!.copyWith(
-                          color: colorScheme.onSurface,
-                        ),
-                      ),
-                      subtitle: Padding(
-                        padding: const .only(top: 4.0),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.badge_outlined,
-                              size: 14,
-                              color: colorScheme.onSurfaceVariant,
+                    title: Text(
+                      children!.length > 1
+                          ? l10n.parentChildSelectorMultipleChildren
+                          : l10n.parentChildSelectorSingleChild,
+                    ),
+                    child: Column(
+                      children: children!
+                          .map(
+                            (child) => _ChildrenDetail(
+                              classRoom: child.kelas,
+                              name: child.nama.capitalizeEveryWord,
+                              nis: child.nis,
                             ),
-                            Text(childEntity!.nis),
-                            Text("-"),
-                            Icon(
-                              Icons.school_outlined,
-                              size: 14,
-                              color: colorScheme.onSurfaceVariant,
-                            ),
-                            Text(childEntity!.kelas),
-                          ].separatedBy(4.w),
-                        ),
-                      ),
+                          )
+                          .toList(),
                     ),
                   ),
                 24.h,
@@ -221,6 +177,120 @@ class _DashboardOutlineCard extends StatelessWidget {
       title: title,
       trailing: Icon(Icons.chevron_right, color: colorScheme.onSurfaceVariant),
       child: child,
+    );
+  }
+}
+
+class _WavingHands extends StatelessWidget {
+  const _WavingHands({required this.colorScheme});
+
+  final ColorScheme colorScheme;
+
+  @override
+  Widget build(BuildContext context) {
+    return Icon(Icons.waving_hand, color: colorScheme.onSurface)
+        .animate(onPlay: (controller) => controller.repeat(reverse: true))
+        .rotate(begin: -0.1, end: 0.05, duration: 3.seconds);
+  }
+}
+
+class _GreetingAndName extends StatelessWidget {
+  const _GreetingAndName({
+    required this.colorScheme,
+    required this.l10n,
+    required this.textTheme,
+  });
+
+  final AppLocalizations l10n;
+  final ColorScheme colorScheme;
+  final TextTheme textTheme;
+
+  String _greeting(AppLocalizations l10n) {
+    final hour = DateTime.now().hour;
+    if (hour < 11) return l10n.goodMorning;
+    if (hour < 15) return l10n.goodAfternoon;
+    if (hour < 18) return l10n.goodEvening;
+    return l10n.goodNight;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: .start,
+        children: [
+          Text(
+            _greeting(l10n),
+            style: textTheme.bodyMedium?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+            ),
+          ),
+          BlocSelector<ParentBloc, ParentState, String>(
+            selector: (state) => state.maybeWhen(
+              ready: (parent, _, _) => parent.nama,
+              orElse: () => '',
+            ),
+            builder: (context, name) {
+              return Text(
+                l10n.parentGreetingName(name.capitalizeEveryWord),
+                style: textTheme.titleMedium?.copyWith(
+                  color: colorScheme.onSurface,
+                ),
+              );
+            },
+          ),
+        ].separatedBy(2.h),
+      ),
+    );
+  }
+}
+
+class _ChildrenDetail extends StatelessWidget {
+  const _ChildrenDetail({
+    required this.name,
+    required this.nis,
+    required this.classRoom,
+  });
+
+  final String name;
+  final String nis;
+  final String classRoom;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    return ListTile(
+      leading: AppProfilePicture(
+        backgroundColor: colorScheme.inverseSurface,
+        foregroundColor: colorScheme.onInverseSurface,
+        radius: 22,
+      ),
+      title: Text(
+        name,
+        style: textTheme.titleMedium!.copyWith(color: colorScheme.onSurface),
+      ),
+      subtitle: Padding(
+        padding: const .only(top: 4.0),
+        child: Row(
+          children: [
+            Icon(
+              Icons.badge_outlined,
+              size: 14,
+              color: colorScheme.onSurfaceVariant,
+            ),
+            Text(nis),
+            Text("-"),
+            Icon(
+              Icons.school_outlined,
+              size: 14,
+              color: colorScheme.onSurfaceVariant,
+            ),
+            Text(classRoom),
+          ].separatedBy(4.w),
+        ),
+      ),
     );
   }
 }
