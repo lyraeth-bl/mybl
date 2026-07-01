@@ -25,6 +25,7 @@ class StudentMainShell extends StatelessWidget {
       create: (context) => di<AppConfigurationBloc>()
         ..add(
           const AppConfigurationEvent.appConfigurationRequested(
+            role: UserRole.student,
             forceRefresh: true,
           ),
         ),

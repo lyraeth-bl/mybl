@@ -5,6 +5,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../../../../core/enums/user_role.dart';
 import '../../../../core/failure/failure.dart';
 import '../../domain/entities/app_configuration_entity/app_configuration_entity.dart';
 import '../../domain/usecases/fetch_app_config_use_case.dart';
@@ -24,19 +25,36 @@ class AppConfigurationBloc
   AppConfigurationBloc(this._appConfigUseCase)
     : super(const AppConfigurationState.initial()) {
     on<_AppConfigurationRequested>(_onAppConfigurationRequested);
+    on<_AppConfigurationRetried>(_onAppConfigurationRetried);
   }
 
   final FetchAppConfigUseCase _appConfigUseCase;
+  UserRole _role = UserRole.student;
+
+  Future<void> _onAppConfigurationRetried(
+    _AppConfigurationRetried event,
+    Emitter<AppConfigurationState> emit,
+  ) => _fetch(role: _role, forceRefresh: true, emit: emit);
 
   /// Proses pengambilan data config pas ada yang minta.
   Future<void> _onAppConfigurationRequested(
     _AppConfigurationRequested event,
     Emitter<AppConfigurationState> emit,
-  ) async {
+  ) {
+    _role = event.role;
+    return _fetch(role: event.role, forceRefresh: event.forceRefresh, emit: emit);
+  }
+
+  Future<void> _fetch({
+    required UserRole role,
+    required bool forceRefresh,
+    required Emitter<AppConfigurationState> emit,
+  }) async {
     emit(const AppConfigurationState.loading());
 
     final result = await _appConfigUseCase.call(
-      forceRefresh: event.forceRefresh,
+      role: role,
+      forceRefresh: forceRefresh,
     );
 
     return result.match(

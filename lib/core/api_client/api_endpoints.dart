@@ -49,6 +49,8 @@ class ApiEndpoints {
 
   static final String appConfig = "/app-config";
 
+  static final String parentAppConfig = "/parent/app-config";
+
   static final String merit = "/merit";
 
   static final String demerit = "/demerit";
@@ -56,6 +58,10 @@ class ApiEndpoints {
   static final String extracurricular = "/ekskul";
 
   static final String result = "/nilai";
+
+  static final String parentAttendance = "/parent/absensi-harian";
+
+  static final String parentTodayAttendance = "/parent/absensi-today";
 
   // --- Internal --- //
 

@@ -73,9 +73,7 @@ class AppUnderMaintenanceContainer extends StatelessWidget {
                     ? null
                     : () {
                         context.read<AppConfigurationBloc>().add(
-                          const AppConfigurationEvent.appConfigurationRequested(
-                            forceRefresh: true,
-                          ),
+                          const AppConfigurationEvent.retried(),
                         );
                       },
                 style: FilledButton.styleFrom(

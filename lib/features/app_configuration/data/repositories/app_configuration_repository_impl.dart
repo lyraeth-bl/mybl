@@ -4,6 +4,7 @@
 
 import 'package:fpdart/fpdart.dart';
 
+import '../../../../core/enums/user_role.dart';
 import '../../../../core/failure/failure.dart';
 import '../../../../core/internal/src/types.dart';
 import '../../domain/entities/app_configuration_entity/app_configuration_entity.dart';
@@ -26,6 +27,7 @@ class AppConfigurationRepositoryImpl implements AppConfigurationRepository {
 
   @override
   Future<Result<AppConfigurationEntity>> fetch({
+    required UserRole role,
     bool forceRefresh = false,
   }) async {
     // Kalau nggak dipaksa refresh, coba intip dulu di lokal ada nggak.
@@ -37,7 +39,7 @@ class AppConfigurationRepositoryImpl implements AppConfigurationRepository {
 
     // Kalau di lokal nggak ada atau emang mau refresh, gas ambil ke server.
     try {
-      final response = await _remoteDataSource.fetch();
+      final response = await _remoteDataSource.fetch(role);
 
       // Jangan lupa dititipin di lokal biar besok-besok nggak perlu narik lagi.
       await _localDataSource.save(response.appConfiguration.first);

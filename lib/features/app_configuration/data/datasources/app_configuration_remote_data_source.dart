@@ -3,6 +3,7 @@
 // that can be found in the LICENSE file.
 
 import '../../../../core/api_client/api_client.dart';
+import '../../../../core/enums/user_role.dart';
 import '../../../../core/internal/src/interfaces/data_interfaces.dart';
 import '../models/app_configuration_response/app_configuration_response.dart';
 
@@ -12,7 +13,7 @@ import '../models/app_configuration_response/app_configuration_response.dart';
 /// balikin data mentah dalam bentuk [AppConfigurationResponse].
 abstract class AppConfigurationRemoteDataSource {
   /// Ambil data config paling fresh dari server.
-  Future<AppConfigurationResponse> fetch();
+  Future<AppConfigurationResponse> fetch(UserRole role);
 }
 
 /// Implementasi nyata dari [AppConfigurationRemoteDataSource].
@@ -24,8 +25,12 @@ class AppConfigurationRemoteDataSourceImpl
   final HTTPRequest _httpRequest;
 
   @override
-  Future<AppConfigurationResponse> fetch() async {
-    final response = await _httpRequest.get(ApiEndpoints.appConfig);
+  Future<AppConfigurationResponse> fetch(UserRole role) async {
+    final endpoint = role == UserRole.parent
+        ? ApiEndpoints.parentAppConfig
+        : ApiEndpoints.appConfig;
+
+    final response = await _httpRequest.get(endpoint);
 
     return AppConfigurationResponse.fromJson(response);
   }

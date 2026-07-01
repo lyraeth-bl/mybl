@@ -43,6 +43,7 @@ class _ParentMainShellViewState extends State<_ParentMainShellView> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<AppConfigurationBloc>().add(
         const AppConfigurationEvent.appConfigurationRequested(
+          role: UserRole.parent,
           forceRefresh: true,
         ),
       );
