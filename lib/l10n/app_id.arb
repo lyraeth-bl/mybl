@@ -288,6 +288,14 @@
       }
     }
   },
+  "parentDailyAttendanceTitle": "Absensi Harian · {name}",
+  "@parentDailyAttendanceTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "welcomeRoleSelectorDescription": "Pilih peran Anda untuk melanjutkan ke halaman masuk.",
   "welcomePortalLabel": "PORTAL SEKOLAH",
   "welcomeTitle": "Sekolah\nBudi Luhur",

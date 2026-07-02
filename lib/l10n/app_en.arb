@@ -288,6 +288,14 @@
       }
     }
   },
+  "parentDailyAttendanceTitle": "Daily Attendance · {name}",
+  "@parentDailyAttendanceTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "welcomeRoleSelectorDescription": "Select your role to continue to the sign in page.",
   "welcomePortalLabel": "PORTAL SEKOLAH",
   "welcomeTitle": "Sekolah\nBudi Luhur",

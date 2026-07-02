@@ -258,8 +258,12 @@ class AppFramedContainer extends StatelessWidget {
     this.borderColor,
     this.innerBorderColor,
     this.elevation = 0,
+    this.aspectRatio,
     this.onTap,
-  });
+  }) : assert(
+         aspectRatio == null || aspectRatio > 0,
+         'aspectRatio must be greater than zero.',
+       );
 
   /// The content displayed inside the inner panel.
   final Widget child;
@@ -324,6 +328,11 @@ class AppFramedContainer extends StatelessWidget {
   /// The z-coordinate at which to place the outer card.
   final double elevation;
 
+  /// The width-to-height ratio for the whole card.
+  ///
+  /// When null, the card sizes itself to its content.
+  final double? aspectRatio;
+
   /// Called when the card is tapped.
   final VoidCallback? onTap;
 
@@ -342,6 +351,7 @@ class AppFramedContainer extends StatelessWidget {
       foregroundColor: foregroundColor ?? colorScheme.onSurfaceVariant,
       backgroundColor: backgroundColor ?? colorScheme.surfaceContainer,
       elevation: elevation,
+      aspectRatio: aspectRatio,
       borderRadius: null,
       shape: RoundedRectangleBorder(
         borderRadius: borderRadius,

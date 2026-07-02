@@ -185,31 +185,6 @@ When creating a new feature, always follow this order. Each layer depends on the
 11. Screen
 12. DI registration
 
-## Skill Index
-
-Read the matching skill file before editing or creating any layer file.
-
-| Task                             | Skill file                                                  |
-| -------------------------------- | ----------------------------------------------------------- |
-| Create feature folders           | `.agents/skills/feature-folder-structure.md`                |
-| Create domain entity             | `.agents/skills/flutter-entity.md`                          |
-| Add or choose data interfaces    | `.agents/skills/flutter-data-interfaces.md`                 |
-| Create domain repository         | `.agents/skills/flutter-domain-repository.md`               |
-| Create use cases                 | `.agents/skills/flutter-usecaes.md`                         |
-| Create data models               | `.agents/skills/flutter-model.md`                           |
-| Create remote data source        | `.agents/skills/flutter-remote-datasource.md`               |
-| Create local data source         | `.agents/skills/flutter-local-datasource.md`                |
-| Create repository implementation | `.agents/skills/flutter-repository-impl.md`                 |
-| Fill BLoC files                  | `.agents/skills/flutter-bloc.md`                            |
-| Create screens                   | `.agents/skills/flutter-screen.md`                          |
-| Fill DI registration             | `.agents/skills/flutter-di.md`                              |
-| Add Flutter animations           | `.agents/skills/flutter-animating-apps/SKILL.md`            |
-| Fix Flutter layout issues        | `.agents/skills/flutter-fix-layout-issues/SKILL.md`         |
-| Set up declarative routing       | `.agents/skills/flutter-setup-declarative-routing/SKILL.md` |
-| Set up localization              | `.agents/skills/flutter-setup-localization/SKILL.md`        |
-
-Note: the use case skill file is currently named `flutter-usecaes.md`.
-
 ## Layer Patterns
 
 ### Feature Folder
@@ -413,7 +388,7 @@ class <Name>Bloc extends Bloc<<Name>Event, <Name>State> {
 
 ## Decision Guide
 
-**Which interface should a domain repository use?** Read `.agents/skills/flutter-data-interfaces.md`, determine what the repository needs to do, ask when behavior is unclear.
+**Which interface should a domain repository use?** Check the Data Interfaces table above, determine what the repository needs to do, ask when behavior is unclear.
 
 **When to add a new interface?** Only when no existing interface covers the need.
 
@@ -564,7 +539,7 @@ Use `context.screenWidth`, `context.screenHeight`, `context.viewInsets`, `contex
 
 ## Localization
 
-ARB files in `lib/l10n/`. Use `AppLocalizations.of(context)!` in all widgets for visible text. See `lib/l10n/localization_guide.md` for adding new strings.
+ARB files in `lib/l10n/`. Use `AppLocalizations.of(context)!` in all widgets for visible text.
 
 ## Behavioral Guidelines
 
