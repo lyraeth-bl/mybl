@@ -14,7 +14,6 @@ import '../../../../core/widgets/app_icon_container.dart';
 import '../../../../core/widgets/app_sliver_group.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../attendance/presentation/bloc/parent_daily_attendance_bloc/parent_daily_attendance_bloc.dart';
-import '../../../user/presentation/bloc/parent_bloc/parent_bloc.dart';
 
 class ParentDashboardDailyAttendanceSection extends StatelessWidget {
   const ParentDashboardDailyAttendanceSection({super.key});
@@ -35,23 +34,12 @@ class ParentDashboardDailyAttendanceSection extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final now = DateTime.now();
     final locale = Localizations.localeOf(context).toString();
-    final childName = context.select<ParentBloc, String>(
-      (bloc) => bloc.state.maybeWhen(
-        ready: (_, _, selectedChild) =>
-            selectedChild?.nama.capitalizeEveryWord ?? '',
-        orElse: () => '',
-      ),
-    );
 
     return AppSliverGroup(
-      title: childName.isEmpty
-          ? l10n.dailyAttendance
-          : l10n.parentDailyAttendanceTitle(
-              childName.takeFirstWordAndCapitalize,
-            ),
+      title: l10n.dailyAttendance,
       titleStyle: textTheme.titleMedium!.copyWith(color: colorScheme.onSurface),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      action: AppChipContainer(
+      action: AppChipContainer.outlined(
         value: DateFormat.yMMMMEEEEd(locale).format(now),
       ),
       sliver: SliverGrid.count(

@@ -274,6 +274,7 @@
   "student": "Student",
   "parent": "Parent / Guardian",
   "parentChildSelectorSingleChild": "Your child's data",
+  "parentDashboardProfileTitle": "Child Profile",
   "parentChildSelectorMultipleChildren": "Select a child to monitor",
   "parentChildSelectorNoChildren": "No children registered",
   "parentChildSelectorNoChildrenDesc": "Contact the school administration if this is incorrect.",

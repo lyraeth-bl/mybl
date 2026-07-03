@@ -23,9 +23,7 @@ class ParentDashboardProfileSection extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     return AppSliverGroup(
-      title: (children?.length ?? 0) > 1
-          ? l10n.parentChildSelectorMultipleChildren
-          : l10n.parentChildSelectorSingleChild,
+      title: l10n.parentDashboardProfileTitle,
       titleStyle: textTheme.titleMedium!.copyWith(color: colorScheme.onSurface),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16),
       child: AppFramedContainer(

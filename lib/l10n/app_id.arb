@@ -274,6 +274,7 @@
   "student": "Siswa",
   "parent": "Orang Tua / Wali",
   "parentChildSelectorSingleChild": "Data anak Anda",
+  "parentDashboardProfileTitle": "Profile Anak",
   "parentChildSelectorMultipleChildren": "Pilih data anak yang ingin dipantau",
   "parentChildSelectorNoChildren": "Tidak ada anak yang terdaftar",
   "parentChildSelectorNoChildrenDesc": "Hubungi administrasi sekolah jika data ini tidak sesuai.",
