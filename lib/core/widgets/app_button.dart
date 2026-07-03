@@ -4,12 +4,13 @@
 
 import 'package:flutter/material.dart';
 
-enum _AppButtonVariant { filled, outlined }
+enum _AppButtonVariant { filled, outlined, text }
 
-/// A reusable Material 3 button with filled and outlined variants.
+/// A reusable Material 3 button with filled, outlined, and text variants.
 ///
-/// Use [AppButton] for primary actions and [AppButton.outlined] for secondary
-/// actions. Both share consistent sizing, shape, and progress feedback.
+/// Use [AppButton] for primary actions, [AppButton.outlined] for secondary
+/// actions, and [AppButton.text] for tertiary/low-emphasis actions. All three
+/// share consistent sizing, shape, and progress feedback.
 @immutable
 class AppButton extends StatelessWidget {
   /// Creates an app-styled primary filled button.
@@ -85,6 +86,47 @@ class AppButton extends StatelessWidget {
     this.onPressed,
     this.onLongPress,
   }) : _variant = _AppButtonVariant.outlined,
+       assert(
+         progressIndicatorSize > 0,
+         'progressIndicatorSize must be greater than zero.',
+       ),
+       assert(
+         progressIndicatorStrokeWidth > 0,
+         'progressIndicatorStrokeWidth must be greater than zero.',
+       );
+
+  /// Creates an app-styled tertiary text button.
+  const AppButton.text({
+    super.key,
+    required this.child,
+    this.loading = false,
+    this.loadingChild,
+    this.style,
+    this.padding,
+    this.minimumSize,
+    this.fixedSize,
+    this.maximumSize,
+    this.borderRadius,
+    this.backgroundColor,
+    this.foregroundColor,
+    this.disabledBackgroundColor,
+    this.disabledForegroundColor,
+    this.elevation,
+    this.shadowColor,
+    this.surfaceTintColor,
+    this.side,
+    this.textStyle,
+    this.visualDensity,
+    this.tapTargetSize,
+    this.animationDuration,
+    this.clipBehavior = Clip.none,
+    this.autofocus = false,
+    this.focusNode,
+    this.progressIndicatorSize = 20,
+    this.progressIndicatorStrokeWidth = 2,
+    this.onPressed,
+    this.onLongPress,
+  }) : _variant = _AppButtonVariant.text,
        assert(
          progressIndicatorSize > 0,
          'progressIndicatorSize must be greater than zero.',
@@ -236,6 +278,35 @@ class AppButton extends StatelessWidget {
         style:
             style ??
             OutlinedButton.styleFrom(
+              backgroundColor: backgroundColor,
+              foregroundColor: foregroundColor,
+              disabledBackgroundColor: disabledBackgroundColor,
+              disabledForegroundColor: disabledForegroundColor,
+              elevation: elevation,
+              shadowColor: shadowColor,
+              surfaceTintColor: surfaceTintColor,
+              side: side,
+              textStyle: textStyle,
+              padding: padding,
+              minimumSize: minimumSize ?? _defaultMinimumSize,
+              fixedSize: fixedSize,
+              maximumSize: maximumSize,
+              shape: shape,
+              visualDensity: visualDensity,
+              tapTargetSize: tapTargetSize,
+              animationDuration: animationDuration,
+            ),
+        focusNode: focusNode,
+        autofocus: autofocus,
+        clipBehavior: clipBehavior,
+        child: effectiveChild,
+      ),
+      _AppButtonVariant.text => TextButton(
+        onPressed: loading ? null : onPressed,
+        onLongPress: loading ? null : onLongPress,
+        style:
+            style ??
+            TextButton.styleFrom(
               backgroundColor: backgroundColor,
               foregroundColor: foregroundColor,
               disabledBackgroundColor: disabledBackgroundColor,

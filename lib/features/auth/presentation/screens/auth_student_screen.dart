@@ -9,7 +9,7 @@ import 'package:my_bl/core/enums/user_role.dart';
 import '../../../../core/di/get_it_constant.dart';
 import '../../../../core/widgets/app_responsive_container.dart';
 import '../bloc/auth_bloc.dart';
-import '../bloc/remember_me/remember_me_cubit.dart';
+import '../cubit/remember_me/remember_me_cubit.dart';
 import '../widgets/auth_error_listener.dart';
 import '../widgets/auth_login_form.dart';
 import '../widgets/auth_pattern_animate.dart';

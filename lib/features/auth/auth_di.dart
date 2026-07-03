@@ -22,7 +22,7 @@ import 'domain/usecases/read_username_use_case.dart';
 import 'domain/usecases/save_nis_use_case.dart';
 import 'domain/usecases/save_username_use_case.dart';
 import 'presentation/bloc/auth_bloc.dart';
-import 'presentation/bloc/remember_me/remember_me_cubit.dart';
+import 'presentation/cubit/remember_me/remember_me_cubit.dart';
 
 void initAuthDI() {
   di.registerLazySingleton<AuthLocalDataSource>(

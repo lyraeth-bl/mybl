@@ -14,7 +14,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../sessions/presentation/bloc/session_bloc.dart';
 import '../../../user/presentation/bloc/parent_bloc/parent_bloc.dart';
 import '../bloc/auth_bloc.dart';
-import '../bloc/remember_me/remember_me_cubit.dart';
+import '../cubit/remember_me/remember_me_cubit.dart';
 
 class AuthLoginForm extends StatefulWidget {
   const AuthLoginForm({super.key, required this.role, this.accentColor});

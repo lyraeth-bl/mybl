@@ -101,10 +101,13 @@ lib/
     │   └── repositories/      # Impl: try/catch → Failure.fromError, model→entity
     ├── presentation/
     │   ├── bloc/              # *_bloc.dart + *_event.dart + *_state.dart
+    │   ├── cubit/             # *_cubit.dart + *_state.dart (for mini state)
     │   ├── screens/           # Outer StatelessWidget (BLoC injection) + private view
     │   └── widgets/           # Feature-scoped UI components
     └── di.dart                # Feature DI registration (GetIt)
 ```
+
+Cubits live in `presentation/cubit/<name>/`, not `presentation/bloc/` — bloc/ is for full Bloc (event+state), cubit/ is for Cubit (state only, no event).
 
 ### Dependency Injection
 
@@ -115,6 +118,14 @@ All DI bootstrapping runs in `lib/core/app/initialize_app.dart`. Each feature ex
 - Global BLoCs manage app-wide state that must persist across screens (e.g. `SessionBloc`, `AppConfigurationBloc`).
 - `UserBloc` is currently a lazy singleton because user state is shared by profile-related screens.
 - Do not reorder existing DI files for style; preserve the local file style unless it causes a real bug.
+
+**`registerLazySingleton` examples:**
+- `SessionBloc` — app-wide auth state, read by `AppRouter`'s redirect via `GoRouterRefreshStream.merged`; must outlive any single screen.
+- `UserBloc` — user/student data shared across multiple profile-related screens; refetching per screen would waste calls and desync state.
+
+**`registerFactory` examples:**
+- `AuthBloc` — scoped to the login screen only; disposed once login completes/screen closes, no reason to keep it alive after.
+- `RememberMeCubit` — scoped to the auth screen's login form; simple checkbox toggle, no cross-screen relevance.
 
 ### Routing
 
@@ -150,7 +161,7 @@ All shared data-layer contracts live in `lib/core/internal/src/interfaces/data_i
 Rules:
 
 - New interfaces use `abstract interface class` and are added at the bottom of `data_interfaces.dart`.
-- Fetch methods include `[bool forceRefresh = false]` when cache bypass matters.
+- Fetch methods include `{bool forceRefresh = false}` when cache bypass matters.
 - Fetcher interfaces may be implemented by domain repositories.
 - Local manager interfaces are data-layer only — never implemented by domain repositories.
 
@@ -167,6 +178,12 @@ Rules:
 - `BlocBuilder` — UI rebuilds only. Use `buildWhen` to avoid unnecessary rebuilds.
 - `BlocSelector` when only one value is needed.
 - Use `maybeWhen` and `whenOrNull`; avoid state-type `if/else`.
+
+### Bloc vs Cubit
+
+- **Bloc:** multiple distinct triggers that map to named events, or a handler needs to branch on *which* thing happened. `SessionBloc` (`Started`/`LoggedIn`/`LoggedOut`), `AuthBloc` (`LoginRequested`/`LoginParentRequested`/`LogoutRequested`), `UserBloc` (`FetchStudentRequested`) — each has 2+ event types with different handling logic.
+- **Cubit:** one simple piece of state changed via direct method calls, no need to distinguish "why" it changed. `RememberMeCubit` — just toggles a boolean, no event vocabulary needed.
+- Default to Bloc when in doubt — it's the project's dominant pattern. Reach for Cubit only when an event type would be pure ceremony around a single setter-like action.
 
 ## Feature Creation Order
 
@@ -201,6 +218,7 @@ lib/features/<feature_name>/
 │   └── usecases/
 ├── presentation/
 │   ├── bloc/
+│   ├── cubit/
 │   ├── screens/
 │   └── widgets/
 └── di.dart
@@ -376,7 +394,7 @@ class <Name>Bloc extends Bloc<<Name>Event, <Name>State> {
 - Two layers: outer `Screen` (`StatelessWidget`, injects BLoCs only) + inner private view (contains UI).
 - Use `Scaffold` as the page root.
 - Prefer `CustomScrollView` with slivers for scrollable screens; `SliverAppBar.medium` for scrollable headers.
-- Use `BouncingScrollPhysics` for main scroll views.
+- Use `AlwaysScrollableScrollPhysics` for main scroll views.
 - Use `Theme.of(context).colorScheme` and `Theme.of(context).textTheme` — no hard-coded colors or text styles.
 - Use `AppLocalizations.of(context)!` for all visible text.
 - Use `RefreshWrapper` and `blocRefresh` for pull-to-refresh pages.
@@ -470,6 +488,19 @@ try {
 - Add `Semantics` labels to interactive elements that lack visible text.
 - Verify with TalkBack (Android) and VoiceOver (iOS).
 
+### Mobile UI/UX Rules
+
+- **Typography:** max 2 font families, max 4 font weights. Already satisfied by `lib/core/theme/app_theme.dart` — Inter (body/label) + Plus Jakarta Sans (display/headline/title, `w600`/`w700`). Don't introduce a third family or a fifth weight; extend the existing `textTheme.copyWith(...)` instead.
+- **Color ratio:** 60% dominant/background, 30% brand/primary, 10% accent (CTAs). Already satisfied via `ColorScheme.fromSeed` (one seed color) — no change needed. Use `AppColors.of(context)` (the `success`/`warning` `ThemeExtension`) for semantic colors instead of hardcoding.
+- **Spacing:** all padding/sizing on 8pt grid (or 4pt fine-grained). Use `num.h`/`num.w` (`16.h`, `8.w`) and `List<Widget>.separatedBy(separator)` from `lib/core/internal/src/extensions/extensions.dart` instead of raw `SizedBox`.
+- **Touch targets:** min 48×48dp, min 8dp gap between tappable elements. `IconButton` enforces 48dp by default; `AppButton`'s `_defaultMinimumSize` is already `Size.fromHeight(48)`.
+- **Visual hierarchy:** one primary CTA per screen. Use `AppButton` (filled) for primary, `AppButton.outlined` for secondary, `AppButton.text` for tertiary/low-emphasis actions — never style secondary/tertiary the same as primary.
+- **Feedback states:** every interactive element handles loading, empty, error, success, disabled. Use one consistent toast/snackbar pattern app-wide — never ad-hoc `ScaffoldMessenger.of(context).showSnackBar`.
+- **Navigation:** max 5 bottom nav items — `StudentMainShell`/`ParentMainShell` (`lib/features/dashboard/presentation/shell/`) each use 3. Predictable patterns — users always know where they are.
+- **Thumb zone:** primary CTAs/bottom nav in bottom-center — already the pattern via `NavigationBar` in both shells above.
+- **Motion:** transitions 200–300ms, `Curves.easeInOut`/`easeOut`/`easeIn`. Respect `MediaQuery.of(context).disableAnimations`. Prefer implicit animations (`AnimatedContainer` etc.) unless multi-step/interruptible needs `AnimationController`.
+- **Dark mode:** already handled — `MyBlTheme.lightTheme`/`darkTheme` both derive from `ColorScheme.fromSeed(brightness: ...)`, never hardcode colors. Always read colors via `Theme.of(context).colorScheme`; never hardcode a background color (pure black or otherwise).
+
 ### Testing
 
 - Unit tests: `package:test` — cover domain logic, data layer, state management.
@@ -491,7 +522,7 @@ try {
 
 ## Shared Widgets
 
-All shared widgets live in `lib/core/widgets/`. Always reach for these before writing a one-off `TextFormField`, `ElevatedButton`, `OutlinedButton`, or toast call — never bypass them with raw Material widgets.
+All shared widgets live in `lib/core/widgets/`. Always reach for these before writing a one-off `TextFormField`, `ElevatedButton`, `OutlinedButton`, `TextButton`, or toast call — never bypass them with raw Material widgets.
 
 ## Shared Extensions
 
