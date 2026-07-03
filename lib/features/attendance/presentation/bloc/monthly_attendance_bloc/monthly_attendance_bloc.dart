@@ -7,30 +7,40 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../../../core/failure/failure.dart';
+import '../../../../../core/internal/src/types.dart';
 import '../../../domain/entities/attendance_entity/attendance_entity.dart';
 import '../../../domain/entities/attendance_status/attendance_status.dart';
 import '../../../domain/entities/attendance_summary/attendance_summary.dart';
-import '../../../domain/usecases/fetch_monthly_attendance_use_case.dart';
 
 part 'monthly_attendance_bloc.freezed.dart';
 part 'monthly_attendance_event.dart';
 part 'monthly_attendance_state.dart';
 
+/// Signature bersama antara [FetchMonthlyAttendanceUseCase] (student) dan
+/// [FetchParentMonthlyAttendanceUseCase] (parent), supaya satu bloc & satu
+/// screen bisa dipakai dua role tanpa duplikasi.
+typedef MonthlyAttendanceFetcher =
+    Future<Result<List<AttendanceEntity>>> Function({
+      required int month,
+      required int year,
+      bool forceRefresh,
+    });
+
 /// Si paling sibuk ngurusin data absen bulanan.
 ///
-/// BLoC ini tugasnya jadi jembatan antara UI sama [FetchMonthlyAttendanceUseCase].
+/// BLoC ini tugasnya jadi jembatan antara UI sama [MonthlyAttendanceFetcher].
 /// Dia yang tanggung jawab buat narik data, ngitung rangkuman (summary), sampe
 /// ngerapiin data biar siap dipake sama widget Kalender atau Chart.
 class MonthlyAttendanceBloc
     extends Bloc<MonthlyAttendanceEvent, MonthlyAttendanceState> {
-  MonthlyAttendanceBloc(this._monthlyAttendanceUseCase)
+  MonthlyAttendanceBloc(this._fetchMonthlyAttendance)
     : super(const MonthlyAttendanceState.initial()) {
     on<_MonthChangeRequested>(_onMonthChangeRequested);
     on<_PreviousMonthRequested>(_onPreviousMonthRequested);
     on<_NextMonthRequested>(_onNextMonthRequested);
   }
 
-  final FetchMonthlyAttendanceUseCase _monthlyAttendanceUseCase;
+  final MonthlyAttendanceFetcher _fetchMonthlyAttendance;
 
   /// Helper buat nyari tau bulan ama tahun berapa yang lagi aktif di-track sama state.
   /// Kalo masih di initial state (awal banget), dia bakal balik ke bulan & tahun sekarang.
@@ -54,7 +64,7 @@ class MonthlyAttendanceBloc
   ) async {
     emit(MonthlyAttendanceState.loading(month: event.month, year: event.year));
 
-    final result = await _monthlyAttendanceUseCase(
+    final result = await _fetchMonthlyAttendance(
       month: event.month,
       year: event.year,
       forceRefresh: event.forceRefresh,

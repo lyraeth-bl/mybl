@@ -9,6 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/di/get_it_constant.dart';
 import '../../../../core/internal/src/extensions/extensions.dart';
 import '../../../../core/widgets/app_top_bar.dart';
+import '../../../../core/widgets/refresh_wrapper.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../attendance/presentation/bloc/parent_daily_attendance_bloc/parent_daily_attendance_bloc.dart';
 import '../../../user/domain/entities/child_entity/child_entity.dart';
@@ -66,11 +67,19 @@ class _ParentDashboardViewState extends State<_ParentDashboardView> {
             children: <ChildEntity>[],
           ),
         );
+        final isLoading = state.maybeWhen(
+          initial: () => true,
+          loading: () => true,
+          orElse: () => false,
+        );
 
         return Scaffold(
           appBar: const _ParentDashboardAppTopBar(),
           backgroundColor: colorScheme.surfaceContainer,
-          body: _ParentDashboardBody(children: record.children),
+          body: _ParentDashboardBody(
+            children: record.children,
+            isLoading: isLoading,
+          ),
         );
       },
     );
@@ -114,19 +123,52 @@ class _ParentDashboardAppTopBar extends StatelessWidget
 }
 
 class _ParentDashboardBody extends StatelessWidget {
-  const _ParentDashboardBody({this.children});
+  const _ParentDashboardBody({this.children, required this.isLoading});
 
   final List<ChildEntity>? children;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
-    return CustomScrollView(
-      physics: const AlwaysScrollableScrollPhysics(),
-      slivers: [
-        ParentDashboardProfileSection(children: children),
-        const ParentDashboardDailyAttendanceSection(),
-        const SliverToBoxAdapter(child: SizedBox(height: 48)),
-      ],
+    return RefreshWrapper(
+      onRefresh: () => Future.wait([
+        blocRefresh<ParentBloc, ParentEvent, ParentState>(
+          context: context,
+          event: const ParentEvent.started(forceRefresh: true),
+          isDone: (state) => state.maybeWhen(
+            ready: (_, _, _) => true,
+            failure: (_) => true,
+            orElse: () => false,
+          ),
+        ),
+        blocRefresh<
+          ParentDailyAttendanceBloc,
+          ParentDailyAttendanceEvent,
+          ParentDailyAttendanceState
+        >(
+          context: context,
+          event: const ParentDailyAttendanceEvent.dailyAttendanceRequested(
+            forceRefresh: true,
+          ),
+          isDone: (state) => state.maybeWhen(
+            success: (_) => true,
+            emptyAttendance: () => true,
+            failure: (_) => true,
+            orElse: () => false,
+          ),
+        ),
+      ]),
+      child: CustomScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        slivers: [
+          ParentDashboardProfileSection(
+            children: children,
+            isLoading: isLoading,
+          ),
+          const ParentDashboardDailyAttendanceSection(),
+          const SliverToBoxAdapter(child: SizedBox(height: 48)),
+        ],
+      ),
     );
   }
 }
@@ -178,14 +220,28 @@ class _GreetingAndName extends StatelessWidget {
               color: colorScheme.onSurfaceVariant,
             ),
           ),
-          BlocSelector<ParentBloc, ParentState, String>(
+          BlocSelector<
+            ParentBloc,
+            ParentState,
+            ({String name, bool isLoading})
+          >(
             selector: (state) => state.maybeWhen(
-              ready: (parent, _, _) => parent.nama,
-              orElse: () => '',
+              ready: (parent, _, _) => (name: parent.nama, isLoading: false),
+              orElse: () => (name: '', isLoading: true),
             ),
-            builder: (context, name) {
+            builder: (context, data) {
+              if (data.isLoading) {
+                return DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: colorScheme.onSurface,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: const SizedBox(width: 140, height: 20),
+                ).toShimmer(context, isLoading: true);
+              }
+
               return Text(
-                l10n.parentGreetingName(name.capitalizeEveryWord),
+                l10n.parentGreetingName(data.name.capitalizeEveryWord),
                 style: textTheme.titleMedium?.copyWith(
                   color: colorScheme.onSurface,
                 ),

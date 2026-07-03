@@ -8,10 +8,12 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/app_router/app_router.dart';
 import '../../../../core/di/get_it_constant.dart';
+import '../../../../core/enums/user_role.dart';
 import '../../../../core/widgets/app_profile_picture.dart';
 import '../../../../core/widgets/app_top_bar.dart';
 import '../../../../core/widgets/refresh_wrapper.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../sessions/presentation/bloc/session_bloc.dart';
 import '../../../user/presentation/bloc/user_bloc.dart';
 import '../bloc/monthly_attendance_bloc/monthly_attendance_bloc.dart';
 import '../widgets/attendance_calendar_section.dart';
@@ -24,15 +26,22 @@ class AttendanceScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isParent = context.read<SessionBloc>().state.maybeWhen(
+      authenticated: (_, role) => role == UserRole.parent,
+      orElse: () => false,
+    );
+
     return BlocProvider<MonthlyAttendanceBloc>(
-      create: (context) => di<MonthlyAttendanceBloc>(),
-      child: const _AttendanceScreenView(),
+      create: (context) => di<MonthlyAttendanceBloc>(param1: isParent),
+      child: _AttendanceScreenView(isParent: isParent),
     );
   }
 }
 
 class _AttendanceScreenView extends StatefulWidget {
-  const _AttendanceScreenView();
+  const _AttendanceScreenView({required this.isParent});
+
+  final bool isParent;
 
   @override
   State<_AttendanceScreenView> createState() => _AttendanceScreenViewState();
@@ -58,7 +67,7 @@ class _AttendanceScreenViewState extends State<_AttendanceScreenView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const _AttendanceAppBar(),
+      appBar: _AttendanceAppBar(isParent: widget.isParent),
       body: const _AttendanceBody(),
     );
   }
@@ -66,7 +75,9 @@ class _AttendanceScreenViewState extends State<_AttendanceScreenView> {
 
 @immutable
 class _AttendanceAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const _AttendanceAppBar();
+  const _AttendanceAppBar({required this.isParent});
+
+  final bool isParent;
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +87,9 @@ class _AttendanceAppBar extends StatelessWidget implements PreferredSizeWidget {
       toolbarHeight: 72,
       title: Text(l10n.dailyAttendance),
       centerTitle: true,
-      actions: const <Widget>[_AttendanceProfileAction()],
+      actions: isParent
+          ? const <Widget>[]
+          : const <Widget>[_AttendanceProfileAction()],
     );
   }
 
@@ -104,27 +117,46 @@ class _AttendanceProfileAction extends StatelessWidget {
         ),
         orElse: () => (imageUrl: null, name: null),
       ),
-      builder: (context, profile) {
-        return Tooltip(
-          message: l10n.profile,
-          child: InkResponse(
-            onTap: () => context.go(RouteNames.profile),
-            customBorder: const CircleBorder(),
-            radius: 24,
-            child: SizedBox.square(
-              dimension: kMinInteractiveDimension,
-              child: Center(
-                child: AppProfilePicture(
-                  imageUrl: profile.imageUrl,
-                  initials: AppProfilePicture.initialFrom(profile.name),
-                  radius: 20,
-                  side: BorderSide(color: colorScheme.outlineVariant, width: 2),
-                ),
-              ),
+      builder: (context, profile) => _ProfileAvatar(
+        colorScheme: colorScheme,
+        l10n: l10n,
+        profile: profile,
+      ),
+    );
+  }
+}
+
+class _ProfileAvatar extends StatelessWidget {
+  const _ProfileAvatar({
+    required this.colorScheme,
+    required this.l10n,
+    required this.profile,
+  });
+
+  final ColorScheme colorScheme;
+  final AppLocalizations l10n;
+  final ({String? imageUrl, String? name}) profile;
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: l10n.profile,
+      child: InkResponse(
+        onTap: () => context.go(RouteNames.profile),
+        customBorder: const CircleBorder(),
+        radius: 24,
+        child: SizedBox.square(
+          dimension: kMinInteractiveDimension,
+          child: Center(
+            child: AppProfilePicture(
+              imageUrl: profile.imageUrl,
+              initials: AppProfilePicture.initialFrom(profile.name),
+              radius: 20,
+              side: BorderSide(color: colorScheme.outlineVariant, width: 2),
             ),
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 }

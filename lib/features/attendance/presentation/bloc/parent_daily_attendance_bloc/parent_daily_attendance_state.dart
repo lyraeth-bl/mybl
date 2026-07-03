@@ -10,8 +10,7 @@ sealed class ParentDailyAttendanceState with _$ParentDailyAttendanceState {
     AttendanceEntity? dailyAttendance,
   }) = _Success;
 
-  const factory ParentDailyAttendanceState.emptyAttendance() =
-      _EmptyAttendance;
+  const factory ParentDailyAttendanceState.emptyAttendance() = _EmptyAttendance;
 
   const factory ParentDailyAttendanceState.failure(Failure failure) = _Failure;
 }

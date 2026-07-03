@@ -3,8 +3,10 @@
 // that can be found in the LICENSE file.
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../../../../core/internal/src/extensions/extensions.dart';
+import '../../../../core/widgets/app_chip_container.dart';
 import '../../../../core/widgets/app_container.dart';
 import '../../../../core/widgets/app_profile_picture.dart';
 import '../../../../core/widgets/app_sliver_group.dart';
@@ -12,27 +14,38 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../user/domain/entities/child_entity/child_entity.dart';
 
 class ParentDashboardProfileSection extends StatelessWidget {
-  const ParentDashboardProfileSection({super.key, this.children});
+  const ParentDashboardProfileSection({
+    super.key,
+    this.children,
+    this.isLoading = false,
+  });
 
   final List<ChildEntity>? children;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    final locale = Localizations.localeOf(context).toString();
 
     return AppSliverGroup(
       title: l10n.parentDashboardProfileTitle,
       titleStyle: textTheme.titleMedium!.copyWith(color: colorScheme.onSurface),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      action: AppChipContainer.outlined(
+        value: DateFormat.yMMMMEEEEd(locale).format(DateTime.now()),
+      ),
       child: AppFramedContainer(
         margin: EdgeInsets.zero,
         innerPadding: EdgeInsets.zero,
         gap: EdgeInsets.zero,
         borderRadius: BorderRadius.circular(16),
         innerBorderRadius: BorderRadius.circular(12),
-        child: children == null || children!.isEmpty
+        child: isLoading
+            ? const _ChildrenDetailSkeleton()
+            : (children == null || children!.isEmpty)
             ? _ChildrenEmptyState(l10n: l10n)
             : Column(
                 children: children!
@@ -45,7 +58,7 @@ class ParentDashboardProfileSection extends StatelessWidget {
                     )
                     .toList(),
               ),
-      ),
+      ).toShimmer(context, isLoading: isLoading),
     );
   }
 }
@@ -77,6 +90,46 @@ class _ChildrenEmptyState extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _ChildrenDetailSkeleton extends StatelessWidget {
+  const _ChildrenDetailSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return ListTile(
+      leading: AppProfilePicture(
+        backgroundColor: colorScheme.inverseSurface,
+        foregroundColor: colorScheme.onInverseSurface,
+        radius: 22,
+      ),
+      title: Align(
+        alignment: Alignment.centerLeft,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: colorScheme.onSurface,
+            borderRadius: BorderRadius.circular(4),
+          ),
+          child: const SizedBox(width: 120, height: 16),
+        ),
+      ),
+      subtitle: Padding(
+        padding: const EdgeInsets.only(top: 8.0),
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: colorScheme.onSurface,
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: const SizedBox(width: 160, height: 12),
+          ),
+        ),
       ),
     );
   }

@@ -18,7 +18,6 @@ import 'presentation/bloc/attendance_qr_bloc/attendance_qr_bloc.dart';
 import 'presentation/bloc/daily_attendance_bloc/daily_attendance_bloc.dart';
 import 'presentation/bloc/monthly_attendance_bloc/monthly_attendance_bloc.dart';
 import 'presentation/bloc/parent_daily_attendance_bloc/parent_daily_attendance_bloc.dart';
-import 'presentation/bloc/parent_monthly_attendance_bloc/parent_monthly_attendance_bloc.dart';
 
 void initAttendanceDI() {
   di.registerLazySingleton<AttendanceLocalDataSource>(
@@ -38,9 +37,8 @@ void initAttendanceDI() {
     ),
   );
   di.registerLazySingleton<ParentAttendanceRepository>(
-    () => ParentAttendanceRepositoryImpl(
-      di<ParentAttendanceRemoteDataSource>(),
-    ),
+    () =>
+        ParentAttendanceRepositoryImpl(di<ParentAttendanceRemoteDataSource>()),
   );
 
   di.registerLazySingleton<FetchMonthlyAttendanceUseCase>(
@@ -56,24 +54,23 @@ void initAttendanceDI() {
     () => FetchParentDailyAttendanceUseCase(di<ParentAttendanceRepository>()),
   );
   di.registerLazySingleton<FetchParentMonthlyAttendanceUseCase>(
-    () =>
-        FetchParentMonthlyAttendanceUseCase(di<ParentAttendanceRepository>()),
+    () => FetchParentMonthlyAttendanceUseCase(di<ParentAttendanceRepository>()),
   );
 
   di.registerFactory<DailyAttendanceBloc>(
     () => DailyAttendanceBloc(di<FetchDailyAttendanceUseCase>()),
   );
-  di.registerFactory<MonthlyAttendanceBloc>(
-    () => MonthlyAttendanceBloc(di<FetchMonthlyAttendanceUseCase>()),
+  di.registerFactoryParam<MonthlyAttendanceBloc, bool, void>(
+    (isParent, _) => MonthlyAttendanceBloc(
+      isParent
+          ? di<FetchParentMonthlyAttendanceUseCase>().call
+          : di<FetchMonthlyAttendanceUseCase>().call,
+    ),
   );
   di.registerFactory<AttendanceQrBloc>(
     () => AttendanceQrBloc(di<FetchAttendanceQrTokenUseCase>()),
   );
   di.registerFactory<ParentDailyAttendanceBloc>(
     () => ParentDailyAttendanceBloc(di<FetchParentDailyAttendanceUseCase>()),
-  );
-  di.registerFactory<ParentMonthlyAttendanceBloc>(
-    () =>
-        ParentMonthlyAttendanceBloc(di<FetchParentMonthlyAttendanceUseCase>()),
   );
 }

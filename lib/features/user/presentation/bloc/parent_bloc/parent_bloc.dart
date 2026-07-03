@@ -40,6 +40,11 @@ class ParentBloc extends Bloc<ParentEvent, ParentState> {
   final SaveSelectedChildUseCase _saveSelectedChildUseCase;
   final ReadSelectedChildUseCase _readSelectedChildUseCase;
 
+  /// Cache anak terpilih di level bloc (bukan cuma di state `_Ready`), supaya
+  /// [activeNis] tetap kepakai pas bloc lagi `loading()` refresh (mis. pull
+  /// to refresh), bukan cuma pas state `_Ready`.
+  ChildEntity? _cachedSelectedChild;
+
   /// Hidrasi saat restart: baca anak + anak terpilih dari storage, fetch
   /// profil parent (cache-first), lalu auto-select kalau anaknya cuma satu.
   Future<void> _onStarted(_Started event, Emitter<ParentState> emit) async {
@@ -62,13 +67,16 @@ class ParentBloc extends Bloc<ParentEvent, ParentState> {
 
     return profileResult.match(
       (failure) => emit(ParentState.failure(failure)),
-      (parent) => emit(
-        ParentState.ready(
-          parent: parent,
-          children: children,
-          selectedChild: selectedChild,
-        ),
-      ),
+      (parent) {
+        _cachedSelectedChild = selectedChild;
+        emit(
+          ParentState.ready(
+            parent: parent,
+            children: children,
+            selectedChild: selectedChild,
+          ),
+        );
+      },
     );
   }
 
@@ -84,6 +92,7 @@ class ParentBloc extends Bloc<ParentEvent, ParentState> {
 
     final selectedChild = await _autoSelectIfSingle(null, event.children);
 
+    _cachedSelectedChild = selectedChild;
     emit(
       ParentState.ready(
         parent: ParentEntity(id: 0, nama: event.nama, username: '', telpon: ''),
@@ -102,6 +111,7 @@ class ParentBloc extends Bloc<ParentEvent, ParentState> {
 
     await _saveSelectedChildUseCase(event.child);
 
+    _cachedSelectedChild = event.child;
     emit(current.copyWith(selectedChild: event.child));
   }
 
@@ -122,6 +132,8 @@ class ParentBloc extends Bloc<ParentEvent, ParentState> {
   /// NIS anak aktif yang dipakai interceptor untuk header `X-Student-NIS`.
   String? get activeNis {
     final current = state;
-    return current is _Ready ? current.selectedChild?.nis : null;
+    return current is _Ready
+        ? current.selectedChild?.nis
+        : _cachedSelectedChild?.nis;
   }
 }

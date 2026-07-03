@@ -4,11 +4,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/app_router/app_router.dart';
 import '../../../../core/internal/src/extensions/extensions.dart';
 import '../../../../core/theme/app_theme.dart';
-import '../../../../core/widgets/app_chip_container.dart';
 import '../../../../core/widgets/app_container.dart';
 import '../../../../core/widgets/app_icon_container.dart';
 import '../../../../core/widgets/app_sliver_group.dart';
@@ -32,15 +33,19 @@ class ParentDashboardDailyAttendanceSection extends StatelessWidget {
       foregroundColor: colorScheme.error,
     );
     final l10n = AppLocalizations.of(context)!;
-    final now = DateTime.now();
     final locale = Localizations.localeOf(context).toString();
 
     return AppSliverGroup(
       title: l10n.dailyAttendance,
       titleStyle: textTheme.titleMedium!.copyWith(color: colorScheme.onSurface),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      action: AppChipContainer.outlined(
-        value: DateFormat.yMMMMEEEEd(locale).format(now),
+      action: IconButton(
+        onPressed: () => context.push(RouteNames.attendance),
+        icon: Icon(
+          Icons.chevron_right_rounded,
+          color: colorScheme.onSurfaceVariant,
+        ),
+        tooltip: l10n.dailyAttendance,
       ),
       sliver: SliverGrid.count(
         crossAxisCount: 2,
