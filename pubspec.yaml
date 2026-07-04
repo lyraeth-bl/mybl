@@ -51,6 +51,7 @@ dev_dependencies:
   json_serializable: ^6.13.1
   hive_ce_generator: ^1.11.1
   flutter_launcher_icons: ^0.14.4
+  mocktail: ^1.0.5
 
 flutter:
   generate: true

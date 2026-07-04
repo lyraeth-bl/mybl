@@ -47,7 +47,11 @@ class DashboardProfileSection extends StatelessWidget {
             );
 
             if (!isLoading && student == null) {
-              return const SizedBox.shrink();
+              return AppNoData(
+                icon: Icons.face_retouching_off,
+                title: l10n.profileLoadFailedTitle,
+                message: l10n.profileLoadFailedSubtitle,
+              );
             }
 
             String normalizeClass() {

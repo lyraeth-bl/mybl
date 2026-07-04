@@ -317,7 +317,7 @@ class AppButton extends StatelessWidget {
               side: side,
               textStyle: textStyle,
               padding: padding,
-              minimumSize: minimumSize ?? _defaultMinimumSize,
+              minimumSize: minimumSize ?? _defaultTextMinimumSize,
               fixedSize: fixedSize,
               maximumSize: maximumSize,
               shape: shape,
@@ -348,6 +348,8 @@ class AppButton extends StatelessWidget {
   }
 
   static const Size _defaultMinimumSize = Size.fromHeight(48);
+
+  static const Size _defaultTextMinimumSize = Size(64, 48);
 
   static const OutlinedBorder _defaultShape = RoundedRectangleBorder(
     borderRadius: BorderRadius.all(Radius.circular(16)),
