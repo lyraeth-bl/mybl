@@ -15,12 +15,22 @@ extension ShimmerFormatting on Widget {
     double? height,
     BorderRadiusGeometry? borderRadius,
   }) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     if (!isLoading) return this;
 
     Widget child = this;
 
     if (width != null || height != null) {
-      child = SizedBox(width: width, height: height, child: child);
+      child = Container(
+        width: width,
+        height: height,
+        decoration: BoxDecoration(
+          color: colorScheme.onSurface,
+          borderRadius: borderRadius,
+        ),
+      );
     }
 
     if (borderRadius != null) {
@@ -28,8 +38,8 @@ extension ShimmerFormatting on Widget {
     }
 
     return Shimmer.fromColors(
-      baseColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-      highlightColor: Theme.of(context).colorScheme.surface,
+      baseColor: colorScheme.surfaceContainerHighest,
+      highlightColor: colorScheme.surface,
       child: child,
     );
   }

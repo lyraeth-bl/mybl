@@ -31,7 +31,7 @@ class ProfileScreen extends StatelessWidget {
         BlocProvider<AuthBloc>(create: (context) => di<AuthBloc>()),
         BlocProvider<MeritBloc>(create: (context) => di<MeritBloc>()),
         BlocProvider<MonthlyAttendanceBloc>(
-          create: (context) => di<MonthlyAttendanceBloc>(),
+          create: (context) => di<MonthlyAttendanceBloc>(param1: false),
         ),
         BlocProvider<AcademicResultBloc>(
           create: (context) => di<AcademicResultBloc>(),

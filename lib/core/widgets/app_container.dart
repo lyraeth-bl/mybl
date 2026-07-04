@@ -4,6 +4,7 @@
 
 import 'package:flutter/material.dart';
 
+import '../internal/src/extensions/extensions.dart';
 import 'app_button.dart';
 
 /// A dashboard card with optional header content and Material interaction.
@@ -20,12 +21,9 @@ class AppContainer extends StatelessWidget {
     required this.child,
     this.title,
     this.trailing,
-    this.margin = const EdgeInsets.all(16),
-    this.padding = const EdgeInsets.all(16),
-    this.titlePadding = const EdgeInsets.symmetric(
-      horizontal: 16,
-      vertical: 12,
-    ),
+    this.margin = const .all(16),
+    this.padding = const .all(16),
+    this.titlePadding = const .symmetric(horizontal: 16, vertical: 12),
     this.backgroundColor,
     this.headerColor,
     this.foregroundColor,
@@ -35,13 +33,8 @@ class AppContainer extends StatelessWidget {
     this.surfaceTintColor,
     this.elevation = 1,
     this.shape,
-    this.borderRadius = const BorderRadius.only(
-      bottomLeft: Radius.circular(16),
-      bottomRight: Radius.circular(32),
-      topLeft: Radius.circular(32),
-      topRight: Radius.circular(16),
-    ),
-    this.clipBehavior = Clip.antiAlias,
+    this.borderRadius = const .all(.circular(16)),
+    this.clipBehavior = .antiAlias,
     this.aspectRatio,
     this.onTap,
   }) : assert(
@@ -145,10 +138,7 @@ class AppContainer extends StatelessWidget {
         foregroundColor ?? colorScheme.onPrimaryContainer;
     final TextStyle effectiveTitleTextStyle =
         titleTextStyle ??
-        textTheme.titleSmall?.copyWith(
-          color: effectiveForegroundColor,
-          fontWeight: FontWeight.w700,
-        ) ??
+        textTheme.titleSmall?.copyWith(color: effectiveForegroundColor) ??
         TextStyle(color: effectiveForegroundColor, fontWeight: FontWeight.w700);
     final bool hasHeader = title != null || trailing != null;
 
@@ -165,8 +155,8 @@ class AppContainer extends StatelessWidget {
         onTap: onTap,
         customBorder: effectiveShape,
         child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: .min,
+          crossAxisAlignment: .stretch,
           children: <Widget>[
             if (hasHeader)
               IconTheme.merge(
@@ -174,14 +164,14 @@ class AppContainer extends StatelessWidget {
                 child: DefaultTextStyle.merge(
                   style: effectiveTitleTextStyle,
                   maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                  overflow: .ellipsis,
                   child: Padding(
                     padding: titlePadding,
                     child: Row(
                       children: <Widget>[
                         if (title != null) Expanded(child: title!),
                         if (trailing != null) ...<Widget>[
-                          if (title != null) const SizedBox(width: 12),
+                          if (title != null) 16.w,
                           trailing!,
                         ],
                       ],
@@ -241,20 +231,17 @@ class AppFramedContainer extends StatelessWidget {
     required this.child,
     this.title,
     this.trailing,
-    this.margin = const EdgeInsets.all(16),
-    this.gap = const EdgeInsets.all(12),
-    this.innerPadding = const EdgeInsets.all(24),
-    this.titlePadding = const EdgeInsets.symmetric(
-      horizontal: 16,
-      vertical: 12,
-    ),
+    this.margin = const .all(16),
+    this.gap = const .all(12),
+    this.innerPadding = const .all(16),
+    this.titlePadding = const .symmetric(horizontal: 16, vertical: 12),
     this.backgroundColor,
     this.innerColor,
     this.headerColor,
     this.foregroundColor,
     this.titleTextStyle,
-    this.borderRadius = const BorderRadius.all(Radius.circular(16)),
-    this.innerBorderRadius = const BorderRadius.all(Radius.circular(16)),
+    this.borderRadius = const .all(.circular(16)),
+    this.innerBorderRadius = const .all(.circular(16)),
     this.borderColor,
     this.innerBorderColor,
     this.elevation = 0,
@@ -338,7 +325,8 @@ class AppFramedContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ColorScheme colorScheme = Theme.of(context).colorScheme;
+    final ThemeData theme = Theme.of(context);
+    final ColorScheme colorScheme = theme.colorScheme;
 
     return AppContainer(
       margin: margin,
@@ -363,9 +351,7 @@ class AppFramedContainer extends StatelessWidget {
         decoration: BoxDecoration(
           color: innerColor ?? colorScheme.surface,
           borderRadius: innerBorderRadius,
-          border: Border.all(
-            color: innerBorderColor ?? colorScheme.outlineVariant,
-          ),
+          border: .all(color: innerBorderColor ?? colorScheme.outlineVariant),
         ),
         child: child,
       ),
@@ -391,7 +377,7 @@ class AppNoData extends StatelessWidget {
     this.message,
     this.actionLabel,
     this.onAction,
-    this.padding = const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+    this.padding = const .symmetric(horizontal: 16, vertical: 8),
     this.iconSize = 32,
   });
 
@@ -418,17 +404,18 @@ class AppNoData extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ColorScheme colorScheme = Theme.of(context).colorScheme;
-    final TextTheme textTheme = Theme.of(context).textTheme;
+    final ThemeData theme = Theme.of(context);
+    final ColorScheme colorScheme = theme.colorScheme;
+    final TextTheme textTheme = theme.textTheme;
     final bool hasAction = actionLabel != null && onAction != null;
 
     return Padding(
       padding: padding,
       child: Column(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: .min,
         children: <Widget>[
           Icon(icon, size: iconSize, color: colorScheme.onSurfaceVariant),
-          const SizedBox(height: 16),
+          16.h,
           Text(
             title,
             textAlign: TextAlign.center,
@@ -437,7 +424,7 @@ class AppNoData extends StatelessWidget {
             ),
           ),
           if (message != null) ...<Widget>[
-            const SizedBox(height: 8),
+            8.h,
             Text(
               message!,
               textAlign: TextAlign.center,
@@ -447,12 +434,12 @@ class AppNoData extends StatelessWidget {
             ),
           ],
           if (hasAction) ...<Widget>[
-            const SizedBox(height: 20),
+            16.h,
             AppButton.outlined(
               onPressed: onAction,
               minimumSize: const Size(0, 40),
               side: BorderSide(color: colorScheme.outlineVariant),
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: .circular(8),
               child: Text(
                 actionLabel!,
                 style: textTheme.titleSmall!.copyWith(

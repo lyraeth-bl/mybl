@@ -111,7 +111,7 @@ abstract class StudentEntity with _$StudentEntity {
     String? aktif,
     required String statusNaik,
     required String usernameOrangTua,
-    required String passwordOrangTua,
+    required String? passwordOrangTua,
     String? statusUjian,
     String? profileImageUrl,
     String? unit,

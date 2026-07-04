@@ -30,9 +30,9 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
     this.actions,
     this.actionsPadding = const EdgeInsetsDirectional.only(end: 16),
     this.notificationCount,
-    this.notificationIcon = Icons.notifications_active_rounded,
+    this.notificationIcon = Icons.notifications,
     this.notificationTooltip,
-    this.notificationMaxCount = 99,
+    this.notificationMaxCount = 9,
     this.automaticallyImplyLeading = true,
     this.leadingWidth,
     this.toolbarHeight = kToolbarHeight,
@@ -188,10 +188,7 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
     final ColorScheme colorScheme = theme.colorScheme;
     final TextStyle? effectiveTitleTextStyle =
         titleTextStyle ??
-        theme.textTheme.titleLarge?.copyWith(
-          fontWeight: FontWeight.bold,
-          color: colorScheme.onSurface,
-        );
+        theme.textTheme.titleLarge?.copyWith(color: colorScheme.onSurface);
     final List<Widget> effectiveActions = <Widget>[
       if (notificationCount != null || onNotificationTap != null)
         IconButton(
@@ -201,7 +198,7 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
             count: notificationCount ?? 0,
             isLabelVisible: (notificationCount ?? 0) > 0,
             maxCount: notificationMaxCount,
-            child: Icon(notificationIcon, color: colorScheme.primary),
+            child: Icon(notificationIcon, color: colorScheme.onSurface),
           ),
         ),
       if (actions != null) ...actions!,
@@ -220,10 +217,10 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
       bottom: bottom,
       elevation: elevation,
       scrolledUnderElevation: scrolledUnderElevation,
-      backgroundColor: backgroundColor,
+      backgroundColor: backgroundColor ?? colorScheme.surfaceContainerLow,
       foregroundColor: foregroundColor,
       shadowColor: shadowColor,
-      surfaceTintColor: surfaceTintColor,
+      surfaceTintColor: surfaceTintColor ?? colorScheme.surfaceContainerLow,
       clipBehavior: clipBehavior,
     );
   }

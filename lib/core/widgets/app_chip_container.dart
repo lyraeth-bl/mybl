@@ -170,9 +170,7 @@ class AppChipContainer extends StatelessWidget {
         );
     final effectiveSide =
         side ??
-        (_outlined
-            ? BorderSide(color: colorScheme.outline)
-            : BorderSide.none);
+        (_outlined ? BorderSide(color: colorScheme.outline) : BorderSide.none);
     final effectiveShape =
         shape ??
         RoundedRectangleBorder(

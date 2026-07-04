@@ -14,14 +14,8 @@ part 'app_configuration_bloc.freezed.dart';
 part 'app_configuration_event.dart';
 part 'app_configuration_state.dart';
 
-/// Si paling sibuk buat ngurusin status konfigurasi aplikasi di UI.
-///
-/// [AppConfigurationBloc] ini tugasnya minta tolong ke [FetchAppConfigUseCase]
-/// buat cari tau settings atau config terbaru, terus dia bakal kasih tau
-/// UI apakah lagi loading, sukses, atau malah gagal.
 class AppConfigurationBloc
     extends Bloc<AppConfigurationEvent, AppConfigurationState> {
-  /// Butuh jasa titip config biar tau apa yang harus di-update.
   AppConfigurationBloc(this._appConfigUseCase)
     : super(const AppConfigurationState.initial()) {
     on<_AppConfigurationRequested>(_onAppConfigurationRequested);
@@ -36,13 +30,16 @@ class AppConfigurationBloc
     Emitter<AppConfigurationState> emit,
   ) => _fetch(role: _role, forceRefresh: true, emit: emit);
 
-  /// Proses pengambilan data config pas ada yang minta.
   Future<void> _onAppConfigurationRequested(
     _AppConfigurationRequested event,
     Emitter<AppConfigurationState> emit,
   ) {
     _role = event.role;
-    return _fetch(role: event.role, forceRefresh: event.forceRefresh, emit: emit);
+    return _fetch(
+      role: event.role,
+      forceRefresh: event.forceRefresh,
+      emit: emit,
+    );
   }
 
   Future<void> _fetch({

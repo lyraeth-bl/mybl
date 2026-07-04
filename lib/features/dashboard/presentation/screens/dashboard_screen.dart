@@ -8,7 +8,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/app_router/app_router.dart';
 import '../../../../core/di/get_it_constant.dart';
-import '../../../../core/widgets/app_profile_picture.dart';
+import '../../../../core/internal/src/extensions/extensions.dart';
 import '../../../../core/widgets/app_top_bar.dart';
 import '../../../../core/widgets/refresh_wrapper.dart';
 import '../../../attendance/presentation/bloc/daily_attendance_bloc/daily_attendance_bloc.dart';
@@ -33,7 +33,7 @@ class DashboardScreen extends StatelessWidget {
           create: (context) => di<DailyAttendanceBloc>(),
         ),
         BlocProvider<MonthlyAttendanceBloc>(
-          create: (context) => di<MonthlyAttendanceBloc>(),
+          create: (context) => di<MonthlyAttendanceBloc>(param1: false),
         ),
         BlocProvider<TimeTableBloc>(create: (context) => di<TimeTableBloc>()),
         BlocProvider<NotificationBloc>(
@@ -67,25 +67,20 @@ class _DashboardViewState extends State<_DashboardView> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final now = DateTime.now();
 
-      context.read<UserBloc>().add(const UserEvent.fetchStudentRequested());
+      context.read<UserBloc>().add(const .fetchStudentRequested());
       context.read<DailyAttendanceBloc>().add(
-        const DailyAttendanceEvent.dailyAttendanceRequested(),
+        const .dailyAttendanceRequested(),
       );
       context.read<MonthlyAttendanceBloc>().add(
-        MonthlyAttendanceEvent.monthChangeRequested(
-          month: now.month,
-          year: now.year,
-        ),
+        .monthChangeRequested(month: now.month, year: now.year),
       );
       context.read<NotificationBloc>().add(
-        const NotificationEvent.fetchNotificationsRequested(),
+        const .fetchNotificationsRequested(),
       );
 
       final studentClass = _studentClass();
       if (studentClass.isNotEmpty) {
-        context.read<TimeTableBloc>().add(
-          TimeTableEvent.fetchTimeTable(false, studentClass),
-        );
+        context.read<TimeTableBloc>().add(.fetchTimeTable(false, studentClass));
       }
     });
   }
@@ -96,7 +91,7 @@ class _DashboardViewState extends State<_DashboardView> {
     final refreshes = <Future<void>>[
       blocRefresh<UserBloc, UserEvent, UserState>(
         context: context,
-        event: const UserEvent.fetchStudentRequested(true),
+        event: const .fetchStudentRequested(true),
         isDone: (state) => state.maybeWhen(
           success: (_) => true,
           failure: (_) => true,
@@ -109,9 +104,7 @@ class _DashboardViewState extends State<_DashboardView> {
         DailyAttendanceState
       >(
         context: context,
-        event: const DailyAttendanceEvent.dailyAttendanceRequested(
-          forceRefresh: true,
-        ),
+        event: const .dailyAttendanceRequested(forceRefresh: true),
         isDone: (state) => state.maybeWhen(
           success: (_) => true,
           emptyAttendance: () => true,
@@ -125,7 +118,7 @@ class _DashboardViewState extends State<_DashboardView> {
         MonthlyAttendanceState
       >(
         context: context,
-        event: MonthlyAttendanceEvent.monthChangeRequested(
+        event: .monthChangeRequested(
           month: now.month,
           year: now.year,
           forceRefresh: true,
@@ -138,7 +131,7 @@ class _DashboardViewState extends State<_DashboardView> {
       ),
       blocRefresh<NotificationBloc, NotificationEvent, NotificationState>(
         context: context,
-        event: const NotificationEvent.fetchNotificationsRequested(),
+        event: const .fetchNotificationsRequested(),
         isDone: (state) => state.maybeWhen(
           success: (_) => true,
           failure: (_) => true,
@@ -151,7 +144,7 @@ class _DashboardViewState extends State<_DashboardView> {
       refreshes.add(
         blocRefresh<TimeTableBloc, TimeTableEvent, TimeTableState>(
           context: context,
-          event: TimeTableEvent.fetchTimeTable(true, studentClass),
+          event: .fetchTimeTable(true, studentClass),
           isDone: (state) => state.maybeWhen(
             success: (_) => true,
             failure: (_) => true,
@@ -166,7 +159,11 @@ class _DashboardViewState extends State<_DashboardView> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Scaffold(
+      backgroundColor: colorScheme.surfaceContainer,
       appBar: const _DashboardAppBar(),
       body: _DashboardBody(onRefresh: _refresh),
     );
@@ -182,37 +179,22 @@ class _DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppTopBar(
       toolbarHeight: 72,
       title: const Text('MyBL'),
-      profileImageUrl: context.select<UserBloc, String?>(
-        (bloc) => bloc.state.maybeWhen(
-          success: (student) => student.profileImageUrl,
-          orElse: () => null,
-        ),
-      ),
-      profileInitials: context.select<UserBloc, String?>(
-        (bloc) => bloc.state.maybeWhen(
-          success: (student) => AppProfilePicture.initialFrom(
-            student.nama ?? student.namaPanggilan,
-          ),
-          orElse: () => null,
-        ),
-      ),
       notificationCount: context.select<NotificationBloc, int>(
         (bloc) => _unreadNotificationCount(bloc.state),
       ),
-      onProfileTap: () => context.go(RouteNames.profile),
       onNotificationTap: () async {
         await context.push(RouteNames.notification);
         if (!context.mounted) return;
 
         context.read<NotificationBloc>().add(
-          const NotificationEvent.fetchNotificationsRequested(),
+          const .fetchNotificationsRequested(),
         );
       },
     );
   }
 
   @override
-  Size get preferredSize => Size.fromHeight(80);
+  Size get preferredSize => Size.fromHeight(72);
 }
 
 int _unreadNotificationCount(NotificationState state) {
@@ -247,7 +229,7 @@ class _DashboardBody extends StatelessWidget {
           const DashboardQuickMenuSection(),
           const DashboardTodayAttendanceSection(),
           const DashboardTimeTableSection(),
-          const SliverToBoxAdapter(child: SizedBox(height: 48)),
+          SliverToBoxAdapter(child: 48.h),
         ],
       ),
     );
