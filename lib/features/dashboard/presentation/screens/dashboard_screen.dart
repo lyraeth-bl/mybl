@@ -11,6 +11,7 @@ import '../../../../core/di/get_it_constant.dart';
 import '../../../../core/internal/src/extensions/extensions.dart';
 import '../../../../core/widgets/app_top_bar.dart';
 import '../../../../core/widgets/refresh_wrapper.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../attendance/presentation/bloc/daily_attendance_bloc/daily_attendance_bloc.dart';
 import '../../../attendance/presentation/bloc/monthly_attendance_bloc/monthly_attendance_bloc.dart';
 import '../../../notifications/domain/entities/app_notification/app_notification.dart';
@@ -176,12 +177,15 @@ class _DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return AppTopBar(
       toolbarHeight: 72,
       title: const Text('MyBL'),
       notificationCount: context.select<NotificationBloc, int>(
         (bloc) => _unreadNotificationCount(bloc.state),
       ),
+      notificationTooltip: l10n.notifications,
       onNotificationTap: () async {
         await context.push(RouteNames.notification);
         if (!context.mounted) return;

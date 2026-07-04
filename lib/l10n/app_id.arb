@@ -104,6 +104,7 @@
     }
   },
   "extracurricular": "Ekstrakulikuler",
+  "extracurricularShort": "Ekskul",
   "merit": "Merit",
   "demerit": "Demerit",
   "settings": "Pengaturan",

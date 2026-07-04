@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/app_router/app_router.dart';
+import '../../../../core/internal/src/extensions/extensions.dart';
 import '../../../../core/widgets/app_container.dart';
 import '../../../../core/widgets/app_icon_container.dart';
 import '../../../../core/widgets/app_sliver_group.dart';
@@ -13,9 +14,10 @@ class DashboardQuickMenuSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-    final l10n = AppLocalizations.of(context)!;
+    final ThemeData theme = Theme.of(context);
+    final ColorScheme colorScheme = theme.colorScheme;
+    final TextTheme textTheme = theme.textTheme;
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
 
     final menuItems = MenuSheetItem.menuItems
         .where((item) => item.routePath != RouteNames.settings)
@@ -23,15 +25,11 @@ class DashboardQuickMenuSection extends StatelessWidget {
 
     return AppSliverGroup(
       title: l10n.quickMenu,
-      titleStyle: textTheme.titleMedium!.copyWith(
-        color: colorScheme.onSurface,
-        fontWeight: .bold,
-      ),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      titleStyle: textTheme.titleMedium!.copyWith(color: colorScheme.onSurface),
       sliver: SliverGrid.count(
         crossAxisCount: 4,
-        crossAxisSpacing: 10,
-        mainAxisSpacing: 10,
+        crossAxisSpacing: 8,
+        mainAxisSpacing: 8,
         childAspectRatio: 0.74,
         children: [
           for (final item in menuItems) _DashboardQuickMenuItem(item: item),
@@ -48,31 +46,28 @@ class _DashboardQuickMenuItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-    final l10n = AppLocalizations.of(context)!;
+    final ThemeData theme = Theme.of(context);
+    final ColorScheme colorScheme = theme.colorScheme;
+    final TextTheme textTheme = theme.textTheme;
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
     final label = item.resolveLabel(l10n);
 
     return AppContainer(
-      backgroundColor: colorScheme.surfaceContainerLow,
-      margin: EdgeInsets.zero,
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
+      backgroundColor: colorScheme.surface,
+      margin: .zero,
       elevation: 0,
-      borderRadius: BorderRadius.circular(16),
+      padding: const .symmetric(vertical: 16, horizontal: 8),
       onTap: () => context.push(item.routePath),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: .center,
         children: [
           AppIconContainer(
             icon: item.icon,
             backgroundColor: colorScheme.primaryContainer,
             foregroundColor: colorScheme.onPrimaryContainer,
-            padding: const EdgeInsets.all(10),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
+            padding: const .all(8),
+            shape: RoundedRectangleBorder(borderRadius: .circular(8)),
           ),
-          const SizedBox(height: 10),
           Text(
             label,
             maxLines: 2,
@@ -83,7 +78,7 @@ class _DashboardQuickMenuItem extends StatelessWidget {
               fontWeight: FontWeight.w600,
             ),
           ),
-        ],
+        ].separatedBy(8.h),
       ),
     );
   }

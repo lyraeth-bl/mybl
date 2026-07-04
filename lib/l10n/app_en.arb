@@ -104,6 +104,7 @@
     }
   },
   "extracurricular": "Extracurricular",
+  "extracurricularShort": "Extracurr.",
   "merit": "Merit",
   "demerit": "Demerit",
   "settings": "Settings",
