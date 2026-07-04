@@ -37,9 +37,6 @@ class RouteNames {
   // Attendance
   static const String attendance = "/attendance";
 
-  // Menu
-  static const String menu = "/menu";
-
   // Profile
   static const String profile = "/profile";
 

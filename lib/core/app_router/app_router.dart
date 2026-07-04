@@ -2,7 +2,6 @@
 // Use of this source code is governed by a MIT License
 // that can be found in the LICENSE file.
 
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/academic_calendar/presentation/screens/academic_calendar_screen.dart';
@@ -246,15 +245,6 @@ class AppRouter {
               GoRoute(
                 path: RouteNames.dashboard,
                 builder: (context, state) => const DashboardScreen(),
-              ),
-            ],
-          ),
-
-          StatefulShellBranch(
-            routes: <GoRoute>[
-              GoRoute(
-                path: RouteNames.menu,
-                builder: (context, state) => const SizedBox.shrink(),
               ),
             ],
           ),

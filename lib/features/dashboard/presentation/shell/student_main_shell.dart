@@ -11,7 +11,6 @@ import '../../../../core/enums/user_role.dart';
 import '../../../../core/notifications/fcm_service.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../app_configuration/presentation/bloc/app_configuration_bloc.dart';
-import '../../../attendance/presentation/widgets/attendance_qr_bottom_sheet.dart';
 import '../widgets/app_under_maintenance_container.dart';
 
 class StudentMainShell extends StatelessWidget {
@@ -98,18 +97,6 @@ class _StudentMainShellViewState extends State<_StudentMainShellView> {
           body: isUnderMaintenance
               ? const AppUnderMaintenanceContainer()
               : widget.navigationShell,
-          floatingActionButton: isUnderMaintenance
-              ? null
-              : FloatingActionButton(
-                  onPressed: () => showAttendanceQrSheet(context),
-                  tooltip: AppLocalizations.of(context)!.attendanceQrCode,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(18),
-                  ),
-                  child: const Icon(Icons.qr_code_2),
-                ),
-          floatingActionButtonLocation:
-              FloatingActionButtonLocation.centerDocked,
           bottomNavigationBar: isUnderMaintenance
               ? null
               : _ShellBottomNavigationBar(
@@ -271,33 +258,21 @@ class _ShellBottomNavigationBar extends StatelessWidget {
 
   final StatefulNavigationShell navigationShell;
 
-  void _onTabTapped(BuildContext context, int index) {
-    if (index == 1) {
-      showAttendanceQrSheet(context);
-      return;
-    }
-
-    navigationShell.goBranch(
-      index,
-      initialLocation: index == navigationShell.currentIndex,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context)!;
-    final selectedIndex = navigationShell.currentIndex == 1
-        ? 0
-        : navigationShell.currentIndex;
 
     return NavigationBar(
       backgroundColor: colorScheme.surfaceContainerLow,
       height: 85,
       elevation: 0,
       indicatorColor: colorScheme.secondaryContainer,
-      selectedIndex: selectedIndex,
-      onDestinationSelected: (index) => _onTabTapped(context, index),
+      selectedIndex: navigationShell.currentIndex,
+      onDestinationSelected: (index) => navigationShell.goBranch(
+        index,
+        initialLocation: index == navigationShell.currentIndex,
+      ),
       labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
       labelTextStyle: WidgetStateProperty.resolveWith<TextStyle>((
         Set<WidgetState> states,
@@ -321,11 +296,6 @@ class _ShellBottomNavigationBar extends StatelessWidget {
             color: colorScheme.onSecondaryContainer,
           ),
           label: l10n.home,
-        ),
-        NavigationDestination(
-          icon: const SizedBox.square(dimension: 32),
-          selectedIcon: const SizedBox.square(dimension: 32),
-          label: l10n.qrCode,
         ),
         NavigationDestination(
           icon: Icon(Icons.person_outline, color: colorScheme.onSurfaceVariant),
