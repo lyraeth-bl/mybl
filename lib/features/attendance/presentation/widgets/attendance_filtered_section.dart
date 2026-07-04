@@ -252,7 +252,7 @@ class _DateFilterButton extends StatelessWidget {
       margin: EdgeInsets.zero,
       onTap: onTap,
       elevation: 0,
-      backgroundColor: colorScheme.surfaceContainerLow,
+      backgroundColor: colorScheme.surface,
       borderRadius: BorderRadius.circular(16),
       padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       child: Column(
@@ -397,7 +397,7 @@ class _AttendanceLogContainer extends StatelessWidget {
       shape: shape,
       borderRadius: null,
       elevation: 0,
-      backgroundColor: colorScheme.surfaceContainerLow,
+      backgroundColor: colorScheme.surface,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -492,7 +492,7 @@ class _AttendanceMessageContainer extends StatelessWidget {
     return AppContainer(
       margin: EdgeInsets.zero,
       elevation: 0,
-      backgroundColor: colorScheme.surfaceContainerLow,
+      backgroundColor: colorScheme.surface,
       borderRadius: BorderRadius.circular(16),
       child: Row(
         children: [

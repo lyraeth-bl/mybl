@@ -94,7 +94,7 @@ class _AttendanceScreenViewState extends State<_AttendanceScreenView>
           controller: _tabController,
           tabs: [
             Tab(text: l10n.today),
-            Tab(text: l10n.attendanceCalendar),
+            Tab(text: l10n.thisMonth),
             Tab(text: l10n.attendanceSummary),
           ],
         ),
