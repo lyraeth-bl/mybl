@@ -94,11 +94,8 @@ class AttendanceCalendarSection extends StatelessWidget {
             );
 
             return RepaintBoundary(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: colorScheme.surfaceContainerLow,
-                  borderRadius: BorderRadius.circular(16),
-                ),
+              child: ColoredBox(
+                color: colorScheme.surface,
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(
