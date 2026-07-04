@@ -248,13 +248,15 @@ class _DateFilterButton extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
 
-    return AppContainer(
+    return AppFramedContainer(
       margin: EdgeInsets.zero,
+      gap: EdgeInsets.zero,
       onTap: onTap,
       elevation: 0,
       backgroundColor: colorScheme.surface,
       borderRadius: BorderRadius.circular(16),
-      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      innerBorderRadius: BorderRadius.circular(16),
+      innerPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       child: Column(
         crossAxisAlignment: crossAxisAlignment,
         mainAxisSize: .min,
@@ -392,10 +394,15 @@ class _AttendanceLogContainer extends StatelessWidget {
     final checkIn = entity?.jamCheckIn;
     final checkOut = entity?.jamCheckOut;
 
-    return AppContainer(
+    final effectiveBorderRadius = shape is RoundedRectangleBorder
+        ? (shape as RoundedRectangleBorder).borderRadius
+        : const BorderRadius.all(Radius.circular(16));
+
+    return AppFramedContainer(
       margin: const EdgeInsets.symmetric(vertical: 2),
-      shape: shape,
-      borderRadius: null,
+      gap: EdgeInsets.zero,
+      borderRadius: effectiveBorderRadius,
+      innerBorderRadius: effectiveBorderRadius,
       elevation: 0,
       backgroundColor: colorScheme.surface,
       child: Row(
@@ -489,11 +496,13 @@ class _AttendanceMessageContainer extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
-    return AppContainer(
+    return AppFramedContainer(
       margin: EdgeInsets.zero,
+      gap: EdgeInsets.zero,
       elevation: 0,
       backgroundColor: colorScheme.surface,
       borderRadius: BorderRadius.circular(16),
+      innerBorderRadius: BorderRadius.circular(16),
       child: Row(
         children: [
           AppIconContainer(

@@ -85,7 +85,7 @@ class _AttendanceScreenViewState extends State<_AttendanceScreenView>
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppTopBar(
         toolbarHeight: 72,
         title: Text(l10n.dailyAttendance),
