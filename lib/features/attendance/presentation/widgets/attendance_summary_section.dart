@@ -111,11 +111,11 @@ class AttendanceSummarySection extends StatelessWidget {
             vertical: 8,
           ),
           action: AppChipContainer(value: _monthLabel(month, year, locale)),
-          child: AppContainer(
-            backgroundColor: colorScheme.surfaceContainerLow,
+          child: AppFramedContainer(
+            backgroundColor: colorScheme.surface,
             margin: EdgeInsets.zero,
+            gap: EdgeInsets.zero,
             elevation: 0,
-            borderRadius: BorderRadius.circular(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
