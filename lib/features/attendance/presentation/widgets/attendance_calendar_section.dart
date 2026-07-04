@@ -94,51 +94,60 @@ class AttendanceCalendarSection extends StatelessWidget {
             );
 
             return RepaintBoundary(
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: colorScheme.surfaceContainerLow,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
                     children: [
-                      IconButton.filledTonal(
-                        onPressed: isLoading
-                            ? null
-                            : () => context.read<MonthlyAttendanceBloc>().add(
-                                const MonthlyAttendanceEvent.previousMonthRequested(),
-                              ),
-                        icon: const Icon(Icons.chevron_left),
-                        tooltip: l10n.previousMonth,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          IconButton.filledTonal(
+                            onPressed: isLoading
+                                ? null
+                                : () => context.read<MonthlyAttendanceBloc>().add(
+                                    const MonthlyAttendanceEvent.previousMonthRequested(),
+                                  ),
+                            icon: const Icon(Icons.chevron_left),
+                            tooltip: l10n.previousMonth,
+                          ),
+                          Text(
+                            _monthLabel(month, year, locale),
+                            style: textTheme.titleMedium?.copyWith(
+                              color: colorScheme.onSurface,
+                              fontWeight: .bold,
+                            ),
+                          ),
+                          IconButton.filledTonal(
+                            onPressed: isLoading
+                                ? null
+                                : () => context.read<MonthlyAttendanceBloc>().add(
+                                    const MonthlyAttendanceEvent.nextMonthRequested(),
+                                  ),
+                            icon: const Icon(Icons.chevron_right),
+                            tooltip: l10n.nextMonth,
+                          ),
+                        ],
                       ),
-                      Text(
-                        _monthLabel(month, year, locale),
-                        style: textTheme.titleMedium?.copyWith(
-                          color: colorScheme.onSurface,
-                          fontWeight: .bold,
-                        ),
+
+                      const SizedBox(height: 16),
+
+                      AttendanceCalendar(
+                        focusedDay: focusedDay,
+                        attendanceData: attendanceMap,
+                        entityData: entityMap,
                       ),
-                      IconButton.filledTonal(
-                        onPressed: isLoading
-                            ? null
-                            : () => context.read<MonthlyAttendanceBloc>().add(
-                                const MonthlyAttendanceEvent.nextMonthRequested(),
-                              ),
-                        icon: const Icon(Icons.chevron_right),
-                        tooltip: l10n.nextMonth,
-                      ),
+
+                      const SizedBox(height: 16),
+
+                      const _AttendanceLegends(),
                     ],
                   ),
-
-                  const SizedBox(height: 16),
-
-                  AttendanceCalendar(
-                    focusedDay: focusedDay,
-                    attendanceData: attendanceMap,
-                    entityData: entityMap,
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  const _AttendanceLegends(),
-                ],
+                ),
               ),
             );
           },

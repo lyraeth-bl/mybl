@@ -186,6 +186,7 @@ class _AttendanceCalendarTab extends StatelessWidget {
         physics: const AlwaysScrollableScrollPhysics(),
         slivers: const [
           AttendanceCalendarSection(),
+          SliverToBoxAdapter(child: SizedBox(height: 24)),
           AttendanceFilteredSection(),
           SliverToBoxAdapter(child: SizedBox(height: 24)),
         ],
