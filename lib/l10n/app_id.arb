@@ -74,6 +74,17 @@
       }
     }
   },
+  "attendanceWorkingDaysSummary": "{present}/{total} hari kerja",
+  "@attendanceWorkingDaysSummary": {
+    "placeholders": {
+      "present": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "guardianDetails": "Detail Orang Tua",
   "meritAndDemerit": "Merit & Demerit",
   "academicCalendar": "Kalendar Akademik",

@@ -121,6 +121,7 @@ class AttendanceSummarySection extends StatelessWidget {
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
                       l10n.thisMonthlyAttendance,
@@ -128,11 +129,25 @@ class AttendanceSummarySection extends StatelessWidget {
                         color: colorScheme.onSurface,
                       ),
                     ),
-                    Text(
-                      percent,
-                      style: textTheme.labelMedium?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                      ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          percent,
+                          style: textTheme.labelMedium?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                        Text(
+                          l10n.attendanceWorkingDaysSummary(
+                            summary.present + summary.late,
+                            summary.workingDaysElapsed,
+                          ),
+                          style: textTheme.labelSmall?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),

@@ -74,6 +74,17 @@
       }
     }
   },
+  "attendanceWorkingDaysSummary": "{present}/{total} working days",
+  "@attendanceWorkingDaysSummary": {
+    "placeholders": {
+      "present": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "guardianDetails": "Guardian Details",
   "meritAndDemerit": "Merit & Demerit",
   "academicCalendar": "Academic Calendar",
