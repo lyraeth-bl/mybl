@@ -35,7 +35,7 @@
   "profile": "Profile",
   "dailyAttendance": "Daily Attendance",
   "attendanceQrCode": "Attendance QR Code",
-  "attendanceSummary": "Attendance Summary",
+  "attendanceSummary": "Summary",
   "attendanceCalendar": "Attendance Calendar",
   "attendanceLog": "Attendance Log",
   "attendanceDateFilter": "Attendance date filter",

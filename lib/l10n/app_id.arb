@@ -35,7 +35,7 @@
   "profile": "Profil",
   "dailyAttendance": "Absensi Harian",
   "attendanceQrCode": "QR Code Absensi",
-  "attendanceSummary": "Ringkasan Absensi",
+  "attendanceSummary": "Ringkasan",
   "attendanceCalendar": "Kalender Absensi",
   "attendanceLog": "Riwayat Absensi",
   "attendanceDateFilter": "Filter tanggal absensi",
