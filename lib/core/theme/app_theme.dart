@@ -10,11 +10,14 @@ class AppColors extends ThemeExtension<AppColors> {
   const AppColors({
     this.success = const Color(0xFF2E7D32),
     this.warning = const Color(0xFFF9A825),
+    this.checkOut = const Color(0xFFC62828),
   });
 
   final Color success;
 
   final Color warning;
+
+  final Color checkOut;
 
   @Deprecated(
     'Use success instead. This alias will be removed in a future release.',
@@ -37,13 +40,18 @@ class AppColors extends ThemeExtension<AppColors> {
     }
 
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
-    return AppColors(success: colorScheme.tertiary, warning: colorScheme.error);
+    return AppColors(
+      success: colorScheme.tertiary,
+      warning: colorScheme.error,
+      checkOut: colorScheme.error,
+    );
   }
 
   @override
   AppColors copyWith({
     Color? success,
     Color? warning,
+    Color? checkOut,
     @Deprecated(
       'Use success instead. This parameter will be removed in a future release.',
     )
@@ -65,6 +73,7 @@ class AppColors extends ThemeExtension<AppColors> {
     return AppColors(
       success: success ?? greenColor ?? this.success,
       warning: warning ?? yellowColor ?? this.warning,
+      checkOut: checkOut ?? this.checkOut,
     );
   }
 
@@ -77,6 +86,7 @@ class AppColors extends ThemeExtension<AppColors> {
     return AppColors(
       success: Color.lerp(success, other.success, t)!,
       warning: Color.lerp(warning, other.warning, t)!,
+      checkOut: Color.lerp(checkOut, other.checkOut, t)!,
     );
   }
 }
@@ -102,7 +112,11 @@ class MyBlTheme {
     ),
     useMaterial3: true,
     extensions: const <ThemeExtension<dynamic>>[
-      AppColors(success: Colors.green, warning: Colors.yellow),
+      AppColors(
+        success: Colors.green,
+        warning: Colors.yellow,
+        checkOut: Colors.red,
+      ),
     ],
   );
 
@@ -124,7 +138,11 @@ class MyBlTheme {
     ),
     useMaterial3: true,
     extensions: const <ThemeExtension<dynamic>>[
-      AppColors(success: Colors.greenAccent, warning: Colors.yellowAccent),
+      AppColors(
+        success: Colors.greenAccent,
+        warning: Colors.yellowAccent,
+        checkOut: Colors.redAccent,
+      ),
     ],
   );
 }
