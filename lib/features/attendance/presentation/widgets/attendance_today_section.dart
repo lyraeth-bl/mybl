@@ -57,30 +57,83 @@ class _AttendanceTodaySectionState extends State<AttendanceTodaySection> {
       ),
       builder: (context, state) {
         return state.maybeWhen(
-          failure: (_) => AppFramedContainer(
-            gap: EdgeInsets.zero,
-            margin: EdgeInsets.zero,
-            elevation: 0,
-            child: AppNoData(
+          failure: (_) => SliverFillRemaining(
+            hasScrollBody: false,
+            child: _AttendanceEmptyState(
               icon: Icons.wifi_off_rounded,
               title: l10n.attendanceTodayLoadFailedTitle,
               message: l10n.attendanceTodayLoadFailedSubtitle,
             ),
           ),
-          emptyAttendance: () => AppFramedContainer(
-            gap: EdgeInsets.zero,
-            margin: EdgeInsets.zero,
-            elevation: 0,
-            child: AppNoData(
+          emptyAttendance: () => SliverFillRemaining(
+            hasScrollBody: false,
+            child: _AttendanceEmptyState(
               icon: Icons.weekend_outlined,
               title: l10n.attendanceNoScheduleTitle,
               message: l10n.attendanceNoScheduleSubtitle,
             ),
           ),
-          orElse: () =>
-              _AttendanceTodayCard(state: state, now: _now, l10n: l10n),
+          orElse: () => SliverPadding(
+            padding: const EdgeInsets.all(16),
+            sliver: SliverToBoxAdapter(
+              child: _AttendanceTodayCard(state: state, now: _now, l10n: l10n),
+            ),
+          ),
         );
       },
+    );
+  }
+}
+
+class _AttendanceEmptyState extends StatelessWidget {
+  const _AttendanceEmptyState({
+    required this.icon,
+    required this.title,
+    required this.message,
+  });
+
+  final IconData icon;
+  final String title;
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 32),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: 72,
+            height: 72,
+            decoration: BoxDecoration(
+              color: colorScheme.primaryContainer,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Icon(icon, color: colorScheme.onPrimaryContainer, size: 36),
+          ),
+          const SizedBox(height: 18),
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: textTheme.titleMedium?.copyWith(
+              color: colorScheme.onSurface,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            message,
+            textAlign: TextAlign.center,
+            style: textTheme.bodyMedium?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

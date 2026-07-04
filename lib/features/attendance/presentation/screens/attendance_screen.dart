@@ -85,6 +85,7 @@ class _AttendanceScreenViewState extends State<_AttendanceScreenView>
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
       appBar: AppTopBar(
         toolbarHeight: 72,
         title: Text(l10n.dailyAttendance),
@@ -92,7 +93,7 @@ class _AttendanceScreenViewState extends State<_AttendanceScreenView>
         bottom: TabBar(
           controller: _tabController,
           tabs: [
-            Tab(text: l10n.home),
+            Tab(text: l10n.today),
             Tab(text: l10n.attendanceCalendar),
             Tab(text: l10n.attendanceSummary),
           ],
@@ -166,10 +167,9 @@ class _AttendanceTodayTab extends StatelessWidget {
               orElse: () => false,
             ),
           ),
-      child: ListView(
+      child: CustomScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.all(16),
-        children: const [AttendanceTodaySection()],
+        slivers: const [AttendanceTodaySection()],
       ),
     );
   }

@@ -10,7 +10,6 @@ import 'package:fpdart/fpdart.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:my_bl/core/failure/failure.dart';
 import 'package:my_bl/core/widgets/app_button.dart';
-import 'package:my_bl/core/widgets/app_container.dart';
 import 'package:my_bl/features/attendance/domain/entities/attendance_entity/attendance_entity.dart';
 import 'package:my_bl/features/attendance/domain/repositories/attendance_repository.dart';
 import 'package:my_bl/features/attendance/domain/usecases/fetch_daily_attendance_use_case.dart';
@@ -62,7 +61,7 @@ Widget _wrap(
     home: Scaffold(
       body: BlocProvider<DailyAttendanceBloc>.value(
         value: bloc,
-        child: AttendanceTodaySection(now: now),
+        child: CustomScrollView(slivers: [AttendanceTodaySection(now: now)]),
       ),
     ),
   );
@@ -86,8 +85,8 @@ void main() {
     bloc.add(const DailyAttendanceEvent.dailyAttendanceRequested());
     await tester.pumpAndSettle();
 
-    expect(find.byType(AppNoData), findsOneWidget);
     expect(find.text(_l10n.attendanceTodayLoadFailedTitle), findsOneWidget);
+    expect(find.text(_l10n.attendanceTodayLoadFailedSubtitle), findsOneWidget);
   });
 
   testWidgets('shows AppNoData when there is no schedule today', (
@@ -105,8 +104,8 @@ void main() {
     bloc.add(const DailyAttendanceEvent.dailyAttendanceRequested());
     await tester.pumpAndSettle();
 
-    expect(find.byType(AppNoData), findsOneWidget);
     expect(find.text(_l10n.attendanceNoScheduleTitle), findsOneWidget);
+    expect(find.text(_l10n.attendanceNoScheduleSubtitle), findsOneWidget);
   });
 
   testWidgets('shows enabled "Check In" button when no record exists yet', (
