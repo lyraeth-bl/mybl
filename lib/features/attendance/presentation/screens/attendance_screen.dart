@@ -4,22 +4,19 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 
-import '../../../../core/app_router/app_router.dart';
 import '../../../../core/di/get_it_constant.dart';
 import '../../../../core/enums/user_role.dart';
-import '../../../../core/widgets/app_profile_picture.dart';
 import '../../../../core/widgets/app_top_bar.dart';
 import '../../../../core/widgets/refresh_wrapper.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../sessions/presentation/bloc/session_bloc.dart';
-import '../../../user/presentation/bloc/user_bloc.dart';
+import '../bloc/daily_attendance_bloc/daily_attendance_bloc.dart';
 import '../bloc/monthly_attendance_bloc/monthly_attendance_bloc.dart';
 import '../widgets/attendance_calendar_section.dart';
-import '../widgets/attendance_chart_section.dart';
 import '../widgets/attendance_filtered_section.dart';
 import '../widgets/attendance_summary_section.dart';
+import '../widgets/attendance_today_section.dart';
 
 class AttendanceScreen extends StatelessWidget {
   const AttendanceScreen({super.key});
@@ -31,140 +28,122 @@ class AttendanceScreen extends StatelessWidget {
       orElse: () => false,
     );
 
-    return BlocProvider<MonthlyAttendanceBloc>(
-      create: (context) => di<MonthlyAttendanceBloc>(param1: isParent),
-      child: _AttendanceScreenView(isParent: isParent),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<DailyAttendanceBloc>(
+          create: (context) => di<DailyAttendanceBloc>(),
+        ),
+        BlocProvider<MonthlyAttendanceBloc>(
+          create: (context) => di<MonthlyAttendanceBloc>(param1: isParent),
+        ),
+      ],
+      child: const _AttendanceScreenView(),
     );
   }
 }
 
 class _AttendanceScreenView extends StatefulWidget {
-  const _AttendanceScreenView({required this.isParent});
-
-  final bool isParent;
+  const _AttendanceScreenView();
 
   @override
   State<_AttendanceScreenView> createState() => _AttendanceScreenViewState();
 }
 
-class _AttendanceScreenViewState extends State<_AttendanceScreenView> {
+class _AttendanceScreenViewState extends State<_AttendanceScreenView>
+    with SingleTickerProviderStateMixin {
+  late final TabController _tabController;
+
   @override
   void initState() {
     super.initState();
 
+    _tabController = TabController(length: 3, vsync: this);
+
     final now = DateTime.now();
 
-    WidgetsBinding.instance.addPostFrameCallback(
-      (_) => context.read<MonthlyAttendanceBloc>().add(
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<DailyAttendanceBloc>().add(
+        const DailyAttendanceEvent.dailyAttendanceRequested(),
+      );
+      context.read<MonthlyAttendanceBloc>().add(
         MonthlyAttendanceEvent.monthChangeRequested(
           month: now.month,
           year: now.year,
         ),
-      ),
-    );
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
-      appBar: _AttendanceAppBar(isParent: widget.isParent),
-      body: const _AttendanceBody(),
-    );
-  }
-}
-
-@immutable
-class _AttendanceAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const _AttendanceAppBar({required this.isParent});
-
-  final bool isParent;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-
-    return AppTopBar(
-      toolbarHeight: 72,
-      title: Text(l10n.dailyAttendance),
-      centerTitle: true,
-      actions: isParent
-          ? const <Widget>[]
-          : const <Widget>[_AttendanceProfileAction()],
-    );
-  }
-
-  @override
-  Size get preferredSize => Size.fromHeight(80);
-}
-
-class _AttendanceProfileAction extends StatelessWidget {
-  const _AttendanceProfileAction();
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final l10n = AppLocalizations.of(context)!;
-
-    return BlocSelector<
-      UserBloc,
-      UserState,
-      ({String? imageUrl, String? name})
-    >(
-      selector: (state) => state.maybeWhen(
-        success: (student) => (
-          imageUrl: student.profileImageUrl,
-          name: student.nama ?? student.namaPanggilan,
+      appBar: AppTopBar(
+        toolbarHeight: 72,
+        title: Text(l10n.dailyAttendance),
+        centerTitle: true,
+        bottom: TabBar(
+          controller: _tabController,
+          tabs: [
+            Tab(text: l10n.home),
+            Tab(text: l10n.attendanceCalendar),
+            Tab(text: l10n.attendanceSummary),
+          ],
         ),
-        orElse: () => (imageUrl: null, name: null),
       ),
-      builder: (context, profile) => _ProfileAvatar(
-        colorScheme: colorScheme,
-        l10n: l10n,
-        profile: profile,
+      body: TabBarView(
+        controller: _tabController,
+        children: const [
+          _AttendanceTodayTab(),
+          _AttendanceCalendarTab(),
+          _AttendanceSummaryTab(),
+        ],
       ),
     );
   }
 }
 
-class _ProfileAvatar extends StatelessWidget {
-  const _ProfileAvatar({
-    required this.colorScheme,
-    required this.l10n,
-    required this.profile,
-  });
-
-  final ColorScheme colorScheme;
-  final AppLocalizations l10n;
-  final ({String? imageUrl, String? name}) profile;
+class _AttendanceTodayTab extends StatelessWidget {
+  const _AttendanceTodayTab();
 
   @override
   Widget build(BuildContext context) {
-    return Tooltip(
-      message: l10n.profile,
-      child: InkResponse(
-        onTap: () => context.go(RouteNames.profile),
-        customBorder: const CircleBorder(),
-        radius: 24,
-        child: SizedBox.square(
-          dimension: kMinInteractiveDimension,
-          child: Center(
-            child: AppProfilePicture(
-              imageUrl: profile.imageUrl,
-              initials: AppProfilePicture.initialFrom(profile.name),
-              radius: 20,
-              side: BorderSide(color: colorScheme.outlineVariant, width: 2),
+    return RefreshWrapper(
+      onRefresh: () =>
+          blocRefresh<
+            DailyAttendanceBloc,
+            DailyAttendanceEvent,
+            DailyAttendanceState
+          >(
+            context: context,
+            event: const DailyAttendanceEvent.dailyAttendanceRequested(
+              forceRefresh: true,
+            ),
+            isDone: (state) => state.maybeWhen(
+              success: (_) => true,
+              emptyAttendance: () => true,
+              failure: (_) => true,
+              orElse: () => false,
             ),
           ),
-        ),
+      child: ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.all(16),
+        children: const [AttendanceTodaySection()],
       ),
     );
   }
 }
 
-class _AttendanceRefreshWrapper extends StatelessWidget {
-  const _AttendanceRefreshWrapper({required this.child});
-
-  final Widget child;
+class _AttendanceCalendarTab extends StatelessWidget {
+  const _AttendanceCalendarTab();
 
   @override
   Widget build(BuildContext context) {
@@ -201,24 +180,60 @@ class _AttendanceRefreshWrapper extends StatelessWidget {
           ),
         );
       },
-      child: child,
+      child: CustomScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        slivers: const [
+          AttendanceCalendarSection(),
+          AttendanceFilteredSection(),
+          SliverToBoxAdapter(child: SizedBox(height: 24)),
+        ],
+      ),
     );
   }
 }
 
-class _AttendanceBody extends StatelessWidget {
-  const _AttendanceBody();
+class _AttendanceSummaryTab extends StatelessWidget {
+  const _AttendanceSummaryTab();
 
   @override
   Widget build(BuildContext context) {
-    return _AttendanceRefreshWrapper(
+    return RefreshWrapper(
+      onRefresh: () {
+        final state = context.read<MonthlyAttendanceBloc>().state;
+
+        final month = state.maybeWhen(
+          success: (m, _, _, _, _, _) => m,
+          loading: (m, _) => m,
+          orElse: () => DateTime.now().month,
+        );
+        final year = state.maybeWhen(
+          success: (_, y, _, _, _, _) => y,
+          loading: (_, y) => y,
+          orElse: () => DateTime.now().year,
+        );
+
+        return blocRefresh<
+          MonthlyAttendanceBloc,
+          MonthlyAttendanceEvent,
+          MonthlyAttendanceState
+        >(
+          context: context,
+          event: MonthlyAttendanceEvent.monthChangeRequested(
+            month: month,
+            year: year,
+            forceRefresh: true,
+          ),
+          isDone: (state) => state.maybeWhen(
+            success: (_, _, _, _, _, _) => true,
+            failure: (_) => true,
+            orElse: () => false,
+          ),
+        );
+      },
       child: CustomScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
         slivers: const [
           AttendanceSummarySection(),
-          AttendanceCalendarSection(),
-          AttendanceFilteredSection(),
-          AttendanceChartSection(),
           SliverToBoxAdapter(child: SizedBox(height: 24)),
         ],
       ),
