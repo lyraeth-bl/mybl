@@ -30,7 +30,7 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
     this.actions,
     this.actionsPadding = const EdgeInsetsDirectional.only(end: 16),
     this.notificationCount,
-    this.notificationIcon = Icons.notifications,
+    this.notificationIcon = Icons.notifications_outlined,
     this.notificationTooltip,
     this.notificationMaxCount = 9,
     this.automaticallyImplyLeading = true,
