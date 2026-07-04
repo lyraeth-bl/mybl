@@ -48,7 +48,10 @@ DailyAttendanceBloc _buildBloc(_MockAttendanceRepository repository) {
   return DailyAttendanceBloc(FetchDailyAttendanceUseCase(repository));
 }
 
-Widget _wrap(DailyAttendanceBloc bloc, {DateTime Function() now = DateTime.now}) {
+Widget _wrap(
+  DailyAttendanceBloc bloc, {
+  DateTime Function() now = DateTime.now,
+}) {
   return MaterialApp(
     localizationsDelegates: const [
       AppLocalizations.delegate,
@@ -87,7 +90,9 @@ void main() {
     expect(find.text(_l10n.attendanceTodayLoadFailedTitle), findsOneWidget);
   });
 
-  testWidgets('shows AppNoData when there is no schedule today', (tester) async {
+  testWidgets('shows AppNoData when there is no schedule today', (
+    tester,
+  ) async {
     final repository = _MockAttendanceRepository();
     when(
       () => repository.fetchDailyAttendance(any()),

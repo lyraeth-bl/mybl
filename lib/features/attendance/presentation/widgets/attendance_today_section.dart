@@ -23,8 +23,7 @@ class AttendanceTodaySection extends StatefulWidget {
   final DateTime Function() now;
 
   @override
-  State<AttendanceTodaySection> createState() =>
-      _AttendanceTodaySectionState();
+  State<AttendanceTodaySection> createState() => _AttendanceTodaySectionState();
 }
 
 class _AttendanceTodaySectionState extends State<AttendanceTodaySection> {
@@ -101,10 +100,7 @@ class _AttendanceTodayCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    final isLoading = state.maybeWhen(
-      loading: () => true,
-      orElse: () => false,
-    );
+    final isLoading = state.maybeWhen(loading: () => true, orElse: () => false);
     final entity = state.maybeWhen(
       success: (dailyAttendance) => dailyAttendance,
       orElse: () => null,

@@ -30,7 +30,10 @@ void main() {
   final afterCutoff = DateTime(2026, 7, 6, 15);
 
   test('no record yet -> checkIn', () {
-    expect(resolveAttendanceQrAction(null, beforeCutoff), AttendanceQrAction.checkIn);
+    expect(
+      resolveAttendanceQrAction(null, beforeCutoff),
+      AttendanceQrAction.checkIn,
+    );
   });
 
   test('checked in, before cutoff -> alreadyCheckedIn', () {
@@ -43,12 +46,18 @@ void main() {
 
   test('checked in, exactly at cutoff -> checkOut', () {
     final entity = _entity(checkIn: DateTime(2026, 7, 6, 6, 30));
-    expect(resolveAttendanceQrAction(entity, atCutoff), AttendanceQrAction.checkOut);
+    expect(
+      resolveAttendanceQrAction(entity, atCutoff),
+      AttendanceQrAction.checkOut,
+    );
   });
 
   test('checked in, after cutoff -> checkOut', () {
     final entity = _entity(checkIn: DateTime(2026, 7, 6, 6, 30));
-    expect(resolveAttendanceQrAction(entity, afterCutoff), AttendanceQrAction.checkOut);
+    expect(
+      resolveAttendanceQrAction(entity, afterCutoff),
+      AttendanceQrAction.checkOut,
+    );
   });
 
   test('checked in and out -> done, regardless of time', () {
@@ -56,7 +65,13 @@ void main() {
       checkIn: DateTime(2026, 7, 6, 6, 30),
       checkOut: DateTime(2026, 7, 6, 11),
     );
-    expect(resolveAttendanceQrAction(entity, beforeCutoff), AttendanceQrAction.done);
-    expect(resolveAttendanceQrAction(entity, afterCutoff), AttendanceQrAction.done);
+    expect(
+      resolveAttendanceQrAction(entity, beforeCutoff),
+      AttendanceQrAction.done,
+    );
+    expect(
+      resolveAttendanceQrAction(entity, afterCutoff),
+      AttendanceQrAction.done,
+    );
   });
 }
