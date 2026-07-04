@@ -110,6 +110,39 @@ class _AttendanceScreenViewState extends State<_AttendanceScreenView>
   }
 }
 
+Future<void> _refreshMonthlyAttendance(BuildContext context) {
+  final state = context.read<MonthlyAttendanceBloc>().state;
+
+  final month = state.maybeWhen(
+    success: (m, _, _, _, _, _) => m,
+    loading: (m, _) => m,
+    orElse: () => DateTime.now().month,
+  );
+  final year = state.maybeWhen(
+    success: (_, y, _, _, _, _) => y,
+    loading: (_, y) => y,
+    orElse: () => DateTime.now().year,
+  );
+
+  return blocRefresh<
+    MonthlyAttendanceBloc,
+    MonthlyAttendanceEvent,
+    MonthlyAttendanceState
+  >(
+    context: context,
+    event: MonthlyAttendanceEvent.monthChangeRequested(
+      month: month,
+      year: year,
+      forceRefresh: true,
+    ),
+    isDone: (state) => state.maybeWhen(
+      success: (_, _, _, _, _, _) => true,
+      failure: (_) => true,
+      orElse: () => false,
+    ),
+  );
+}
+
 class _AttendanceTodayTab extends StatelessWidget {
   const _AttendanceTodayTab();
 
@@ -148,38 +181,7 @@ class _AttendanceCalendarTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RefreshWrapper(
-      onRefresh: () {
-        final state = context.read<MonthlyAttendanceBloc>().state;
-
-        final month = state.maybeWhen(
-          success: (m, _, _, _, _, _) => m,
-          loading: (m, _) => m,
-          orElse: () => DateTime.now().month,
-        );
-        final year = state.maybeWhen(
-          success: (_, y, _, _, _, _) => y,
-          loading: (_, y) => y,
-          orElse: () => DateTime.now().year,
-        );
-
-        return blocRefresh<
-          MonthlyAttendanceBloc,
-          MonthlyAttendanceEvent,
-          MonthlyAttendanceState
-        >(
-          context: context,
-          event: MonthlyAttendanceEvent.monthChangeRequested(
-            month: month,
-            year: year,
-            forceRefresh: true,
-          ),
-          isDone: (state) => state.maybeWhen(
-            success: (_, _, _, _, _, _) => true,
-            failure: (_) => true,
-            orElse: () => false,
-          ),
-        );
-      },
+      onRefresh: () => _refreshMonthlyAttendance(context),
       child: CustomScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
         slivers: const [
@@ -198,38 +200,7 @@ class _AttendanceSummaryTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RefreshWrapper(
-      onRefresh: () {
-        final state = context.read<MonthlyAttendanceBloc>().state;
-
-        final month = state.maybeWhen(
-          success: (m, _, _, _, _, _) => m,
-          loading: (m, _) => m,
-          orElse: () => DateTime.now().month,
-        );
-        final year = state.maybeWhen(
-          success: (_, y, _, _, _, _) => y,
-          loading: (_, y) => y,
-          orElse: () => DateTime.now().year,
-        );
-
-        return blocRefresh<
-          MonthlyAttendanceBloc,
-          MonthlyAttendanceEvent,
-          MonthlyAttendanceState
-        >(
-          context: context,
-          event: MonthlyAttendanceEvent.monthChangeRequested(
-            month: month,
-            year: year,
-            forceRefresh: true,
-          ),
-          isDone: (state) => state.maybeWhen(
-            success: (_, _, _, _, _, _) => true,
-            failure: (_) => true,
-            orElse: () => false,
-          ),
-        );
-      },
+      onRefresh: () => _refreshMonthlyAttendance(context),
       child: CustomScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
         slivers: const [
