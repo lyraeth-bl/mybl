@@ -85,7 +85,7 @@ class _AttendanceScreenViewState extends State<_AttendanceScreenView>
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
       appBar: AppTopBar(
         toolbarHeight: 72,
         title: Text(l10n.dailyAttendance),
@@ -180,16 +180,19 @@ class _AttendanceCalendarTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RefreshWrapper(
-      onRefresh: () => _refreshMonthlyAttendance(context),
-      child: CustomScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        slivers: const [
-          AttendanceCalendarSection(),
-          SliverToBoxAdapter(child: SizedBox(height: 24)),
-          AttendanceFilteredSection(),
-          SliverToBoxAdapter(child: SizedBox(height: 24)),
-        ],
+    return ColoredBox(
+      color: Theme.of(context).colorScheme.surface,
+      child: RefreshWrapper(
+        onRefresh: () => _refreshMonthlyAttendance(context),
+        child: CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          slivers: const [
+            AttendanceCalendarSection(),
+            SliverToBoxAdapter(child: SizedBox(height: 24)),
+            AttendanceFilteredSection(),
+            SliverToBoxAdapter(child: SizedBox(height: 24)),
+          ],
+        ),
       ),
     );
   }
