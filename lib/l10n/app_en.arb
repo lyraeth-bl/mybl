@@ -30,12 +30,10 @@
   "schoolName": "Sekolah Budi Luhur",
   "schoolSlogan": "Cerdas Berbudi Luhur",
   "home": "Home",
-  "menu": "Menu",
   "quickMenu": "Quick Menu",
   "emptyMenu": "Menu not available yet.",
   "profile": "Profile",
   "dailyAttendance": "Daily Attendance",
-  "qrCode": "QR",
   "attendanceQrCode": "Attendance QR Code",
   "attendanceSummary": "Attendance Summary",
   "attendanceCalendar": "Attendance Calendar",
@@ -57,7 +55,6 @@
       }
     }
   },
-  "attendanceChart": "Attendance Chart",
   "navigation": "Navigation",
   "all": "All",
   "seeAll": "See all",

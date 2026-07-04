@@ -30,12 +30,10 @@
   "schoolName": "Sekolah Budi Luhur",
   "schoolSlogan": "Cerdas Berbudi Luhur",
   "home": "Beranda",
-  "menu": "Menu",
   "quickMenu": "Menu Cepat",
   "emptyMenu": "Menu belum tersedia.",
   "profile": "Profil",
   "dailyAttendance": "Absensi Harian",
-  "qrCode": "QR",
   "attendanceQrCode": "QR Code Absensi",
   "attendanceSummary": "Ringkasan Absensi",
   "attendanceCalendar": "Kalender Absensi",
@@ -57,7 +55,6 @@
       }
     }
   },
-  "attendanceChart": "Grafik Absensi",
   "navigation": "Navigasi",
   "all": "Semua",
   "seeAll": "Lihat Semua",

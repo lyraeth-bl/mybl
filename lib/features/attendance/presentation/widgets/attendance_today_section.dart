@@ -125,7 +125,7 @@ class _AttendanceTodayCard extends StatelessWidget {
                   color: colorScheme.onSurface,
                   fontWeight: FontWeight.bold,
                 ),
-              ),
+              ).toShimmer(context, isLoading: isLoading, width: 48, height: 20),
               Text(
                 '${_clockLabel(now)} ${l10n.westernIndonesiaTime}',
                 style: textTheme.labelMedium?.copyWith(
@@ -138,7 +138,7 @@ class _AttendanceTodayCard extends StatelessWidget {
                   color: colorScheme.onSurface,
                   fontWeight: FontWeight.bold,
                 ),
-              ),
+              ).toShimmer(context, isLoading: isLoading, width: 48, height: 20),
             ],
           ),
           16.h,
