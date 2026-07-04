@@ -74,7 +74,7 @@
       }
     }
   },
-  "attendanceWorkingDaysSummary": "{present}/{total} hari kerja",
+  "attendanceWorkingDaysSummary": "{present}/{total} hari sekolah",
   "@attendanceWorkingDaysSummary": {
     "placeholders": {
       "present": {

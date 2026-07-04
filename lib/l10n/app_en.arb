@@ -74,7 +74,7 @@
       }
     }
   },
-  "attendanceWorkingDaysSummary": "{present}/{total} working days",
+  "attendanceWorkingDaysSummary": "{present}/{total} school days",
   "@attendanceWorkingDaysSummary": {
     "placeholders": {
       "present": {
