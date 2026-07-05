@@ -223,6 +223,8 @@
   "profileLoadFailedSubtitle": "Coba tarik buat refresh, ingatannya lagi lemot.",
   "timeTableLoadFailedTitle": "Jadwalnya kecampur, nih!",
   "timeTableLoadFailedSubtitle": "Tarik buat refresh, biar dirapiin lagi.",
+  "timeTableNoScheduleTitle": "Belum Ada Jadwal",
+  "timeTableNoScheduleSubtitle": "Tidak ada pelajaran di hari ini, waktunya santai sejenak.",
   "noExtracurricularData": "Belum ada data ekstrakurikuler.",
   "schoolYear": "Tajaran",
   "allSchoolYears": "Semua tajaran",

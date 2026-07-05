@@ -4,6 +4,7 @@
 
 import 'package:flutter/material.dart';
 
+import '../../../../core/internal/src/extensions/extensions.dart';
 import '../../../../core/widgets/app_sliver_group.dart';
 import '../../../../l10n/app_localizations.dart';
 
@@ -45,8 +46,9 @@ class TimeTableDaySelectorSection extends StatelessWidget {
       title: '',
       pinned: true,
       headerHeight: 64,
-      headerPadding: EdgeInsets.zero,
-      backgroundColor: colorScheme.surface,
+      headerPadding: .zero,
+      contentPadding: .zero,
+      backgroundColor: colorScheme.surfaceContainer,
       titleOffset: 0,
       collapsedOpacity: 1,
       action: SizedBox(
@@ -92,18 +94,23 @@ class _TimeTableDaySelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
-      padding: const EdgeInsetsDirectional.fromSTEB(8, 10, 16, 10),
+      padding: const .fromSTEB(8, 8, 16, 8),
       physics: const BouncingScrollPhysics(),
-      scrollDirection: Axis.horizontal,
+      scrollDirection: .horizontal,
       itemCount: TimeTableDaySelectorSection.defaultDayValues.length,
-      separatorBuilder: (context, index) => const SizedBox(width: 8),
+      separatorBuilder: (context, index) => 8.w,
       itemBuilder: (context, index) {
         final day = TimeTableDaySelectorSection.defaultDayValues[index];
 
-        return ChoiceChip(
-          label: Text(localizedDay(day)),
-          selected: day == selectedDay,
-          onSelected: (_) => onSelected(day),
+        return ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 48),
+          child: ChoiceChip(
+            shape: RoundedRectangleBorder(borderRadius: .circular(16)),
+            backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+            label: Text(localizedDay(day)),
+            selected: day == selectedDay,
+            onSelected: (_) => onSelected(day),
+          ),
         );
       },
     );

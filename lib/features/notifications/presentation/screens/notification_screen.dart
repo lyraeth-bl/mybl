@@ -6,12 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/di/get_it_constant.dart';
+import '../../../../core/widgets/app_empty_state.dart';
 import '../../../../core/widgets/app_top_bar.dart';
 import '../../../../core/widgets/refresh_wrapper.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/app_notification/app_notification.dart';
 import '../bloc/notification_bloc.dart';
-import '../widgets/notification_header.dart';
 import '../widgets/notification_helpers.dart';
 import '../widgets/notification_list_section.dart';
 
@@ -138,14 +138,16 @@ class _NotificationBody extends StatelessWidget {
         builder: (context, state) {
           final notifications = notificationsFromState(state);
           final groups = groupNotifications(context, notifications);
+          final l10n = AppLocalizations.of(context)!;
 
           return CustomScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             slivers: [
               if (groups.isEmpty)
-                const SliverFillRemaining(
-                  hasScrollBody: false,
-                  child: NotificationEmptyState(),
+                AppEmptyStateSliver(
+                  icon: Icons.notifications_none_outlined,
+                  title: l10n.noNotifications,
+                  message: l10n.noNotificationsDesc,
                 )
               else ...[
                 const SliverToBoxAdapter(child: SizedBox(height: 16)),

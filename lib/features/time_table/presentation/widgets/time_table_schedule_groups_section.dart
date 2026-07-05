@@ -9,9 +9,11 @@ import '../../../../core/internal/src/extensions/extensions.dart';
 import '../../../../core/utils/subject_icon_resolver.dart';
 import '../../../../core/widgets/app_chip_container.dart';
 import '../../../../core/widgets/app_container.dart';
+import '../../../../core/widgets/app_empty_state.dart';
 import '../../../../core/widgets/app_icon_container.dart';
 import '../../../../core/widgets/app_profile_picture.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../user/presentation/bloc/user_bloc.dart';
 import '../../domain/entities/time_table/time_table.dart';
 import '../bloc/time_table_bloc.dart';
 
@@ -37,7 +39,7 @@ class TimeTableScheduleGroupsSection extends StatelessWidget {
 
             if (selectedSchedules.isEmpty) {
               return SliverPadding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const .symmetric(horizontal: 16),
                 sliver: SliverList.list(
                   children: const [
                     _TimeTableLoadingCard(),
@@ -49,7 +51,7 @@ class TimeTableScheduleGroupsSection extends StatelessWidget {
             }
 
             return SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const .symmetric(horizontal: 16),
               sliver: SliverList.list(
                 children: selectedSchedules
                     .map(
@@ -62,28 +64,37 @@ class TimeTableScheduleGroupsSection extends StatelessWidget {
               ),
             );
           },
-          failure: (failure) => SliverFillRemaining(
-            hasScrollBody: false,
-            child: _TimeTableEmptyView(
-              icon: Icons.error_outline,
-              message: failure.localizedMessage(l10n),
-            ),
+          failure: (failure) => AppEmptyStateSliver(
+            icon: Icons.error_outline,
+            title: l10n.timeTableLoadFailedTitle,
+            message: l10n.timeTableLoadFailedSubtitle,
+            retryLabel: l10n.tryAgain,
+            onRetry: () {
+              final studentClass = context.read<UserBloc>().state.maybeWhen(
+                success: (student) =>
+                    '${student.kelasSaatIni}${student.noKelasSaatIni}',
+                orElse: () => '',
+              );
+              if (studentClass.isEmpty) return;
+
+              context.read<TimeTableBloc>().add(
+                .fetchTimeTable(true, studentClass),
+              );
+            },
           ),
           success: (timeTable) {
             final selectedSchedules = _filterSchedules(timeTable, selectedDay);
 
             if (selectedSchedules.isEmpty) {
-              return SliverFillRemaining(
-                hasScrollBody: false,
-                child: _TimeTableEmptyView(
-                  icon: Icons.event_busy_outlined,
-                  message: l10n.noData,
-                ),
+              return AppEmptyStateSliver(
+                icon: Icons.event_busy_outlined,
+                title: l10n.timeTableNoScheduleTitle,
+                message: l10n.timeTableNoScheduleSubtitle,
               );
             }
 
             return SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const .symmetric(horizontal: 16),
               sliver: SliverList.list(
                 children: selectedSchedules
                     .map((timeTable) => _TimeTableCard(timeTable: timeTable))
@@ -92,12 +103,10 @@ class TimeTableScheduleGroupsSection extends StatelessWidget {
               ),
             );
           },
-          orElse: () => SliverFillRemaining(
-            hasScrollBody: false,
-            child: _TimeTableEmptyView(
-              icon: Icons.calendar_month_outlined,
-              message: AppLocalizations.of(context)!.noData,
-            ),
+          orElse: () => AppEmptyStateSliver(
+            icon: Icons.calendar_month_outlined,
+            title: l10n.timeTableNoScheduleTitle,
+            message: l10n.timeTableNoScheduleSubtitle,
           ),
         );
       },
@@ -137,68 +146,58 @@ class _TimeTableCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-    final l10n = AppLocalizations.of(context)!;
-    final isOngoing = _isScheduleOngoing(timeTable, DateTime.now());
+    final ThemeData theme = Theme.of(context);
+    final ColorScheme colorScheme = theme.colorScheme;
+    final TextTheme textTheme = theme.textTheme;
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
+    final bool isOngoing = _isScheduleOngoing(timeTable, DateTime.now());
 
     return AppContainer(
-      margin: const EdgeInsets.symmetric(vertical: 8),
+      margin: const .only(bottom: 8),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: .circular(16),
         side: isOngoing
             ? BorderSide(color: colorScheme.primary)
             : BorderSide.none,
       ),
       borderRadius: null,
-      backgroundColor: colorScheme.surfaceContainerLow,
+      backgroundColor: colorScheme.surface,
       elevation: 0,
-      padding: const EdgeInsets.all(24),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: .center,
             children: <Widget>[
               Expanded(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: .start,
                   children: [
                     if (isOngoing) ...[
                       AppChipContainer(
                         value: l10n.ongoingNow.toUpperCase(),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 4,
-                        ),
                         backgroundColor: colorScheme.secondaryContainer,
                         foregroundColor: colorScheme.onSecondaryContainer,
                       ),
-                      const SizedBox(height: 8),
+                      8.h,
                     ],
                     Text(
-                      timeTable.namaMataPelajaran,
+                      timeTable.namaMataPelajaran.capitalizeEveryWord,
                       maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
+                      overflow: .ellipsis,
                       style: textTheme.titleMedium?.copyWith(
                         color: colorScheme.onSurface,
-                        fontWeight: .bold,
                       ),
                     ).toShimmer(
                       context,
                       isLoading: isLoading,
                       width: 160,
-                      height: 18,
+                      height: 16,
+                      borderRadius: .circular(24),
                     ),
-                    const SizedBox(height: 4),
+                    8.h,
                     Row(
                       children: [
-                        Icon(
-                          Icons.schedule_rounded,
-                          size: 16,
-                          color: colorScheme.onSurfaceVariant,
-                        ),
-                        const SizedBox(width: 8),
                         Text(
                           '${timeTable.jamMulai} - ${timeTable.jamSelesai}',
                           style: textTheme.titleMedium?.copyWith(
@@ -207,36 +206,35 @@ class _TimeTableCard extends StatelessWidget {
                         ).toShimmer(
                           context,
                           isLoading: isLoading,
-                          width: 112,
+                          width: 120,
                           height: 16,
+                          borderRadius: .circular(24),
                         ),
                       ],
                     ),
                   ],
                 ),
               ),
-              const SizedBox(width: 16),
+              16.w,
               AppIconContainer(
                 icon: SubjectIconResolver.resolve(timeTable.namaMataPelajaran),
-                padding: const EdgeInsets.all(16),
+                padding: const .all(8),
                 iconSize: 28,
                 backgroundColor: colorScheme.primaryContainer,
                 foregroundColor: colorScheme.onPrimaryContainer,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
+                shape: RoundedRectangleBorder(borderRadius: .circular(8)),
               ).toShimmer(
                 context,
                 isLoading: isLoading,
-                width: 60,
-                height: 60,
-                borderRadius: BorderRadius.circular(8),
+                width: 40,
+                height: 40,
+                borderRadius: .circular(8),
               ),
             ],
           ),
-          const SizedBox(height: 24),
+          24.h,
           Divider(color: colorScheme.outlineVariant),
-          const SizedBox(height: 16),
+          16.h,
           Row(
             children: <Widget>[
               AppProfilePicture(
@@ -245,16 +243,16 @@ class _TimeTableCard extends StatelessWidget {
                 backgroundColor: colorScheme.secondaryContainer,
                 foregroundColor: colorScheme.onSecondaryContainer,
               ),
-              const SizedBox(width: 16),
+              16.w,
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      timeTable.namaGuru,
+                      timeTable.namaGuru.capitalizeEveryWord,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: textTheme.labelLarge?.copyWith(
+                      style: textTheme.bodyMedium?.copyWith(
                         color: colorScheme.onSurface,
                         fontWeight: .bold,
                       ),
@@ -262,41 +260,41 @@ class _TimeTableCard extends StatelessWidget {
                       context,
                       isLoading: isLoading,
                       width: 128,
-                      height: 14,
+                      height: 16,
+                      borderRadius: .circular(24),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(width: 12),
+              16.w,
               Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
+                crossAxisAlignment: .end,
                 children: [
                   Text(
                     l10n.classRoom,
                     maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                    overflow: .ellipsis,
                     style: textTheme.labelSmall?.copyWith(
                       color: colorScheme.onSurfaceVariant,
                       fontWeight: .bold,
                     ),
                   ),
-                  const SizedBox(height: 4),
                   Text(
                     timeTable.kelas,
                     maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.end,
+                    overflow: .ellipsis,
+                    textAlign: .end,
                     style: textTheme.titleMedium?.copyWith(
                       color: colorScheme.primary,
-                      fontWeight: .bold,
                     ),
                   ).toShimmer(
                     context,
                     isLoading: isLoading,
-                    width: 44,
+                    width: 40,
                     height: 16,
+                    borderRadius: .circular(24),
                   ),
-                ],
+                ].separatedBy(4.h),
               ),
             ],
           ),
@@ -351,39 +349,6 @@ String _indonesianDayName(DateTime dateTime) {
   };
 }
 
-class _TimeTableEmptyView extends StatelessWidget {
-  const _TimeTableEmptyView({required this.icon, required this.message});
-
-  final IconData icon;
-  final String message;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 48, color: colorScheme.onSurfaceVariant),
-            const SizedBox(height: 12),
-            Text(
-              message,
-              textAlign: TextAlign.center,
-              style: textTheme.bodyLarge?.copyWith(
-                color: colorScheme.onSurfaceVariant,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 class _TimeTableLoadingCard extends StatelessWidget {
   const _TimeTableLoadingCard();
 
@@ -392,49 +357,47 @@ class _TimeTableLoadingCard extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
 
     return AppContainer(
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      margin: const .only(bottom: 8),
       borderRadius: null,
-      backgroundColor: colorScheme.surfaceContainerLow,
+      backgroundColor: colorScheme.surface,
       elevation: 0,
-      padding: const EdgeInsets.all(24),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: .center,
             children: [
               Expanded(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: .start,
                   children: [
-                    const Text('').toShimmer(context, width: 140, height: 16),
+                    const Text('').toShimmer(context, width: 140, height: 12),
                     const SizedBox(height: 8),
-                    const Text('').toShimmer(context, width: 104, height: 14),
+                    const Text('').toShimmer(context, width: 120, height: 16),
                   ],
                 ),
               ),
-              const SizedBox(width: 16),
+              16.w,
               const Text('').toShimmer(
                 context,
                 width: 56,
                 height: 56,
-                borderRadius: BorderRadius.all(Radius.circular(8)),
+                borderRadius: .circular(8),
               ),
             ],
           ),
-          const SizedBox(height: 24),
+          24.h,
           Divider(color: colorScheme.outlineVariant),
-          const SizedBox(height: 16),
+          16.h,
           Row(
             children: [
               const Text('').toShimmer(
                 context,
                 width: 40,
                 height: 40,
-                borderRadius: BorderRadius.circular(999),
+                borderRadius: .circular(8),
               ),
-              const SizedBox(width: 12),
+              16.w,
               const Expanded(
                 child: Text(''),
               ).toShimmer(context, width: 112, height: 12),
@@ -443,9 +406,8 @@ class _TimeTableLoadingCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   const Text('').toShimmer(context, width: 48, height: 10),
-                  const SizedBox(height: 8),
-                  const Text('').toShimmer(context, width: 44, height: 14),
-                ],
+                  const Text('').toShimmer(context, width: 48, height: 16),
+                ].separatedBy(8.h),
               ),
             ],
           ),

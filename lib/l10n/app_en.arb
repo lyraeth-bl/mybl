@@ -223,6 +223,8 @@
   "profileLoadFailedSubtitle": "Give it a pull-to-refresh, our memory's a bit fuzzy.",
   "timeTableLoadFailedTitle": "Our schedule got shuffled!",
   "timeTableLoadFailedSubtitle": "Pull to refresh and we'll sort it back out.",
+  "timeTableNoScheduleTitle": "No Classes Scheduled",
+  "timeTableNoScheduleSubtitle": "Nothing on the schedule today, enjoy the break.",
   "noExtracurricularData": "No extracurricular data yet.",
   "schoolYear": "School year",
   "allSchoolYears": "All school years",
