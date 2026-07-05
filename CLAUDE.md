@@ -524,6 +524,22 @@ try {
 
 All shared widgets live in `lib/core/widgets/`. Always reach for these before writing a one-off `TextFormField`, `ElevatedButton`, `OutlinedButton`, `TextButton`, or toast call — never bypass them with raw Material widgets.
 
+| Widget                                    | Use when                                                            |
+| ------------------------------------------ | -------------------------------------------------------------------- |
+| `AppButton` (+ `.outlined`, `.text`)       | Primary/secondary/tertiary action buttons with loading state        |
+| `AppTextField`                             | Form text input with the app's animated filled surface              |
+| `AppTopBar`                                 | Screen `AppBar` with centered title, profile leading, actions        |
+| `AppContainer`                              | Dashboard card with optional header row and tap target               |
+| `AppSliverGroup`                            | Section header + sliver/box content inside a `CustomScrollView`      |
+| `AppIconContainer`                          | Small filled icon surface (leading icons, status badges)             |
+| `AppChipContainer` (+ `.outlined`)          | Compact rounded label/chip without selection/delete behavior         |
+| `AppProfilePicture`                         | Circular avatar with initials/icon fallback when no image            |
+| `AppEmptyState` / `AppEmptyStateSliver`     | Centered empty/error state, with optional retry action                |
+| `AppToast` (`AppToastType`)                 | Semantic toast notifications — never call `ScaffoldMessenger` raw    |
+| `AppResponsiveContainer`                    | Center content and cap width (e.g. forms) on wide screens             |
+| `RefreshWrapper` (+ `blocRefresh`)          | Pull-to-refresh wrapper for scrollable pages                          |
+| `LogoutButton`                              | Logout action button with loading state, used in profile-type screens |
+
 ## Shared Extensions
 
 All shared extensions live in `lib/core/internal/src/extensions/extensions.dart`. Always reach for these before writing one-off shimmer wrappers, spacing `SizedBox`es, date formatting, or `MediaQuery.of(context)` calls.

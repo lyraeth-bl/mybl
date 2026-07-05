@@ -4,12 +4,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 
-import '../../../../core/app_router/app_router.dart';
 import '../../../../core/internal/src/extensions/extensions.dart';
 import '../../../../core/widgets/app_container.dart';
-import '../../../../core/widgets/app_profile_picture.dart';
+import '../../../../core/widgets/app_empty_state.dart';
 import '../../../../core/widgets/app_top_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../user/domain/entities/student_entity/student_entity.dart';
@@ -30,6 +28,7 @@ class _GuardiansDetailView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
       appBar: const _GuardianDetailAppBar(),
       body: const _GuardianDetailBody(),
     );
@@ -44,61 +43,11 @@ class _GuardianDetailAppBar extends StatelessWidget
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    return AppTopBar(
-      toolbarHeight: 72,
-      title: Text(l10n.guardianDetails),
-      centerTitle: true,
-      actions: const <Widget>[_GuardianDetailProfileAction()],
-    );
+    return AppTopBar(toolbarHeight: 72, title: Text(l10n.guardianDetails));
   }
 
   @override
-  Size get preferredSize => Size.fromHeight(80);
-}
-
-class _GuardianDetailProfileAction extends StatelessWidget {
-  const _GuardianDetailProfileAction();
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final l10n = AppLocalizations.of(context)!;
-
-    return BlocSelector<
-      UserBloc,
-      UserState,
-      ({String? imageUrl, String? name})
-    >(
-      selector: (state) => state.maybeWhen(
-        success: (student) => (
-          imageUrl: student.profileImageUrl,
-          name: student.nama ?? student.namaPanggilan,
-        ),
-        orElse: () => (imageUrl: null, name: null),
-      ),
-      builder: (context, profile) {
-        return Tooltip(
-          message: l10n.profile,
-          child: InkResponse(
-            onTap: () => context.go(RouteNames.profile),
-            customBorder: const CircleBorder(),
-            radius: 24,
-            child: SizedBox.square(
-              dimension: kMinInteractiveDimension,
-              child: Center(
-                child: AppProfilePicture(
-                  imageUrl: profile.imageUrl,
-                  initials: AppProfilePicture.initialFrom(profile.name),
-                  radius: 20,
-                  side: BorderSide(color: colorScheme.outlineVariant, width: 2),
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
+  Size get preferredSize => Size.fromHeight(72);
 }
 
 class _GuardianDetailBody extends StatelessWidget {
@@ -119,22 +68,36 @@ class _GuardianDetailBody extends StatelessWidget {
 
         final l10n = AppLocalizations.of(context)!;
 
-        if (isLoading || student == null) {
+        if (isLoading) {
           return CustomScrollView(
-            physics: const BouncingScrollPhysics(),
+            physics: const AlwaysScrollableScrollPhysics(),
             slivers: [
               SliverPadding(
-                padding: const EdgeInsets.fromLTRB(16, 24, 16, 32),
+                padding: const .fromLTRB(16, 24, 16, 32),
                 sliver: SliverList.list(
                   children: const [
                     _GuardianLoadingCard(),
-                    SizedBox(height: 16),
                     _GuardianLoadingCard(),
-                    SizedBox(height: 16),
                     _GuardianLoadingCard(),
-                    SizedBox(height: 16),
                     _GuardianLoadingCard(rowCount: 4),
-                  ],
+                  ].separatedBy(16.h),
+                ),
+              ),
+            ],
+          );
+        }
+
+        if (student == null) {
+          return CustomScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            slivers: [
+              AppEmptyStateSliver(
+                icon: Icons.face_retouching_off,
+                title: l10n.profileLoadFailedTitle,
+                message: l10n.profileLoadFailedSubtitle,
+                retryLabel: l10n.tryAgain,
+                onRetry: () => context.read<UserBloc>().add(
+                  const UserEvent.fetchStudentRequested(true),
                 ),
               ),
             ],
@@ -142,10 +105,10 @@ class _GuardianDetailBody extends StatelessWidget {
         }
 
         return CustomScrollView(
-          physics: const BouncingScrollPhysics(),
+          physics: const AlwaysScrollableScrollPhysics(),
           slivers: [
             SliverPadding(
-              padding: const EdgeInsets.fromLTRB(16, 24, 16, 32),
+              padding: const .fromLTRB(16, 24, 16, 32),
               sliver: SliverList.list(
                 children: [
                   _GuardianCard(
@@ -156,7 +119,6 @@ class _GuardianDetailBody extends StatelessWidget {
                     occupation: student.pekerjaanAyah,
                     lastEducation: student.pendidikanTerakhirAyah,
                   ),
-                  const SizedBox(height: 24),
                   _GuardianCard(
                     title: l10n.mother,
                     icon: Icons.woman_rounded,
@@ -165,7 +127,6 @@ class _GuardianDetailBody extends StatelessWidget {
                     occupation: student.pekerjaanIbu,
                     lastEducation: student.pendidikanTerakhirIbu,
                   ),
-                  const SizedBox(height: 24),
                   _GuardianCard(
                     title: l10n.guardian,
                     icon: Icons.family_restroom_rounded,
@@ -174,9 +135,8 @@ class _GuardianDetailBody extends StatelessWidget {
                     occupation: student.pekerjaanWali,
                     lastEducation: student.pendidikanTerakhirWali,
                   ),
-                  const SizedBox(height: 24),
                   _ContactDetailCard(student: student),
-                ],
+                ].separatedBy(24.h),
               ),
             ),
           ],
@@ -205,24 +165,25 @@ class _GuardianCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final ThemeData theme = Theme.of(context);
+    final ColorScheme colorScheme = theme.colorScheme;
     final l10n = AppLocalizations.of(context)!;
 
-    return AppContainer(
+    return AppFramedContainer(
       title: _SectionTitle(icon: icon, title: title),
-      margin: EdgeInsets.zero,
-      borderRadius: BorderRadius.circular(16),
+      gap: .all(8),
+      backgroundColor: colorScheme.surfaceContainer,
+      headerColor: colorScheme.surfaceContainer,
+      innerBorderRadius: .circular(12),
+      margin: .zero,
       elevation: 0,
-      backgroundColor: colorScheme.surfaceContainerLow,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           _DetailRow(label: nameLabel, value: name),
-          const SizedBox(height: 12),
           _DetailRow(label: l10n.occupation, value: occupation),
-          const SizedBox(height: 12),
           _DetailRow(label: l10n.lastEducation, value: lastEducation),
-        ],
+        ].separatedBy(16.h),
       ),
     );
   }
@@ -238,32 +199,31 @@ class _ContactDetailCard extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
 
-    return AppContainer(
+    return AppFramedContainer(
       title: _SectionTitle(
         icon: Icons.contact_phone_rounded,
         title: l10n.contactAndAddress,
       ),
-      margin: EdgeInsets.zero,
-      backgroundColor: colorScheme.surfaceContainerLow,
+      gap: .all(8),
+      backgroundColor: colorScheme.surfaceContainer,
+      headerColor: colorScheme.surfaceContainer,
+      innerBorderRadius: .circular(12),
+      margin: .zero,
       elevation: 0,
-      borderRadius: BorderRadius.circular(16),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           _DetailRow(
             label: l10n.parentPhoneNumber,
             value: student.noTeleponOrangTua,
           ),
-          const SizedBox(height: 12),
           _DetailRow(
             label: l10n.guardianPhoneNumber,
             value: student.noTeleponWali,
           ),
-          const SizedBox(height: 12),
           _DetailRow(label: l10n.parentAddress, value: student.alamatOrangTua),
-          const SizedBox(height: 12),
           _DetailRow(label: l10n.guardianAddress, value: student.alamatWali),
-        ],
+        ].separatedBy(16.h),
       ),
     );
   }
@@ -277,14 +237,13 @@ class _SectionTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    final ColorScheme colorScheme = theme.colorScheme;
     return Row(
       children: [
-        Icon(icon, size: 22),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Text(title, maxLines: 1, overflow: TextOverflow.ellipsis),
-        ),
-      ],
+        Icon(icon, size: 24, color: colorScheme.onSurface),
+        Expanded(child: Text(title, maxLines: 1, overflow: .ellipsis)),
+      ].separatedBy(8.w),
     );
   }
 }
@@ -302,7 +261,7 @@ class _DetailRow extends StatelessWidget {
     final resolvedValue = value == null || value!.trim().isEmpty ? '-' : value!;
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         Text(
           label,
@@ -310,7 +269,6 @@ class _DetailRow extends StatelessWidget {
             color: colorScheme.onSurfaceVariant,
           ),
         ),
-        const SizedBox(height: 4),
         Text(
           resolvedValue,
           style: textTheme.bodyLarge?.copyWith(
@@ -318,7 +276,7 @@ class _DetailRow extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-      ],
+      ].separatedBy(4.h),
     );
   }
 }
@@ -337,29 +295,27 @@ class _GuardianLoadingCard extends StatelessWidget {
         children: [
           const Text('').toShimmer(
             context,
-            width: 22,
-            height: 22,
-            borderRadius: BorderRadius.circular(999),
+            width: 24,
+            height: 24,
+            borderRadius: .circular(8),
           ),
-          const SizedBox(width: 12),
-          const Text('').toShimmer(context, width: 96, height: 14),
-        ],
+          const Text('').toShimmer(context, width: 96, height: 12),
+        ].separatedBy(16.w),
       ),
-      margin: EdgeInsets.zero,
+      margin: .zero,
       elevation: 0,
-      backgroundColor: colorScheme.surfaceContainerLow,
+      backgroundColor: colorScheme.surfaceContainer,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: List.generate(rowCount, (index) {
           return Padding(
-            padding: EdgeInsets.only(top: index == 0 ? 0 : 12),
+            padding: .only(top: index == 0 ? 0 : 16),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: .start,
               children: [
-                const Text('').toShimmer(context, width: 88, height: 11),
-                const SizedBox(height: 6),
-                const Text('').toShimmer(context, width: 160, height: 14),
-              ],
+                const Text('').toShimmer(context, width: 80, height: 8),
+                const Text('').toShimmer(context, width: 160, height: 16),
+              ].separatedBy(8.h),
             ),
           );
         }),
