@@ -111,7 +111,7 @@ extension AnimateListExtension on List<Widget> {
   List<Widget> makeListAnimate({
     AnimationType type = AnimationType.fadeSlideUp,
     Duration interval = const Duration(milliseconds: 100),
-    Duration duration = const Duration(milliseconds: 400),
+    Duration duration = const Duration(milliseconds: 250),
     Curve curve = Curves.easeOut,
   }) {
     if (isEmpty) return this;

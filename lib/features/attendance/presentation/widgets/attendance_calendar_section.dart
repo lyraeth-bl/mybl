@@ -22,133 +22,130 @@ class AttendanceCalendarSection extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final locale = Localizations.localeOf(context).toString();
 
-    return SliverPadding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      sliver: SliverToBoxAdapter(
-        child: BlocBuilder<MonthlyAttendanceBloc, MonthlyAttendanceState>(
-          buildWhen: (prev, curr) {
-            final prevData = (
-              month: prev.maybeWhen(
-                success: (m, _, _, _, _, _) => m,
-                loading: (m, _) => m,
-                orElse: () => 0,
-              ),
-              year: prev.maybeWhen(
-                success: (_, y, _, _, _, _) => y,
-                loading: (_, y) => y,
-                orElse: () => 0,
-              ),
-              map: prev.maybeWhen(
-                success: (_, _, _, am, _, _) => am,
-                orElse: () => null,
-              ),
-              isLoading: prev.maybeWhen(
-                loading: (_, _) => true,
-                orElse: () => false,
-              ),
-            );
-            final currData = (
-              month: curr.maybeWhen(
-                success: (m, _, _, _, _, _) => m,
-                loading: (m, _) => m,
-                orElse: () => 0,
-              ),
-              year: curr.maybeWhen(
-                success: (_, y, _, _, _, _) => y,
-                loading: (_, y) => y,
-                orElse: () => 0,
-              ),
-              map: curr.maybeWhen(
-                success: (_, _, _, am, _, _) => am,
-                orElse: () => null,
-              ),
-              isLoading: curr.maybeWhen(
-                loading: (_, _) => true,
-                orElse: () => false,
-              ),
-            );
-            return prevData != currData;
-          },
-          builder: (context, state) {
-            final (month, year) = state.maybeWhen(
-              success: (month, year, _, _, _, _) => (month, year),
-              loading: (month, year) => (month, year),
-              orElse: () => (DateTime.now().month, DateTime.now().year),
-            );
-            final focusedDay = state.maybeWhen(
-              success: (month, year, _, _, _, _) => DateTime(year, month),
-              loading: (month, year) => DateTime(year, month),
-              orElse: () => DateTime.now(),
-            );
-            final attendanceMap = state.maybeWhen(
-              success: (_, _, _, attendanceMap, _, _) => attendanceMap,
-              orElse: () => const <DateTime, AttendanceStatus>{},
-            );
-            final entityMap = state.maybeWhen(
-              success: (_, _, _, _, entityMap, _) => entityMap,
-              orElse: () => const <DateTime, AttendanceEntity>{},
-            );
-            final isLoading = state.maybeWhen(
+    return SliverToBoxAdapter(
+      child: BlocBuilder<MonthlyAttendanceBloc, MonthlyAttendanceState>(
+        buildWhen: (prev, curr) {
+          final prevData = (
+            month: prev.maybeWhen(
+              success: (m, _, _, _, _, _) => m,
+              loading: (m, _) => m,
+              orElse: () => 0,
+            ),
+            year: prev.maybeWhen(
+              success: (_, y, _, _, _, _) => y,
+              loading: (_, y) => y,
+              orElse: () => 0,
+            ),
+            map: prev.maybeWhen(
+              success: (_, _, _, am, _, _) => am,
+              orElse: () => null,
+            ),
+            isLoading: prev.maybeWhen(
               loading: (_, _) => true,
               orElse: () => false,
-            );
+            ),
+          );
+          final currData = (
+            month: curr.maybeWhen(
+              success: (m, _, _, _, _, _) => m,
+              loading: (m, _) => m,
+              orElse: () => 0,
+            ),
+            year: curr.maybeWhen(
+              success: (_, y, _, _, _, _) => y,
+              loading: (_, y) => y,
+              orElse: () => 0,
+            ),
+            map: curr.maybeWhen(
+              success: (_, _, _, am, _, _) => am,
+              orElse: () => null,
+            ),
+            isLoading: curr.maybeWhen(
+              loading: (_, _) => true,
+              orElse: () => false,
+            ),
+          );
+          return prevData != currData;
+        },
+        builder: (context, state) {
+          final (month, year) = state.maybeWhen(
+            success: (month, year, _, _, _, _) => (month, year),
+            loading: (month, year) => (month, year),
+            orElse: () => (DateTime.now().month, DateTime.now().year),
+          );
+          final focusedDay = state.maybeWhen(
+            success: (month, year, _, _, _, _) => DateTime(year, month),
+            loading: (month, year) => DateTime(year, month),
+            orElse: () => DateTime.now(),
+          );
+          final attendanceMap = state.maybeWhen(
+            success: (_, _, _, attendanceMap, _, _) => attendanceMap,
+            orElse: () => const <DateTime, AttendanceStatus>{},
+          );
+          final entityMap = state.maybeWhen(
+            success: (_, _, _, _, entityMap, _) => entityMap,
+            orElse: () => const <DateTime, AttendanceEntity>{},
+          );
+          final isLoading = state.maybeWhen(
+            loading: (_, _) => true,
+            orElse: () => false,
+          );
 
-            return RepaintBoundary(
-              child: ColoredBox(
-                color: colorScheme.surface,
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          IconButton.filledTonal(
-                            onPressed: isLoading
-                                ? null
-                                : () => context.read<MonthlyAttendanceBloc>().add(
-                                    const MonthlyAttendanceEvent.previousMonthRequested(),
-                                  ),
-                            icon: const Icon(Icons.chevron_left),
-                            tooltip: l10n.previousMonth,
+          return RepaintBoundary(
+            child: ColoredBox(
+              color: colorScheme.surface,
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        IconButton.filledTonal(
+                          onPressed: isLoading
+                              ? null
+                              : () => context.read<MonthlyAttendanceBloc>().add(
+                                  const MonthlyAttendanceEvent.previousMonthRequested(),
+                                ),
+                          icon: const Icon(Icons.chevron_left),
+                          tooltip: l10n.previousMonth,
+                        ),
+                        Text(
+                          _monthLabel(month, year, locale),
+                          style: textTheme.titleMedium?.copyWith(
+                            color: colorScheme.onSurface,
+                            fontWeight: .bold,
                           ),
-                          Text(
-                            _monthLabel(month, year, locale),
-                            style: textTheme.titleMedium?.copyWith(
-                              color: colorScheme.onSurface,
-                              fontWeight: .bold,
-                            ),
-                          ),
-                          IconButton.filledTonal(
-                            onPressed: isLoading
-                                ? null
-                                : () => context.read<MonthlyAttendanceBloc>().add(
-                                    const MonthlyAttendanceEvent.nextMonthRequested(),
-                                  ),
-                            icon: const Icon(Icons.chevron_right),
-                            tooltip: l10n.nextMonth,
-                          ),
-                        ],
-                      ),
+                        ),
+                        IconButton.filledTonal(
+                          onPressed: isLoading
+                              ? null
+                              : () => context.read<MonthlyAttendanceBloc>().add(
+                                  const MonthlyAttendanceEvent.nextMonthRequested(),
+                                ),
+                          icon: const Icon(Icons.chevron_right),
+                          tooltip: l10n.nextMonth,
+                        ),
+                      ],
+                    ),
 
-                      const SizedBox(height: 16),
+                    const SizedBox(height: 16),
 
-                      AttendanceCalendar(
-                        focusedDay: focusedDay,
-                        attendanceData: attendanceMap,
-                        entityData: entityMap,
-                      ),
+                    AttendanceCalendar(
+                      focusedDay: focusedDay,
+                      attendanceData: attendanceMap,
+                      entityData: entityMap,
+                    ),
 
-                      const SizedBox(height: 16),
+                    const SizedBox(height: 16),
 
-                      const _AttendanceLegends(),
-                    ],
-                  ),
+                    const _AttendanceLegends(),
+                  ],
                 ),
               ),
-            );
-          },
-        ),
+            ),
+          );
+        },
       ),
     );
   }
