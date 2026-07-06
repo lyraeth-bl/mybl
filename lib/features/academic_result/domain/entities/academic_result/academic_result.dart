@@ -24,6 +24,14 @@ abstract class AcademicResultEntity with _$AcademicResultEntity {
     required String jenisNilai,
     required String unit,
   }) = _AcademicResultEntity;
+
+  const AcademicResultEntity._();
+
+  int get semesterNumber {
+    final normalized = semester.toLowerCase();
+    if (normalized.contains('2') || normalized.contains('genap')) return 2;
+    return 1;
+  }
 }
 
 @freezed
@@ -34,6 +42,22 @@ abstract class AcademicResultCategories with _$AcademicResultCategories {
     required AcademicResultSummary summary,
     required List<AcademicResultEntity> listResult,
   }) = _AcademicResultCategories;
+
+  const AcademicResultCategories._();
+
+  List<AcademicResultEntity> resultsForSemester(int semester) =>
+      listResult.where((result) => result.semesterNumber == semester).toList();
+
+  int totalDataForSemester(int semester) =>
+      resultsForSemester(semester).length;
+
+  double averageForSemester(int semester) {
+    final results = resultsForSemester(semester);
+    if (results.isEmpty) return 0.0;
+
+    return results.fold<double>(0, (total, result) => total + result.nilai) /
+        results.length;
+  }
 }
 
 @freezed
@@ -42,6 +66,28 @@ abstract class AcademicResultData with _$AcademicResultData {
     required AcademicResultOverallSummary overallSummaryResult,
     required List<AcademicResultCategories> categories,
   }) = _AcademicResultData;
+
+  const AcademicResultData._();
+
+  int totalDataForSemester(int semester) => categories.fold(
+    0,
+    (total, category) => total + category.totalDataForSemester(semester),
+  );
+
+  double averageForSemester(int semester) {
+    final total = totalDataForSemester(semester);
+    if (total == 0) return 0.0;
+
+    final weightedSum = categories.fold<double>(
+      0,
+      (sum, category) =>
+          sum +
+          category.averageForSemester(semester) *
+              category.totalDataForSemester(semester),
+    );
+
+    return weightedSum / total;
+  }
 }
 
 @freezed
@@ -80,4 +126,14 @@ abstract class AcademicResultResponse with _$AcademicResultResponse {
     required AcademicResultMeta meta,
     required AcademicResultData data,
   }) = _AcademicResultResponse;
+}
+
+String academicResultGradeLabel(double average) {
+  if (average >= 90) return 'A';
+  if (average >= 85) return 'B+';
+  if (average >= 80) return 'B';
+  if (average >= 75) return 'C+';
+  if (average >= 70) return 'C';
+  if (average >= 60) return 'D';
+  return 'E';
 }

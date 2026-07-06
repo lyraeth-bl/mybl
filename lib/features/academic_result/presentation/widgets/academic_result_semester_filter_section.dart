@@ -27,7 +27,7 @@ class AcademicResultSemesterFilterSection extends StatelessWidget {
     return SliverToBoxAdapter(
       child: SingleChildScrollView(
         scrollDirection: .horizontal,
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+        padding: const .fromLTRB(16, 8, 16, 8),
         child: Row(
           children: [1, 2].map((semester) {
             return _SemesterChip(
@@ -38,7 +38,7 @@ class AcademicResultSemesterFilterSection extends StatelessWidget {
             ).toShimmer(
               context,
               isLoading: isLoading,
-              height: 24,
+              height: 48,
               width: 80,
               borderRadius: .circular(24),
             );
@@ -70,6 +70,7 @@ class _SemesterChip extends StatelessWidget {
     return AppChipContainer(
       onTap: onTap,
       padding: const .symmetric(horizontal: 16, vertical: 8),
+      constraints: const BoxConstraints(minHeight: 48),
       backgroundColor: selected
           ? colorScheme.primaryContainer
           : colorScheme.surfaceContainer,
@@ -79,21 +80,7 @@ class _SemesterChip extends StatelessWidget {
       side: selected
           ? BorderSide.none
           : BorderSide(color: colorScheme.outlineVariant),
-      child: Text(label),
+      child: Center(child: Text(label)),
     );
-  }
-}
-
-class _SemesterLoadingChip extends StatelessWidget {
-  const _SemesterLoadingChip({required this.width});
-
-  final double width;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: width,
-      height: 36,
-    ).toShimmer(context, borderRadius: BorderRadius.circular(999));
   }
 }

@@ -8,6 +8,7 @@ import 'package:my_bl/core/widgets/app_chip_container.dart';
 import '../../../../core/internal/src/extensions/extensions.dart';
 import '../../../../core/widgets/app_container.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../domain/entities/academic_result/academic_result.dart';
 import 'academic_result_ui_helpers.dart';
 
 class AcademicResultScoreSummarySection extends StatelessWidget {
@@ -117,6 +118,7 @@ class _ScoreProgress extends StatelessWidget {
     final TextTheme textTheme = theme.textTheme;
     final double percent = value / 100;
     final bool disableAnimations = MediaQuery.disableAnimationsOf(context);
+    final Color scoreColor = academicResultScoreColor(context, value);
 
     return SizedBox.square(
       dimension: 72,
@@ -128,7 +130,7 @@ class _ScoreProgress extends StatelessWidget {
                   value: percent,
                   strokeWidth: 5,
                   strokeCap: .round,
-                  color: colorScheme.onSurfaceVariant,
+                  color: scoreColor,
                   backgroundColor: colorScheme.surfaceContainerHigh,
                 )
               : TweenAnimationBuilder<double>(
@@ -140,7 +142,7 @@ class _ScoreProgress extends StatelessWidget {
                       value: value,
                       strokeWidth: 5,
                       strokeCap: .round,
-                      color: colorScheme.onSurfaceVariant,
+                      color: scoreColor,
                       backgroundColor: colorScheme.surfaceContainerHigh,
                     );
                   },
@@ -148,10 +150,8 @@ class _ScoreProgress extends StatelessWidget {
           Center(
             child:
                 Text(
-                  academicResultGrade(value),
-                  style: textTheme.titleLarge?.copyWith(
-                    color: colorScheme.onSurface,
-                  ),
+                  academicResultGradeLabel(value),
+                  style: textTheme.titleLarge?.copyWith(color: scoreColor),
                 ).toShimmer(
                   context,
                   isLoading: isLoading,
