@@ -48,8 +48,7 @@ abstract class AcademicResultCategories with _$AcademicResultCategories {
   List<AcademicResultEntity> resultsForSemester(int semester) =>
       listResult.where((result) => result.semesterNumber == semester).toList();
 
-  int totalDataForSemester(int semester) =>
-      resultsForSemester(semester).length;
+  int totalDataForSemester(int semester) => resultsForSemester(semester).length;
 
   double averageForSemester(int semester) {
     final results = resultsForSemester(semester);

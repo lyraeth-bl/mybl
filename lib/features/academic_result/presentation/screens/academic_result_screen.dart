@@ -4,16 +4,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 
-import '../../../../core/app_router/app_router.dart';
 import '../../../../core/di/get_it_constant.dart';
 import '../../../../core/internal/src/extensions/extensions.dart';
-import '../../../../core/widgets/app_profile_picture.dart';
 import '../../../../core/widgets/app_top_bar.dart';
 import '../../../../core/widgets/refresh_wrapper.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../../user/presentation/bloc/user_bloc.dart';
 import '../bloc/academic_result_bloc.dart';
 import '../widgets/academic_result_content.dart';
 import '../widgets/academic_result_state_widgets.dart';

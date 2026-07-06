@@ -29,20 +29,23 @@ class AcademicResultSemesterFilterSection extends StatelessWidget {
         scrollDirection: .horizontal,
         padding: const .fromLTRB(16, 8, 16, 8),
         child: Row(
-          children: [1, 2].map((semester) {
-            return _SemesterChip(
-              label: '${l10n.semester} $semester',
-              selected: selectedSemester == semester,
-              onTap: () => onChanged(semester),
-              isLoading: isLoading,
-            ).toShimmer(
-              context,
-              isLoading: isLoading,
-              height: 48,
-              width: 80,
-              borderRadius: .circular(24),
-            );
-          }).toList().separatedBy(8.w),
+          children: [1, 2]
+              .map((semester) {
+                return _SemesterChip(
+                  label: '${l10n.semester} $semester',
+                  selected: selectedSemester == semester,
+                  onTap: () => onChanged(semester),
+                  isLoading: isLoading,
+                ).toShimmer(
+                  context,
+                  isLoading: isLoading,
+                  height: 48,
+                  width: 80,
+                  borderRadius: .circular(24),
+                );
+              })
+              .toList()
+              .separatedBy(8.w),
         ),
       ),
     );
