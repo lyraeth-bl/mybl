@@ -128,6 +128,8 @@
       }
     }
   },
+  "academicResultSubjectsEmptyTitle": "Report Card's Still Blank",
+  "academicResultSubjectsEmptyMessage": "No grades logged for this semester just yet.",
   "extracurricular": "Extracurricular",
   "extracurricularShort": "Extracurr.",
   "merit": "Merit",

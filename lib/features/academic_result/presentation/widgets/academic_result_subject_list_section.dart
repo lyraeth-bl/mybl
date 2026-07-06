@@ -49,9 +49,15 @@ class AcademicResultSubjectListSection extends StatelessWidget {
           ),
       sliver: subjects.isEmpty && !isLoading
           ? SliverToBoxAdapter(
-              child: AcademicResultMessage(
-                icon: Icons.menu_book_outlined,
-                message: emptyMessage,
+              child: AppFramedContainer(
+                margin: .zero,
+                gap: .zero,
+                elevation: 0,
+                child: AppNoData(
+                  icon: Icons.menu_book_outlined,
+                  title: l10n.academicResultSubjectsEmptyTitle,
+                  message: emptyMessage,
+                ),
               ),
             )
           : SliverList.builder(
@@ -368,12 +374,11 @@ class _SubjectDetailSheet extends StatelessWidget {
 
                       return Padding(
                         padding: .only(bottom: isLast ? 0 : 16),
-                        child:
-                            _ResultDetailCard(result: subject.results[index])
-                                .makeAnimate(
-                                  duration: const Duration(milliseconds: 250),
-                                  delay: Duration(milliseconds: 100 * index),
-                                ),
+                        child: _ResultDetailCard(result: subject.results[index])
+                            .makeAnimate(
+                              duration: const Duration(milliseconds: 250),
+                              delay: Duration(milliseconds: 100 * index),
+                            ),
                       );
                     },
                   ),

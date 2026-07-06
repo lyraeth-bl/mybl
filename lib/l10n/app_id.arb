@@ -128,6 +128,8 @@
       }
     }
   },
+  "academicResultSubjectsEmptyTitle": "Rapor Masih Kosong",
+  "academicResultSubjectsEmptyMessage": "Belum ada nilai yang tercatat buat semester ini.",
   "extracurricular": "Ekstrakulikuler",
   "extracurricularShort": "Ekskul",
   "merit": "Merit",

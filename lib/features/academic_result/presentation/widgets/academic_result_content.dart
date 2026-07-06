@@ -83,7 +83,7 @@ class _AcademicResultContentState extends State<AcademicResultContent> {
         ),
         AcademicResultSubjectListSection(
           subjects: subjects,
-          emptyMessage: l10n.noData,
+          emptyMessage: l10n.academicResultSubjectsEmptyMessage,
           isLoading: widget.isLoading,
         ),
       ],
