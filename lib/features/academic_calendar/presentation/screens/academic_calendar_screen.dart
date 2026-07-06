@@ -4,11 +4,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 
-import '../../../../core/app_router/app_router.dart';
 import '../../../../core/di/get_it_constant.dart';
-import '../../../../core/widgets/app_profile_picture.dart';
+import '../../../../core/internal/src/extensions/extensions.dart';
 import '../../../../core/widgets/app_top_bar.dart';
 import '../../../../core/widgets/refresh_wrapper.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -48,7 +46,7 @@ class _AcademicCalendarViewState extends State<_AcademicCalendarView> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final unit = _currentStudentUnit(context);
       if (unit == null) {
-        context.read<UserBloc>().add(const UserEvent.fetchStudentRequested());
+        context.read<UserBloc>().add(const .fetchStudentRequested());
         return;
       }
 
@@ -71,7 +69,7 @@ class _AcademicCalendarViewState extends State<_AcademicCalendarView> {
     bool forceRefresh = false,
   }) {
     context.read<AcademicCalendarBloc>().add(
-      AcademicCalendarEvent.fetchAcademicCalendar(
+      .fetchAcademicCalendar(
         year: _focusedMonth.year,
         month: _focusedMonth.month,
         unit: unit,
@@ -103,7 +101,7 @@ class _AcademicCalendarViewState extends State<_AcademicCalendarView> {
       AcademicCalendarState
     >(
       context: context,
-      event: AcademicCalendarEvent.fetchAcademicCalendar(
+      event: .fetchAcademicCalendar(
         year: _focusedMonth.year,
         month: _focusedMonth.month,
         unit: unit,
@@ -138,6 +136,7 @@ class _AcademicCalendarViewState extends State<_AcademicCalendarView> {
         if (unit != null) _fetchAcademicCalendar(unit: unit);
       },
       child: Scaffold(
+        backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
         appBar: const _AcademicCalendarAppBar(),
         body: _AcademicCalendarBody(
           focusedMonth: _focusedMonth,
@@ -159,61 +158,11 @@ class _AcademicCalendarAppBar extends StatelessWidget
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    return AppTopBar(
-      toolbarHeight: 72,
-      title: Text(l10n.academicCalendar),
-      centerTitle: true,
-      actions: [const _AcademicCalendarProfileAction()],
-    );
+    return AppTopBar(toolbarHeight: 72, title: Text(l10n.academicCalendar));
   }
 
   @override
-  Size get preferredSize => Size.fromHeight(80);
-}
-
-class _AcademicCalendarProfileAction extends StatelessWidget {
-  const _AcademicCalendarProfileAction();
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final l10n = AppLocalizations.of(context)!;
-
-    return BlocSelector<
-      UserBloc,
-      UserState,
-      ({String? imageUrl, String? name})
-    >(
-      selector: (state) => state.maybeWhen(
-        success: (student) => (
-          imageUrl: student.profileImageUrl,
-          name: student.nama ?? student.namaPanggilan,
-        ),
-        orElse: () => (imageUrl: null, name: null),
-      ),
-      builder: (context, profile) {
-        return Tooltip(
-          message: l10n.profile,
-          child: InkResponse(
-            onTap: () => context.go(RouteNames.profile),
-            customBorder: const CircleBorder(),
-            radius: 24,
-            child: SizedBox.square(
-              dimension: kMinInteractiveDimension,
-              child: Center(
-                child: AppProfilePicture(
-                  imageUrl: profile.imageUrl,
-                  initials: AppProfilePicture.initialFrom(profile.name),
-                  radius: 20,
-                  side: BorderSide(color: colorScheme.outlineVariant, width: 2),
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
+  Size get preferredSize => Size.fromHeight(72);
 }
 
 class _AcademicCalendarBody extends StatelessWidget {
@@ -241,8 +190,8 @@ class _AcademicCalendarBody extends StatelessWidget {
             onPrevious: onPrevious,
             onNext: onNext,
           ),
-          const AcademicCalendarEventListSection(),
-          const SliverToBoxAdapter(child: SizedBox(height: 24)),
+          AcademicCalendarEventListSection(focusedMonth: focusedMonth),
+          SliverToBoxAdapter(child: 24.h),
         ],
       ),
     );

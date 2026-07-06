@@ -31,48 +31,39 @@ class AcademicCalendarEventCard extends StatelessWidget {
     final (statusBackgroundColor, statusForegroundColor) =
         academicCalendarStatusColors(context, status);
 
-    return AppContainer(
-      margin: const EdgeInsets.only(bottom: 12),
-      backgroundColor: colorScheme.surfaceContainerLow,
+    return AppFramedContainer(
+      margin: const EdgeInsets.only(bottom: 8),
+      gap: .zero,
       elevation: 0,
-      borderRadius: BorderRadius.circular(8),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           _EventDateBadge(month: monthLabel, day: dayLabel),
-          const SizedBox(width: 16),
+          16.w,
           Expanded(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: .start,
               children: [
                 Text(
                   event.judul,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: textTheme.labelLarge?.copyWith(
+                  style: textTheme.titleMedium?.copyWith(
                     color: colorScheme.onSurface,
-                    fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 8),
+                8.h,
                 _EventInlineMeta(
                   icon: Icons.schedule_rounded,
                   value: _formatEventRange(event, locale),
                 ),
-                if (event.unit.trim().isNotEmpty) ...[
-                  const SizedBox(height: 4),
-                  _EventInlineMeta(
-                    icon: Icons.school_outlined,
-                    value: event.unit,
-                  ),
-                ],
                 if (event.keterangan.trim().isNotEmpty) ...[
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 16),
                   Text(
                     event.keterangan,
                     maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: textTheme.bodySmall?.copyWith(
+                    overflow: .ellipsis,
+                    style: textTheme.bodyMedium?.copyWith(
                       color: colorScheme.onSurfaceVariant,
                     ),
                   ),
@@ -80,7 +71,7 @@ class AcademicCalendarEventCard extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(width: 8),
+          8.w,
           ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 84),
             child: AppChipContainer(
@@ -88,11 +79,10 @@ class AcademicCalendarEventCard extends StatelessWidget {
                 AppLocalizations.of(context)!,
                 status,
               ).toUpperCase(),
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               backgroundColor: statusBackgroundColor,
               foregroundColor: statusForegroundColor,
               textStyle: textTheme.labelSmall,
-              textAlign: TextAlign.center,
+              textAlign: .center,
             ),
           ),
         ],
@@ -119,13 +109,10 @@ class AcademicCalendarEventLoadingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return AppContainer(
-      margin: const EdgeInsets.only(bottom: 12),
-      backgroundColor: colorScheme.surfaceContainerLow,
+    return AppFramedContainer(
+      margin: const EdgeInsets.only(bottom: 8),
+      gap: EdgeInsets.zero,
       elevation: 0,
-      borderRadius: BorderRadius.circular(8),
       child: const Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -151,42 +138,6 @@ class AcademicCalendarEventLoadingCard extends StatelessWidget {
   }
 }
 
-class AcademicCalendarEventListMessage extends StatelessWidget {
-  const AcademicCalendarEventListMessage({
-    super.key,
-    required this.icon,
-    required this.message,
-  });
-
-  final IconData icon;
-  final String message;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
-        child: Column(
-          children: [
-            Icon(icon, size: 48, color: colorScheme.onSurfaceVariant),
-            const SizedBox(height: 12),
-            Text(
-              message,
-              textAlign: TextAlign.center,
-              style: textTheme.bodyLarge?.copyWith(
-                color: colorScheme.onSurfaceVariant,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 class _EventDateBadge extends StatelessWidget {
   const _EventDateBadge({required this.month, required this.day});
 
@@ -202,28 +153,23 @@ class _EventDateBadge extends StatelessWidget {
       dimension: 52,
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: colorScheme.primaryContainer.withValues(alpha: 0.6),
-          borderRadius: BorderRadius.circular(10),
+          color: colorScheme.primaryContainer,
+          borderRadius: .circular(8),
         ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: .center,
           children: [
             Text(
               month,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: textTheme.labelSmall?.copyWith(
-                color: colorScheme.primary,
-                fontWeight: FontWeight.w700,
+                color: colorScheme.onPrimaryContainer,
               ),
             ),
-            const SizedBox(height: 2),
             Text(
               day,
-              style: textTheme.titleLarge?.copyWith(
-                color: colorScheme.primary,
-                fontWeight: FontWeight.w700,
-              ),
+              style: textTheme.titleLarge?.copyWith(color: colorScheme.primary),
             ),
           ],
         ),
@@ -245,14 +191,12 @@ class _EventInlineMeta extends StatelessWidget {
 
     return Row(
       children: [
-        Icon(icon, size: 13, color: colorScheme.onSurfaceVariant),
-        const SizedBox(width: 4),
         Expanded(
           child: Text(
             value,
             maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: textTheme.labelSmall?.copyWith(
+            overflow: .ellipsis,
+            style: textTheme.bodySmall?.copyWith(
               color: colorScheme.onSurfaceVariant,
             ),
           ),

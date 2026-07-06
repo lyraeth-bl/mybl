@@ -14,7 +14,7 @@ AcademicCalendarStatus academicCalendarStatusFromTitle(String title) {
   final normalized = title.toLowerCase();
 
   if (normalized.contains('libur') || normalized.contains('natal')) {
-    return AcademicCalendarStatus.holiday;
+    return .holiday;
   }
 
   if (normalized.contains('asas') ||
@@ -23,53 +23,48 @@ AcademicCalendarStatus academicCalendarStatusFromTitle(String title) {
       normalized.contains('pas') ||
       normalized.contains('pat') ||
       normalized.contains('asat')) {
-    return AcademicCalendarStatus.exam;
+    return .exam;
   }
 
   if (normalized.contains('class meeting') ||
+      normalized.contains('class metting') ||
       normalized.contains('event') ||
       normalized.contains('kegiatan') ||
       normalized.contains('perayaan')) {
-    return AcademicCalendarStatus.event;
+    return .event;
   }
 
   if (normalized.contains('rapor') ||
       normalized.contains('raport') ||
       normalized.contains('pembagian')) {
-    return AcademicCalendarStatus.academic;
+    return .academic;
   }
 
-  return AcademicCalendarStatus.academic;
+  return .academic;
 }
 
 AcademicCalendarStatus academicCalendarStatusFromEvents(
   List<AcademicCalendarEntity> events,
 ) {
   if (events.any(
-    (event) =>
-        academicCalendarStatusFromTitle(event.judul) ==
-        AcademicCalendarStatus.holiday,
+    (event) => academicCalendarStatusFromTitle(event.judul) == .holiday,
   )) {
-    return AcademicCalendarStatus.holiday;
+    return .holiday;
   }
 
   if (events.any(
-    (event) =>
-        academicCalendarStatusFromTitle(event.judul) ==
-        AcademicCalendarStatus.exam,
+    (event) => academicCalendarStatusFromTitle(event.judul) == .exam,
   )) {
-    return AcademicCalendarStatus.exam;
+    return .exam;
   }
 
   if (events.any(
-    (event) =>
-        academicCalendarStatusFromTitle(event.judul) ==
-        AcademicCalendarStatus.event,
+    (event) => academicCalendarStatusFromTitle(event.judul) == .event,
   )) {
-    return AcademicCalendarStatus.event;
+    return .event;
   }
 
-  return AcademicCalendarStatus.academic;
+  return .academic;
 }
 
 String academicCalendarStatusLabel(
@@ -77,10 +72,10 @@ String academicCalendarStatusLabel(
   AcademicCalendarStatus status,
 ) {
   return switch (status) {
-    AcademicCalendarStatus.exam => l10n.exam,
-    AcademicCalendarStatus.academic => l10n.academic,
-    AcademicCalendarStatus.holiday => l10n.holiday,
-    AcademicCalendarStatus.event => l10n.event,
+    .exam => l10n.exam,
+    .academic => l10n.academic,
+    .holiday => l10n.holiday,
+    .event => l10n.event,
   };
 }
 
@@ -92,21 +87,33 @@ String academicCalendarStatusLabel(
   final appColors = AppColors.of(context);
 
   return switch (status) {
-    AcademicCalendarStatus.exam => (
-      colorScheme.primaryContainer,
-      colorScheme.onPrimaryContainer,
-    ),
-    AcademicCalendarStatus.academic => (
+    .exam => (colorScheme.primaryContainer, colorScheme.onPrimaryContainer),
+    .academic => (
       colorScheme.tertiaryContainer,
       colorScheme.onTertiaryContainer,
     ),
-    AcademicCalendarStatus.holiday => (
-      colorScheme.errorContainer,
-      colorScheme.onErrorContainer,
-    ),
-    AcademicCalendarStatus.event => (
+    .holiday => (colorScheme.errorContainer, colorScheme.onErrorContainer),
+    .event => (
       appColors.warning.withValues(alpha: 0.18),
-      appColors.warning,
+      colorScheme.onSurface,
     ),
+  };
+}
+
+/// A solid, equally-saturated color representing [status] for use in
+/// legends/swatches, distinct from the pale container tones used for day
+/// cell backgrounds.
+Color academicCalendarStatusDotColor(
+  BuildContext context,
+  AcademicCalendarStatus status,
+) {
+  final colorScheme = Theme.of(context).colorScheme;
+  final appColors = AppColors.of(context);
+
+  return switch (status) {
+    .exam => colorScheme.primary,
+    .academic => colorScheme.tertiary,
+    .holiday => colorScheme.error,
+    .event => appColors.warning,
   };
 }

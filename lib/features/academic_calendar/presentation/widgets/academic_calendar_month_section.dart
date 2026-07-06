@@ -5,6 +5,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:my_bl/core/internal/src/extensions/extensions.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import '../../../../core/widgets/app_chip_container.dart';
@@ -63,55 +64,120 @@ class AcademicCalendarMonthSection extends StatelessWidget {
 
         return AppSliverGroup(
           title: _monthLabel(focusedMonth, locale),
+          headerHeight: 72,
+          backgroundColor: colorScheme.surface,
+          contentPadding: EdgeInsets.zero,
           titleStyle: textTheme.titleMedium!.copyWith(
             color: colorScheme.onSurface,
-            fontWeight: FontWeight.bold,
           ),
           action: Row(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisSize: .min,
             children: [
-              AppChipContainer(
-                onTap: isLoading ? null : onPrevious,
-                child: const Icon(Icons.chevron_left_rounded),
+              AnimatedOpacity(
+                duration: const Duration(milliseconds: 200),
+                opacity: isLoading ? 0.4 : 1,
+                child: AppChipContainer(
+                  onTap: isLoading ? null : onPrevious,
+                  padding: const EdgeInsets.all(12),
+                  child: const Icon(Icons.chevron_left_rounded),
+                ),
               ),
-              const SizedBox(width: 8),
-              AppChipContainer(
-                onTap: isLoading ? null : onNext,
-                child: const Icon(Icons.chevron_right_rounded),
+              AnimatedOpacity(
+                duration: const Duration(milliseconds: 200),
+                opacity: isLoading ? 0.4 : 1,
+                child: AppChipContainer(
+                  onTap: isLoading ? null : onNext,
+                  padding: const EdgeInsets.all(12),
+                  child: const Icon(Icons.chevron_right_rounded),
+                ),
               ),
-            ],
-          ),
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 8,
+            ].separatedBy(8.w),
           ),
           child: RepaintBoundary(
-            child: AppContainer(
-              margin: EdgeInsets.zero,
-              elevation: 0,
-              backgroundColor: colorScheme.surfaceContainerLow,
-              borderRadius: BorderRadius.circular(16),
-              child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 200),
-                child: Column(
-                  key: ValueKey((
-                    focusedMonth.year,
-                    focusedMonth.month,
-                    isLoading,
-                    data.length,
-                  )),
-                  children: [
-                    _AcademicCalendarMonth(
-                      focusedMonth: focusedMonth,
-                      events: data,
-                    ),
-                  ],
+            child: ColoredBox(
+              color: colorScheme.surface,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 200),
+                  child: Column(
+                    key: ValueKey((
+                      focusedMonth.year,
+                      focusedMonth.month,
+                      isLoading,
+                      data.length,
+                    )),
+                    children: [
+                      _AcademicCalendarMonth(
+                        focusedMonth: focusedMonth,
+                        events: data,
+                      ),
+                      16.h,
+                      const _AcademicCalendarLegends(),
+                    ],
+                  ),
                 ),
               ),
             ),
           ),
         );
       },
+    );
+  }
+}
+
+class _AcademicCalendarLegends extends StatelessWidget {
+  const _AcademicCalendarLegends();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+      child: Wrap(
+        spacing: 16,
+        runSpacing: 6,
+        alignment: WrapAlignment.spaceEvenly,
+        children: [
+          for (final status in AcademicCalendarStatus.values)
+            _LegendItem(
+              dotColor: academicCalendarStatusDotColor(context, status),
+              label: academicCalendarStatusLabel(l10n, status),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _LegendItem extends StatelessWidget {
+  const _LegendItem({required this.dotColor, required this.label});
+
+  final Color dotColor;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 8,
+          height: 8,
+          decoration: BoxDecoration(shape: BoxShape.circle, color: dotColor),
+        ),
+        8.w,
+        Text(
+          label,
+          style: textTheme.labelMedium?.copyWith(
+            color: colorScheme.onSurfaceVariant,
+          ),
+        ),
+      ],
     );
   }
 }
@@ -201,21 +267,21 @@ class _CalendarTable extends StatelessWidget {
 
     return TableCalendar<AcademicCalendarEntity>(
       focusedDay: focusedDay,
-      firstDay: DateTime.utc(2020, 1, 1),
-      lastDay: DateTime.utc(2030, 12, 31),
+      firstDay: .utc(2020, 1, 1),
+      lastDay: .utc(2030, 12, 31),
       headerVisible: false,
       calendarStyle: CalendarStyle(
         todayDecoration: BoxDecoration(
           color: colorScheme.primaryContainer,
-          shape: BoxShape.rectangle,
-          borderRadius: BorderRadius.circular(8),
+          shape: .rectangle,
+          borderRadius: .circular(8),
         ),
         todayTextStyle: textTheme.bodyLarge!.copyWith(
           color: colorScheme.onPrimaryContainer,
-          fontWeight: FontWeight.bold,
+          fontWeight: .bold,
         ),
         weekendTextStyle: textTheme.bodyLarge!.copyWith(
-          color: colorScheme.error,
+          color: colorScheme.tertiary,
         ),
         defaultTextStyle: textTheme.bodyLarge!.copyWith(
           color: colorScheme.onSurface,
@@ -229,12 +295,12 @@ class _CalendarTable extends StatelessWidget {
           fontWeight: FontWeight.bold,
         ),
         weekendStyle: textTheme.labelLarge!.copyWith(
-          color: colorScheme.error,
+          color: colorScheme.tertiary,
           fontWeight: FontWeight.bold,
         ),
       ),
-      startingDayOfWeek: StartingDayOfWeek.monday,
-      availableGestures: AvailableGestures.none,
+      startingDayOfWeek: .monday,
+      availableGestures: .none,
       onDaySelected: (selectedDay, _) => _showDayDetail(context, selectedDay),
       calendarBuilders: CalendarBuilders<AcademicCalendarEntity>(
         defaultBuilder: (context, day, focusedDay) {
@@ -271,8 +337,8 @@ class _AcademicCalendarDayCell extends StatelessWidget {
         child: DecoratedBox(
           decoration: BoxDecoration(
             color: backgroundColor,
-            shape: BoxShape.rectangle,
-            borderRadius: BorderRadius.circular(8),
+            shape: .rectangle,
+            borderRadius: .circular(8),
           ),
           child: Center(
             child: Text(
@@ -324,21 +390,17 @@ class _AcademicCalendarDetailSheet extends StatelessWidget {
                     Text(
                       formattedDate,
                       style: textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
                         color: colorScheme.onSurface,
                       ),
                     ),
-                    const SizedBox(height: 24),
+                    24.h,
                     if (!hasEvents)
-                      Center(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 24),
-                          child: Text(
-                            l10n.noData,
-                            style: textTheme.titleMedium?.copyWith(
-                              color: colorScheme.onSurfaceVariant,
-                            ),
-                            textAlign: TextAlign.center,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 24),
+                        child: Center(
+                          child: AppNoData(
+                            icon: Icons.event_busy_outlined,
+                            title: l10n.noData,
                           ),
                         ),
                       )
