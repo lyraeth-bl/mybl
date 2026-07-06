@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/app_router/app_router.dart';
 import '../../../../core/di/get_it_constant.dart';
+import '../../../../core/internal/src/extensions/extensions.dart';
 import '../../../../core/widgets/app_profile_picture.dart';
 import '../../../../core/widgets/app_top_bar.dart';
 import '../../../../core/widgets/refresh_wrapper.dart';
@@ -42,15 +43,14 @@ class _AcademicResultViewState extends State<_AcademicResultView> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<AcademicResultBloc>().add(
-        const AcademicResultEvent.fetchAcademicResult(),
-      );
+      context.read<AcademicResultBloc>().add(const .fetchAcademicResult());
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
       appBar: const _AcademicResultAppBar(),
       body: const _AcademicResultBody(),
     );
@@ -66,61 +66,11 @@ class _AcademicResultAppBar extends StatelessWidget
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    return AppTopBar(
-      toolbarHeight: 72,
-      title: Text(l10n.academicResult),
-      centerTitle: true,
-      actions: const <Widget>[_AcademicResultProfileAction()],
-    );
+    return AppTopBar(toolbarHeight: 72, title: Text(l10n.academicResult));
   }
 
   @override
-  Size get preferredSize => Size.fromHeight(80);
-}
-
-class _AcademicResultProfileAction extends StatelessWidget {
-  const _AcademicResultProfileAction();
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final l10n = AppLocalizations.of(context)!;
-
-    return BlocSelector<
-      UserBloc,
-      UserState,
-      ({String? imageUrl, String? name})
-    >(
-      selector: (state) => state.maybeWhen(
-        success: (student) => (
-          imageUrl: student.profileImageUrl,
-          name: student.nama ?? student.namaPanggilan,
-        ),
-        orElse: () => (imageUrl: null, name: null),
-      ),
-      builder: (context, profile) {
-        return Tooltip(
-          message: l10n.profile,
-          child: InkResponse(
-            onTap: () => context.go(RouteNames.profile),
-            customBorder: const CircleBorder(),
-            radius: 24,
-            child: SizedBox.square(
-              dimension: kMinInteractiveDimension,
-              child: Center(
-                child: AppProfilePicture(
-                  imageUrl: profile.imageUrl,
-                  initials: AppProfilePicture.initialFrom(profile.name),
-                  radius: 20,
-                  side: BorderSide(color: colorScheme.outlineVariant, width: 2),
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
+  Size get preferredSize => Size.fromHeight(72);
 }
 
 class _AcademicResultBody extends StatelessWidget {
@@ -164,7 +114,7 @@ class _AcademicResultBody extends StatelessWidget {
               );
             },
           ),
-          const SliverToBoxAdapter(child: SizedBox(height: 24)),
+          SliverToBoxAdapter(child: 24.h),
         ],
       ),
     );

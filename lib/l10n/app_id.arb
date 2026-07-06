@@ -120,6 +120,14 @@
       }
     }
   },
+  "outOfMaxScore": "/ {maxScore}",
+  "@outOfMaxScore": {
+    "placeholders": {
+      "maxScore": {
+        "type": "int"
+      }
+    }
+  },
   "extracurricular": "Ekstrakulikuler",
   "extracurricularShort": "Ekskul",
   "merit": "Merit",

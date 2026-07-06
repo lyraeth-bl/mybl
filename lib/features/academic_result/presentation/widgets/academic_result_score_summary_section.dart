@@ -3,6 +3,7 @@
 // that can be found in the LICENSE file.
 
 import 'package:flutter/material.dart';
+import 'package:my_bl/core/widgets/app_chip_container.dart';
 
 import '../../../../core/internal/src/extensions/extensions.dart';
 import '../../../../core/widgets/app_container.dart';
@@ -23,116 +24,81 @@ class AcademicResultScoreSummarySection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-    final l10n = AppLocalizations.of(context)!;
-    final clampedAverage = average.clamp(0, 100).toDouble();
-
-    if (isLoading) return const _ScoreSummaryLoading();
+    final ThemeData theme = Theme.of(context);
+    final ColorScheme colorScheme = theme.colorScheme;
+    final TextTheme textTheme = theme.textTheme;
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
+    final double clampedAverage = average.clamp(0, 100).toDouble();
 
     return SliverPadding(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+      padding: const .fromLTRB(16, 24, 16, 24),
       sliver: SliverToBoxAdapter(
-        child: AppContainer(
-          margin: EdgeInsets.zero,
-          backgroundColor: colorScheme.primaryContainer,
-          foregroundColor: colorScheme.onPrimaryContainer,
-          borderRadius: BorderRadius.circular(16),
+        child: AppFramedContainer(
+          margin: .zero,
+          gap: .zero,
           elevation: 0,
           child: Row(
             children: [
               Expanded(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: .start,
                   children: [
                     Text(
                       l10n.currentSemesterScore,
-                      style: textTheme.labelMedium?.copyWith(
-                        color: colorScheme.onPrimaryContainer,
-                        fontWeight: .bold,
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    8.h,
                     Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
+                      crossAxisAlignment: .end,
                       children: [
                         Text(
                           academicResultFormatScore(clampedAverage),
                           style: textTheme.headlineSmall?.copyWith(
-                            color: colorScheme.onPrimaryContainer,
-                            fontWeight: .bold,
+                            color: colorScheme.onSurface,
                           ),
                         ).toShimmer(
                           context,
                           isLoading: isLoading,
-                          width: 72,
-                          height: 32,
+                          width: 32,
+                          height: 24,
+                          borderRadius: .circular(24),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(bottom: 4),
+                          padding: const .only(bottom: 4),
                           child: Text(
-                            ' / 100',
+                            l10n.outOfMaxScore(100),
                             style: textTheme.titleSmall?.copyWith(
-                              color: colorScheme.onPrimaryContainer,
-                              fontWeight: .bold,
+                              color: colorScheme.onSurfaceVariant,
                             ),
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 16),
-                    AppContainer(
-                      margin: EdgeInsets.zero,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 4,
+                    16.h,
+                    AppChipContainer.outlined(
+                      child: Text(
+                        l10n.assessmentDataCount(totalData),
+                        style: textTheme.labelSmall?.copyWith(
+                          color: colorScheme.onSurface,
+                        ),
                       ),
-                      backgroundColor: colorScheme.primary.withValues(
-                        alpha: 0.2,
-                      ),
-                      foregroundColor: colorScheme.onPrimary,
-                      elevation: 0,
-                      borderRadius: BorderRadius.circular(999),
-                      child:
-                          Text(
-                            l10n.assessmentDataCount(totalData),
-                            style: textTheme.labelSmall?.copyWith(
-                              color: colorScheme.onPrimaryContainer,
-                              fontWeight: .bold,
-                            ),
-                          ).toShimmer(
-                            context,
-                            isLoading: isLoading,
-                            width: 116,
-                            height: 12,
-                            borderRadius: BorderRadius.circular(999),
-                          ),
+                    ).toShimmer(
+                      context,
+                      isLoading: isLoading,
+                      width: 120,
+                      height: 24,
+                      borderRadius: .circular(24),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(width: 16),
+              16.w,
               _ScoreProgress(value: clampedAverage, isLoading: isLoading),
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _ScoreSummaryLoading extends StatelessWidget {
-  const _ScoreSummaryLoading();
-
-  @override
-  Widget build(BuildContext context) {
-    return SliverPadding(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-      sliver: SliverToBoxAdapter(
-        child: const SizedBox(
-          width: double.infinity,
-          height: 124,
-        ).toShimmer(context, borderRadius: BorderRadius.circular(16)),
       ),
     );
   }
@@ -146,44 +112,53 @@ class _ScoreProgress extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final percent = value / 100;
+    final ThemeData theme = Theme.of(context);
+    final ColorScheme colorScheme = theme.colorScheme;
+    final TextTheme textTheme = theme.textTheme;
+    final double percent = value / 100;
+    final bool disableAnimations = MediaQuery.disableAnimationsOf(context);
 
     return SizedBox.square(
-      dimension: 76,
+      dimension: 72,
       child: Stack(
-        fit: StackFit.expand,
+        fit: .expand,
         children: [
-          TweenAnimationBuilder<double>(
-            tween: Tween<double>(begin: 0, end: percent),
-            duration: const Duration(milliseconds: 500),
-            curve: Curves.easeOutCubic,
-            builder: (context, value, child) {
-              return CircularProgressIndicator(
-                value: value,
-                strokeWidth: 5,
-                strokeCap: StrokeCap.round,
-                color: colorScheme.onPrimaryContainer,
-                backgroundColor: colorScheme.onPrimaryContainer.withValues(
-                  alpha: 0.24,
+          disableAnimations
+              ? CircularProgressIndicator(
+                  value: percent,
+                  strokeWidth: 5,
+                  strokeCap: .round,
+                  color: colorScheme.onSurfaceVariant,
+                  backgroundColor: colorScheme.surfaceContainerHigh,
+                )
+              : TweenAnimationBuilder<double>(
+                  tween: Tween<double>(begin: 0, end: percent),
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeOutCubic,
+                  builder: (context, value, child) {
+                    return CircularProgressIndicator(
+                      value: value,
+                      strokeWidth: 5,
+                      strokeCap: .round,
+                      color: colorScheme.onSurfaceVariant,
+                      backgroundColor: colorScheme.surfaceContainerHigh,
+                    );
+                  },
                 ),
-              );
-            },
-          ).toShimmer(
-            context,
-            isLoading: isLoading,
-            width: 76,
-            height: 76,
-            borderRadius: BorderRadius.circular(999),
-          ),
           Center(
-            child: Text(
-              '${(percent * 100).round()}%',
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                color: colorScheme.onPrimaryContainer,
-                fontWeight: .bold,
-              ),
-            ).toShimmer(context, isLoading: isLoading, width: 36, height: 14),
+            child:
+                Text(
+                  academicResultGrade(value),
+                  style: textTheme.titleLarge?.copyWith(
+                    color: colorScheme.onSurface,
+                  ),
+                ).toShimmer(
+                  context,
+                  isLoading: isLoading,
+                  width: 32,
+                  height: 16,
+                  borderRadius: .circular(24),
+                ),
           ),
         ],
       ),
