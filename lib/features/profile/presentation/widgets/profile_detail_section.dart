@@ -3,7 +3,6 @@
 // that can be found in the LICENSE file.
 
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 import '../../../../core/internal/src/extensions/extensions.dart';
 import '../../../../core/widgets/app_sliver_group.dart';
@@ -18,25 +17,24 @@ class ProfileDetailSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-    final l10n = AppLocalizations.of(context)!;
-    final locale = Localizations.localeOf(context).toString();
-    final details = _profileDetails(student, l10n, locale);
+    final ThemeData theme = Theme.of(context);
+    final ColorScheme colorScheme = theme.colorScheme;
+    final TextTheme textTheme = theme.textTheme;
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
+    final List<_ProfileDetailEntity> details = _profileDetails(
+      context,
+      student,
+      l10n,
+    );
 
     return AppSliverGroup(
       title: l10n.personalInfo,
       pinned: true,
-      titleStyle: textTheme.titleMedium?.copyWith(
-        color: colorScheme.onSurface,
-        fontWeight: FontWeight.bold,
-      ),
-      headerPadding: const EdgeInsetsDirectional.fromSTEB(16, 12, 16, 8),
+      titleStyle: textTheme.titleMedium?.copyWith(color: colorScheme.onSurface),
       headerHeight: 48,
       titleOffset: 0,
       collapsedOpacity: 1,
-      backgroundColor: colorScheme.surface,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      backgroundColor: colorScheme.surfaceContainer,
       sliver: SliverList.list(
         children: details
             .asMap()
@@ -58,33 +56,10 @@ class ProfileDetailSection extends StatelessWidget {
   }
 }
 
-class ProfileDetailNotesSection extends StatelessWidget {
-  const ProfileDetailNotesSection({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-    final l10n = AppLocalizations.of(context)!;
-
-    return SliverToBoxAdapter(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 24, 16, 32),
-        child: Text(
-          l10n.detailProfileNotes,
-          style: textTheme.labelMedium?.copyWith(
-            color: colorScheme.onSurfaceVariant,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 List<_ProfileDetailEntity> _profileDetails(
+  BuildContext context,
   StudentEntity student,
   AppLocalizations l10n,
-  String locale,
 ) {
   final gender = _text(student.jenisKelamin);
 
@@ -106,15 +81,13 @@ List<_ProfileDetailEntity> _profileDetails(
     ),
     _ProfileDetailEntity(
       title: l10n.dateOfBirth,
-      subtitle: _dateText(student.tanggalLahir, locale),
+      subtitle: _dateText(student.tanggalLahir, context),
       icon: Icons.date_range_outlined,
     ),
     _ProfileDetailEntity(
       title: l10n.gender,
       subtitle: gender == '-' ? gender : gender.capitalize,
-      icon: student.jenisKelamin?.trim().toLowerCase() == 'perempuan'
-          ? Icons.female_rounded
-          : Icons.male_rounded,
+      icon: _genderIcon(student.jenisKelamin),
     ),
     _ProfileDetailEntity(
       title: l10n.religion,
@@ -163,7 +136,7 @@ List<_ProfileDetailEntity> _profileDetails(
     ),
     _ProfileDetailEntity(
       title: l10n.admissionDate,
-      subtitle: _dateText(student.tanggalDiTerima, locale),
+      subtitle: _dateText(student.tanggalDiTerima, context),
       icon: Icons.calendar_today_outlined,
     ),
     _ProfileDetailEntity(
@@ -172,6 +145,15 @@ List<_ProfileDetailEntity> _profileDetails(
       icon: Icons.info_outline_rounded,
     ),
   ];
+}
+
+IconData _genderIcon(String? value) {
+  final gender = value?.trim().toLowerCase() ?? '';
+
+  if (gender == 'perempuan') return Icons.female_rounded;
+  if (gender.contains('laki')) return Icons.male_rounded;
+
+  return Icons.person_outline;
 }
 
 String _text(String? value) {
@@ -186,10 +168,10 @@ String _capitalizedText(String? value) {
   return text == '-' ? text : text.capitalize;
 }
 
-String _dateText(DateTime? value, String locale) {
+String _dateText(DateTime? value, BuildContext context) {
   if (value == null) return '-';
 
-  return DateFormat('EEEE, d MMMM yyyy', locale).format(value.toLocal());
+  return value.toLocal().toDayDateMonthYearFormat(context);
 }
 
 class _ProfileDetailEntity {

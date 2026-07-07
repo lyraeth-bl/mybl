@@ -39,41 +39,32 @@ class ProfileCardMenu extends StatelessWidget {
 
     return AppContainer(
       margin: const EdgeInsets.only(bottom: 4),
-      padding: EdgeInsets.zero,
-      backgroundColor: colorScheme.surfaceContainerLow,
-      elevation: 0,
-      shape:
-          shape ??
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      borderRadius: null,
+      padding: .zero,
+      elevation: 0.5,
       onTap: onTap,
+      borderRadius: null,
+      shape: shape ?? RoundedRectangleBorder(borderRadius: .circular(16)),
       child: ListTile(
-        shape:
-            shape ??
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        contentPadding: const .symmetric(horizontal: 16, vertical: 8),
         leading: AppIconContainer(
           icon: icon,
-          padding: const EdgeInsets.all(12),
+          padding: const .all(16),
           backgroundColor: colorScheme.primaryContainer,
           foregroundColor: colorScheme.onPrimaryContainer,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          shape: RoundedRectangleBorder(borderRadius: .circular(8)),
         ),
         title: Text(
           title,
           maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: textTheme.titleMedium?.copyWith(
-            color: colorScheme.onSurface,
-            fontWeight: FontWeight.bold,
-          ),
+          overflow: .ellipsis,
+          style: textTheme.titleMedium?.copyWith(color: colorScheme.onSurface),
         ),
         subtitle: Padding(
-          padding: const EdgeInsets.only(top: 4),
+          padding: const .only(top: 4),
           child: Text(
             subtitle,
             maxLines: 2,
-            overflow: TextOverflow.ellipsis,
+            overflow: .ellipsis,
             style: textTheme.bodyMedium?.copyWith(
               color: colorScheme.onSurfaceVariant,
             ),

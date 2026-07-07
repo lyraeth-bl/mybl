@@ -4,6 +4,7 @@
 
 import 'package:flutter/material.dart';
 
+import '../../../../core/internal/src/extensions/extensions.dart';
 import '../../../../core/widgets/logout_button.dart';
 import '../../../../l10n/app_localizations.dart';
 import 'profile_card_menu.dart';
@@ -27,7 +28,7 @@ class ProfileMenuSection extends StatelessWidget {
     return SliverList.list(
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          padding: const .symmetric(horizontal: 16),
           child: ProfileCardMenu(
             title: l10n.personalInfo,
             subtitle: l10n.personalInfoDesc,
@@ -35,15 +36,14 @@ class ProfileMenuSection extends StatelessWidget {
             onTap: onPersonalInfoTap,
           ),
         ),
-        const SizedBox(height: 16),
         Padding(
-          padding: EdgeInsetsGeometry.symmetric(horizontal: 16),
+          padding: .symmetric(horizontal: 16),
           child: LogoutButton(
             onPressed: onLogoutPressed,
             isLoading: isLogoutLoading,
           ),
         ),
-      ],
+      ].separatedBy(16.h),
     );
   }
 }

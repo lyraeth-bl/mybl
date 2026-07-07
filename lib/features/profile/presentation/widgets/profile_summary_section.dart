@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/internal/src/extensions/extensions.dart';
 import '../../../../core/widgets/app_container.dart';
 import '../../../../core/widgets/app_icon_container.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -19,17 +20,17 @@ class ProfileSummarySection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SliverPadding(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+      padding: const .fromLTRB(16, 0, 16, 8),
       sliver: SliverToBoxAdapter(
         child: Column(
-          children: const [
-            _TotalMeritCard(),
-            SizedBox(height: 12),
+          children: [
+            const _TotalMeritCard(),
+            12.h,
             Row(
               children: [
-                Expanded(child: _AttendanceSummaryCard()),
-                SizedBox(width: 16),
-                Expanded(child: _ScoreSummaryCard()),
+                const Expanded(child: _AttendanceSummaryCard()),
+                16.w,
+                const Expanded(child: _ScoreSummaryCard()),
               ],
             ),
           ],
@@ -62,53 +63,51 @@ class _TotalMeritCard extends StatelessWidget {
             : NumberFormat.decimalPattern(locale).format(totalMeritPoint);
 
         return AppContainer(
-          margin: EdgeInsets.zero,
+          margin: .zero,
           backgroundColor: colorScheme.primaryContainer,
           foregroundColor: colorScheme.onPrimaryContainer,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: .circular(16),
           elevation: 0,
           child: Row(
             children: [
               Expanded(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: .start,
                   children: [
                     Text(
                       l10n.totalMeritPoint,
                       maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                      overflow: .ellipsis,
                       style: textTheme.labelLarge?.copyWith(
                         color: colorScheme.onPrimaryContainer,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: .bold,
                         letterSpacing: 0,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    8.h,
                     Text(
                       value,
                       maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                      overflow: .ellipsis,
                       style: textTheme.headlineMedium?.copyWith(
                         color: colorScheme.onPrimaryContainer,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: .bold,
                         letterSpacing: 0,
                       ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(width: 16),
+              16.w,
               AppIconContainer(
                 icon: Icons.workspace_premium_outlined,
                 iconSize: 32,
-                padding: const EdgeInsets.all(16),
+                padding: const .all(16),
                 backgroundColor: colorScheme.onPrimaryContainer.withValues(
                   alpha: 0.14,
                 ),
                 foregroundColor: colorScheme.onPrimaryContainer,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
+                shape: RoundedRectangleBorder(borderRadius: .circular(16)),
               ),
             ],
           ),
@@ -140,17 +139,17 @@ class _AttendanceSummaryCard extends StatelessWidget {
 
         return _ProfileMetricCard(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: .center,
             children: [
               SizedBox.square(
                 dimension: 72,
                 child: Stack(
-                  fit: StackFit.expand,
+                  fit: .expand,
                   children: [
                     CircularProgressIndicator(
                       value: rate,
                       strokeWidth: 6,
-                      strokeCap: StrokeCap.round,
+                      strokeCap: .round,
                       color: colorScheme.primary,
                       backgroundColor: colorScheme.primaryContainer,
                     ),
@@ -159,7 +158,7 @@ class _AttendanceSummaryCard extends StatelessWidget {
                         value,
                         style: textTheme.labelLarge?.copyWith(
                           color: colorScheme.primary,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: .bold,
                           letterSpacing: 0,
                         ),
                       ),
@@ -167,16 +166,16 @@ class _AttendanceSummaryCard extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(height: 14),
+              16.h,
               Flexible(
                 child: Text(
                   l10n.profileAttendance,
                   maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.center,
+                  overflow: .ellipsis,
+                  textAlign: .center,
                   style: textTheme.titleMedium?.copyWith(
                     color: colorScheme.onSurface,
-                    fontWeight: FontWeight.w500,
+                    fontWeight: .w500,
                     letterSpacing: 0,
                   ),
                 ),
@@ -212,38 +211,38 @@ class _ScoreSummaryCard extends StatelessWidget {
 
         return _ProfileMetricCard(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: .center,
             children: [
               AppIconContainer(
                 icon: Icons.star_border_rounded,
                 iconSize: 34,
-                padding: const EdgeInsets.all(8),
+                padding: const .all(8),
                 backgroundColor: colorScheme.tertiaryContainer,
                 foregroundColor: colorScheme.onTertiaryContainer,
               ),
-              const SizedBox(height: 12),
+              12.h,
               Flexible(
                 child: FittedBox(
-                  fit: BoxFit.scaleDown,
+                  fit: .scaleDown,
                   child: Text(
                     value,
                     maxLines: 1,
-                    textAlign: TextAlign.center,
+                    textAlign: .center,
                     style: textTheme.headlineSmall?.copyWith(
                       color: colorScheme.onSurface,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: .bold,
                       letterSpacing: 0,
                     ),
                   ),
                 ),
               ),
-              const SizedBox(height: 2),
+              4.h,
               Flexible(
                 child: Text(
                   l10n.profileAverageScore,
                   maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.center,
+                  overflow: .ellipsis,
+                  textAlign: .center,
                   style: textTheme.bodySmall?.copyWith(
                     color: colorScheme.onSurfaceVariant,
                     letterSpacing: 0,
@@ -268,9 +267,9 @@ class _ProfileMetricCard extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
 
     return AppContainer(
-      margin: EdgeInsets.zero,
+      margin: .zero,
       backgroundColor: colorScheme.surfaceContainerLow,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: .circular(16),
       elevation: 0,
       child: SizedBox(height: 128, child: child),
     );
