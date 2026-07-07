@@ -3,7 +3,9 @@
 // that can be found in the LICENSE file.
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../../core/app_router/app_router.dart';
 import '../../../../core/widgets/app_sliver_group.dart';
 import '../../../../l10n/app_localizations.dart';
 import 'settings_card.dart';
@@ -34,7 +36,7 @@ class SettingsSupportSection extends StatelessWidget {
               iconBackgroundColor: colorScheme.errorContainer,
               iconForegroundColor: colorScheme.onErrorContainer,
               title: l10n.helpCenter,
-              onTap: () {},
+              onTap: () => context.push(RouteNames.helpCenter),
             ),
             SettingsMenuTile(
               icon: Icons.shield_outlined,
