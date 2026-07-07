@@ -224,9 +224,8 @@ extension DateAndTimeFormatterExtension on DateTime {
 }
 
 extension StringExtension on String {
-  String get capitalize => isEmpty
-      ? this
-      : "${this[0].toUpperCase()}${substring(1).toLowerCase()}";
+  String get capitalize =>
+      isEmpty ? this : "${this[0].toUpperCase()}${substring(1).toLowerCase()}";
 
   String get capitalizeEveryWord =>
       split(' ').map((word) => word.capitalize).join(' ');
