@@ -224,15 +224,14 @@ extension DateAndTimeFormatterExtension on DateTime {
 }
 
 extension StringExtension on String {
-  String get capitalize =>
-      "${this[0].toUpperCase()}${substring(1).toLowerCase()}";
+  String get capitalize => isEmpty
+      ? this
+      : "${this[0].toUpperCase()}${substring(1).toLowerCase()}";
 
-  String get capitalizeEveryWord => split(' ')
-      .map((word) => word[0].toUpperCase() + word.substring(1).toLowerCase())
-      .join(' ');
+  String get capitalizeEveryWord =>
+      split(' ').map((word) => word.capitalize).join(' ');
 
-  String get takeFirstWordAndCapitalize =>
-      split(' ').map((word) => word).first.capitalize.toString();
+  String get takeFirstWordAndCapitalize => split(' ').first.capitalize;
 }
 
 extension SpaceExtension on num {
