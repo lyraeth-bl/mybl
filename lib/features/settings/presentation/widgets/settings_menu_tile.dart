@@ -4,6 +4,7 @@
 
 import 'package:flutter/material.dart';
 
+import '../../../../core/internal/src/extensions/extensions.dart';
 import '../../../../core/widgets/app_icon_container.dart';
 
 class SettingsMenuTile extends StatelessWidget {
@@ -15,7 +16,7 @@ class SettingsMenuTile extends StatelessWidget {
     required this.title,
     this.subtitle,
     this.trailing,
-    this.padding = const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+    this.padding = const .symmetric(horizontal: 16, vertical: 14),
     this.onTap,
   });
 
@@ -44,30 +45,30 @@ class SettingsMenuTile extends StatelessWidget {
               AppIconContainer(
                 icon: icon,
                 iconSize: 20,
-                padding: const EdgeInsets.all(8),
+                padding: const .all(8),
                 backgroundColor: iconBackgroundColor,
                 foregroundColor: iconForegroundColor,
               ),
-              const SizedBox(width: 16),
+              16.w,
               Expanded(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: .start,
                   children: [
                     Text(
                       title,
                       maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                      overflow: .ellipsis,
                       style: textTheme.titleSmall?.copyWith(
                         color: colorScheme.onSurface,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: .w600,
                       ),
                     ),
                     if (subtitle != null) ...[
-                      const SizedBox(height: 2),
+                      2.h,
                       Text(
                         subtitle!,
                         maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                        overflow: .ellipsis,
                         style: textTheme.bodySmall?.copyWith(
                           color: colorScheme.onSurfaceVariant,
                         ),
@@ -76,7 +77,7 @@ class SettingsMenuTile extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(width: 12),
+              12.w,
               trailing ??
                   Icon(
                     Icons.chevron_right_rounded,

@@ -27,20 +27,20 @@ class SettingsAppVersionFooter extends StatelessWidget {
               : '${packageInfo.version}+${packageInfo.buildNumber}';
 
           return Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 28),
+            padding: const .fromLTRB(16, 12, 16, 28),
             child: Column(
               children: [
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: .center,
+                  mainAxisSize: .min,
                   children: [
                     Icon(Icons.circle, size: 8, color: colorScheme.primary),
-                    const SizedBox(width: 8),
+                    8.w,
                     Text(
                       packageInfo?.appName ?? 'MyBL',
                       style: textTheme.labelMedium?.copyWith(
                         color: colorScheme.onSurfaceVariant,
-                        fontWeight: FontWeight.w700,
+                        fontWeight: .w700,
                       ),
                     ).toShimmer(
                       context,
@@ -49,18 +49,18 @@ class SettingsAppVersionFooter extends StatelessWidget {
                       height: 14,
                     ),
                     if (version.isNotEmpty) ...[
-                      const SizedBox(width: 4),
+                      4.w,
                       Text(
                         l10n.appVersion(version),
                         style: textTheme.labelMedium?.copyWith(
                           color: colorScheme.onSurfaceVariant,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: .w700,
                         ),
                       ),
                     ],
                   ],
                 ),
-                const SizedBox(height: 6),
+                6.h,
                 Text(
                   version.isEmpty
                       ? l10n.appVersion('')

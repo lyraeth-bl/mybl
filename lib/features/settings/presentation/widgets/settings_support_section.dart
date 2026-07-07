@@ -22,11 +22,11 @@ class SettingsSupportSection extends StatelessWidget {
       title: l10n.support,
       titleStyle: textTheme.titleMedium?.copyWith(
         color: colorScheme.onSurface,
-        fontWeight: FontWeight.bold,
+        fontWeight: .bold,
       ),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      contentPadding: const .symmetric(horizontal: 16, vertical: 8),
       child: SettingsCard(
-        padding: EdgeInsets.zero,
+        padding: .zero,
         child: Column(
           children: [
             SettingsMenuTile(

@@ -151,6 +151,8 @@
   "language": "Bahasa",
   "indonesian": "Indonesia",
   "english": "Inggris",
+  "indonesianShort": "Indo",
+  "englishShort": "Ing",
   "theme": "Tema",
   "systemTheme": "Sistem",
   "lightTheme": "Terang",
