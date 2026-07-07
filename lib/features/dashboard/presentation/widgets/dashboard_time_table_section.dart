@@ -230,7 +230,7 @@ class _TimeTableContainer extends StatelessWidget {
               crossAxisAlignment: .start,
               children: [
                 Text(
-                  subject,
+                  subject.capitalizeEveryWord,
                   style: textTheme.titleMedium!.copyWith(
                     color: colorScheme.onSurface,
                     fontWeight: .bold,
@@ -245,7 +245,7 @@ class _TimeTableContainer extends StatelessWidget {
                 const SizedBox(height: 8),
 
                 Text(
-                  teacherName,
+                  teacherName.capitalizeEveryWord,
                   style: textTheme.bodyMedium!.copyWith(
                     color: colorScheme.onSurfaceVariant,
                   ),
