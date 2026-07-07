@@ -69,4 +69,7 @@ class RouteNames {
 
   // Help Center
   static const String helpCenter = "/settings/help-center";
+
+  // Privacy Policy
+  static const String privacyPolicy = "/settings/privacy-policy";
 }

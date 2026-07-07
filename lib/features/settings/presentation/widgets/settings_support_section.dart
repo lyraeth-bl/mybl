@@ -43,7 +43,7 @@ class SettingsSupportSection extends StatelessWidget {
               iconBackgroundColor: colorScheme.secondaryContainer,
               iconForegroundColor: colorScheme.onSecondaryContainer,
               title: l10n.privacyPolicy,
-              onTap: () {},
+              onTap: () => context.push(RouteNames.privacyPolicy),
             ),
           ],
         ),
