@@ -254,8 +254,6 @@ class _LanguageSegmentedControl extends StatelessWidget {
     return SegmentedButton<String>(
       showSelectedIcon: false,
       style: ButtonStyle(
-        visualDensity: .compact,
-        tapTargetSize: .shrinkWrap,
         backgroundColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
             return colorScheme.primary;

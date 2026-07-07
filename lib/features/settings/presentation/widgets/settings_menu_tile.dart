@@ -16,7 +16,7 @@ class SettingsMenuTile extends StatelessWidget {
     required this.title,
     this.subtitle,
     this.trailing,
-    this.padding = const .symmetric(horizontal: 16, vertical: 14),
+    this.padding = const .symmetric(horizontal: 16, vertical: 12),
     this.onTap,
   });
 

@@ -71,7 +71,6 @@ class _SettingsNotificationSectionState
                   : isEnabled
                   ? l10n.notificationStatusActive
                   : l10n.notificationStatusInactive,
-              padding: const .symmetric(horizontal: 14, vertical: 12),
               trailing: _NotificationStatusBadge(
                 isLoading: isLoading,
                 isEnabled: isEnabled,

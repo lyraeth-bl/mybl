@@ -6,7 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/di/get_it_constant.dart';
+import '../../../../core/internal/src/extensions/extensions.dart';
 import '../../../../core/widgets/app_empty_state.dart';
+import '../../../../core/widgets/app_toast.dart';
 import '../../../../core/widgets/app_top_bar.dart';
 import '../../../../core/widgets/refresh_wrapper.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -48,30 +50,16 @@ class _NotificationViewState extends State<_NotificationView> {
 
   @override
   Widget build(BuildContext context) {
-    return const _NotificationFailureListener(
-      child: Scaffold(appBar: _NotificationAppBar(), body: _NotificationBody()),
-    );
-  }
-}
-
-@immutable
-class _NotificationAppBar extends StatelessWidget
-    implements PreferredSizeWidget {
-  const _NotificationAppBar();
-
-  @override
-  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    return AppTopBar(
-      toolbarHeight: 72,
-      title: Text(l10n.notifications),
-      centerTitle: true,
+    return _NotificationFailureListener(
+      child: Scaffold(
+        backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+        appBar: AppTopBar(toolbarHeight: 72, title: Text(l10n.notifications)),
+        body: const _NotificationBody(),
+      ),
     );
   }
-
-  @override
-  Size get preferredSize => Size.fromHeight(80);
 }
 
 class _NotificationFailureListener extends StatelessWidget {
@@ -90,9 +78,7 @@ class _NotificationFailureListener extends StatelessWidget {
         final failure = state.whenOrNull(failure: (failure) => failure);
         if (failure == null) return;
 
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(failure.localizedMessage(l10n))));
+        AppToast.error(context, failure.localizedMessage(l10n));
       },
       child: child,
     );
@@ -150,7 +136,7 @@ class _NotificationBody extends StatelessWidget {
                   message: l10n.noNotificationsDesc,
                 )
               else ...[
-                const SliverToBoxAdapter(child: SizedBox(height: 16)),
+                SliverToBoxAdapter(child: 16.h),
                 for (final group in groups)
                   NotificationSliverGroup(
                     group: group,
@@ -159,7 +145,7 @@ class _NotificationBody extends StatelessWidget {
                     onMarkAllAsRead: (notifications) =>
                         _markAllAsRead(context, notifications),
                   ),
-                const SliverToBoxAdapter(child: SizedBox(height: 24)),
+                SliverToBoxAdapter(child: 24.h),
               ],
             ],
           );

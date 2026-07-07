@@ -4,6 +4,7 @@
 
 import 'package:flutter/material.dart';
 
+import '../../../../core/internal/src/extensions/extensions.dart';
 import '../../../../core/widgets/app_chip_container.dart';
 import '../../../../core/widgets/app_container.dart';
 import '../../../../core/widgets/app_icon_container.dart';
@@ -45,13 +46,13 @@ class NotificationSliverGroup extends StatelessWidget {
       backgroundColor: colorScheme.surface,
       titleStyle: textTheme.titleSmall?.copyWith(
         color: colorScheme.onSurfaceVariant,
-        fontWeight: FontWeight.bold,
+        fontWeight: .bold,
       ),
       headerPadding: const EdgeInsetsDirectional.fromSTEB(16, 12, 16, 8),
       headerHeight: 48,
       titleOffset: 0,
       collapsedOpacity: 1,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      contentPadding: const .symmetric(horizontal: 16, vertical: 8),
       sliver: SliverList.list(
         children: group.items
             .map(
@@ -82,7 +83,7 @@ class _NotificationCard extends StatelessWidget {
     final icon = notificationIconForType(notification.type);
 
     return AppContainer(
-      margin: const EdgeInsets.only(bottom: 10),
+      margin: const .only(bottom: 10),
       backgroundColor: isRead
           ? colorScheme.surfaceContainerLow
           : colorScheme.primaryContainer.withValues(alpha: 0.2),
@@ -90,52 +91,49 @@ class _NotificationCard extends StatelessWidget {
           ? colorScheme.onSurface
           : colorScheme.onPrimaryContainer,
       elevation: 0,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: .circular(16),
       onTap: onTap,
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           _NotificationLeadingIcon(
             icon: icon,
             imageUrl: notification.imageUrl,
             isRead: isRead,
           ),
-          const SizedBox(width: 16),
+          16.w,
           Expanded(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: .start,
               children: [
                 Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: .start,
                   children: [
                     Expanded(
                       child: Text(
                         notification.title,
                         maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
+                        overflow: .ellipsis,
                         style: textTheme.titleSmall?.copyWith(
                           color: colorScheme.onSurface,
                           fontWeight: isRead ? .w400 : .bold,
                         ),
                       ),
                     ),
-                    if (!isRead) ...[
-                      const SizedBox(width: 8),
-                      _UnreadBadge(label: l10n.unread),
-                    ],
+                    if (!isRead) ...[8.w, _UnreadBadge(label: l10n.unread)],
                   ],
                 ),
-                const SizedBox(height: 8),
+                8.h,
                 Text(
                   notification.body,
                   maxLines: 3,
-                  overflow: TextOverflow.ellipsis,
+                  overflow: .ellipsis,
                   style: textTheme.bodyMedium?.copyWith(
                     color: colorScheme.onSurfaceVariant,
                     height: 1.25,
                   ),
                 ),
-                const SizedBox(height: 16),
+                16.h,
                 Row(
                   children: [
                     Icon(
@@ -143,12 +141,12 @@ class _NotificationCard extends StatelessWidget {
                       size: 16,
                       color: colorScheme.onSurfaceVariant,
                     ),
-                    const SizedBox(width: 8),
+                    8.w,
                     Expanded(
                       child: Text(
                         formatNotificationTime(notification.sentAt, locale),
                         maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                        overflow: .ellipsis,
                         style: textTheme.labelMedium?.copyWith(
                           color: colorScheme.onSurfaceVariant,
                         ),
@@ -189,29 +187,25 @@ class _NotificationLeadingIcon extends StatelessWidget {
     return Container(
       width: 48,
       height: 48,
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
-      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(borderRadius: .circular(8)),
+      clipBehavior: .antiAlias,
       child: imageUrl == null || imageUrl!.isEmpty
           ? AppIconContainer(
               icon: icon,
-              padding: const EdgeInsets.all(12),
+              padding: const .all(12),
               backgroundColor: backgroundColor,
               foregroundColor: foregroundColor,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
+              shape: RoundedRectangleBorder(borderRadius: .circular(8)),
             )
           : Image.network(
               imageUrl!,
-              fit: BoxFit.cover,
+              fit: .cover,
               errorBuilder: (context, error, stackTrace) => AppIconContainer(
                 icon: icon,
-                padding: const EdgeInsets.all(12),
+                padding: const .all(12),
                 backgroundColor: backgroundColor,
                 foregroundColor: foregroundColor,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
+                shape: RoundedRectangleBorder(borderRadius: .circular(8)),
               ),
             ),
     );
@@ -231,12 +225,12 @@ class _UnreadBadge extends StatelessWidget {
     return AppChipContainer(
       value: label,
       constraints: const BoxConstraints(maxWidth: 96),
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const .symmetric(horizontal: 8, vertical: 4),
       backgroundColor: colorScheme.primary,
       foregroundColor: colorScheme.onPrimary,
       textStyle: textTheme.labelSmall?.copyWith(
         color: colorScheme.onPrimary,
-        fontWeight: FontWeight.bold,
+        fontWeight: .bold,
       ),
     );
   }
