@@ -271,6 +271,8 @@
   "attendanceTodayLoadFailedSubtitle": "Signal's being cheeky, pull to refresh!",
   "attendanceNoScheduleTitle": "No School Today!",
   "attendanceNoScheduleSubtitle": "Enjoy your day, no attendance to worry about.",
+  "attendanceNoDataWeekdayTitle": "No Attendance Data Yet",
+  "attendanceNoDataWeekdaySubtitle": "Today's attendance isn't available yet. Pull to refresh!",
   "noAttendanceDetailData": "No detail attendance yet.",
   "days": "Days",
   "noData": "No data.",

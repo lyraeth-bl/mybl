@@ -63,11 +63,21 @@ class _AttendanceTodaySectionState extends State<AttendanceTodaySection> {
             title: l10n.attendanceTodayLoadFailedTitle,
             message: l10n.attendanceTodayLoadFailedSubtitle,
           ),
-          emptyAttendance: () => AppEmptyStateSliver(
-            icon: Icons.weekend_outlined,
-            title: l10n.attendanceNoScheduleTitle,
-            message: l10n.attendanceNoScheduleSubtitle,
-          ),
+          emptyAttendance: () {
+            final isWeekday = _now.weekday <= DateTime.friday;
+
+            return AppEmptyStateSliver(
+              icon: isWeekday
+                  ? Icons.hourglass_empty_rounded
+                  : Icons.weekend_outlined,
+              title: isWeekday
+                  ? l10n.attendanceNoDataWeekdayTitle
+                  : l10n.attendanceNoScheduleTitle,
+              message: isWeekday
+                  ? l10n.attendanceNoDataWeekdaySubtitle
+                  : l10n.attendanceNoScheduleSubtitle,
+            );
+          },
           orElse: () => SliverPadding(
             padding: const EdgeInsets.all(16),
             sliver: SliverToBoxAdapter(

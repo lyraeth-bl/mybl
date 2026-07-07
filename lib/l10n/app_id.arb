@@ -271,6 +271,8 @@
   "attendanceTodayLoadFailedSubtitle": "Sinyal lagi jahil nih, coba tarik buat refresh ya!",
   "attendanceNoScheduleTitle": "Hari Ini Libur!",
   "attendanceNoScheduleSubtitle": "Nikmatin harimu, gak ada absen yang perlu ditunggu.",
+  "attendanceNoDataWeekdayTitle": "Belum Ada Data Absen",
+  "attendanceNoDataWeekdaySubtitle": "Data absen hari ini belum tersedia. Tarik buat refresh ya!",
   "noAttendanceDetailData": "Tidak ada detail absensi.",
   "days": "Hari",
   "noData": "Tidak ada data.",
