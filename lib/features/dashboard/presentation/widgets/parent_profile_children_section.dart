@@ -59,8 +59,7 @@ class ParentProfileChildrenSection extends StatelessWidget {
 
     return AppSliverGroup(
       title: l10n.parentProfileChildrenTitle,
-      titleStyle:
-          textTheme.titleMedium!.copyWith(color: colorScheme.onSurface),
+      titleStyle: textTheme.titleMedium!.copyWith(color: colorScheme.onSurface),
       child: AppFramedContainer(
         margin: .zero,
         innerPadding: .zero,
