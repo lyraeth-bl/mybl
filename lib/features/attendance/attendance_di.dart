@@ -57,8 +57,12 @@ void initAttendanceDI() {
     () => FetchParentMonthlyAttendanceUseCase(di<ParentAttendanceRepository>()),
   );
 
-  di.registerFactory<DailyAttendanceBloc>(
-    () => DailyAttendanceBloc(di<FetchDailyAttendanceUseCase>()),
+  di.registerFactoryParam<DailyAttendanceBloc, bool, void>(
+    (isParent, _) => DailyAttendanceBloc(
+      isParent
+          ? di<FetchParentDailyAttendanceUseCase>().call
+          : di<FetchDailyAttendanceUseCase>().call,
+    ),
   );
   di.registerFactoryParam<MonthlyAttendanceBloc, bool, void>(
     (isParent, _) => MonthlyAttendanceBloc(

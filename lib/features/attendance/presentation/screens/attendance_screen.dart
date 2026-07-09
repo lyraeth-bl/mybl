@@ -31,7 +31,7 @@ class AttendanceScreen extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider<DailyAttendanceBloc>(
-          create: (context) => di<DailyAttendanceBloc>(),
+          create: (context) => di<DailyAttendanceBloc>(param1: isParent),
         ),
         BlocProvider<MonthlyAttendanceBloc>(
           create: (context) => di<MonthlyAttendanceBloc>(param1: isParent),

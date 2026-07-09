@@ -8,6 +8,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:my_bl/core/enums/user_role.dart';
 import 'package:my_bl/core/failure/failure.dart';
 import 'package:my_bl/core/widgets/app_button.dart';
 import 'package:my_bl/features/attendance/domain/entities/attendance_entity/attendance_entity.dart';
@@ -15,10 +16,25 @@ import 'package:my_bl/features/attendance/domain/repositories/attendance_reposit
 import 'package:my_bl/features/attendance/domain/usecases/fetch_daily_attendance_use_case.dart';
 import 'package:my_bl/features/attendance/presentation/bloc/daily_attendance_bloc/daily_attendance_bloc.dart';
 import 'package:my_bl/features/attendance/presentation/widgets/attendance_today_section.dart';
+import 'package:my_bl/features/sessions/presentation/bloc/session_bloc.dart';
 import 'package:my_bl/l10n/app_localizations.dart';
 import 'package:my_bl/l10n/app_localizations_en.dart';
 
 class _MockAttendanceRepository extends Mock implements AttendanceRepository {}
+
+class _MockSessionBloc extends Mock implements SessionBloc {}
+
+SessionBloc _sessionBloc({bool isParent = false}) {
+  final bloc = _MockSessionBloc();
+  when(() => bloc.state).thenReturn(
+    SessionState.authenticated(
+      accessToken: 'token',
+      role: isParent ? UserRole.parent : UserRole.student,
+    ),
+  );
+  when(() => bloc.stream).thenAnswer((_) => const Stream.empty());
+  return bloc;
+}
 
 final AppLocalizationsEn _l10n = AppLocalizationsEn();
 
@@ -44,12 +60,13 @@ AttendanceEntity _entity({DateTime? checkIn, DateTime? checkOut}) {
 }
 
 DailyAttendanceBloc _buildBloc(_MockAttendanceRepository repository) {
-  return DailyAttendanceBloc(FetchDailyAttendanceUseCase(repository));
+  return DailyAttendanceBloc(FetchDailyAttendanceUseCase(repository).call);
 }
 
 Widget _wrap(
   DailyAttendanceBloc bloc, {
   DateTime Function() now = DateTime.now,
+  bool isParent = false,
 }) {
   return MaterialApp(
     localizationsDelegates: const [
@@ -59,9 +76,12 @@ Widget _wrap(
     ],
     supportedLocales: const [Locale('en')],
     home: Scaffold(
-      body: BlocProvider<DailyAttendanceBloc>.value(
-        value: bloc,
-        child: CustomScrollView(slivers: [AttendanceTodaySection(now: now)]),
+      body: BlocProvider<SessionBloc>.value(
+        value: _sessionBloc(isParent: isParent),
+        child: BlocProvider<DailyAttendanceBloc>.value(
+          value: bloc,
+          child: CustomScrollView(slivers: [AttendanceTodaySection(now: now)]),
+        ),
       ),
     ),
   );
@@ -108,6 +128,34 @@ void main() {
     expect(find.text(_l10n.attendanceNoScheduleSubtitle), findsOneWidget);
   });
 
+  testWidgets(
+    'shows parent-worded copy when there is no schedule today for parent',
+    (tester) async {
+      final repository = _MockAttendanceRepository();
+      when(
+        () => repository.fetchDailyAttendance(any()),
+      ).thenAnswer((_) async => right(null));
+
+      final bloc = _buildBloc(repository);
+      addTearDown(bloc.close);
+
+      await tester.pumpWidget(
+        _wrap(bloc, isParent: true, now: () => DateTime(2026, 7, 4, 10)),
+      );
+      bloc.add(const DailyAttendanceEvent.dailyAttendanceRequested());
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text(_l10n.attendanceNoScheduleTitleParent),
+        findsOneWidget,
+      );
+      expect(
+        find.text(_l10n.attendanceNoScheduleSubtitleParent),
+        findsOneWidget,
+      );
+    },
+  );
+
   testWidgets('shows enabled "Check In" button when no record exists yet', (
     tester,
   ) async {
@@ -126,6 +174,27 @@ void main() {
     final button = tester.widget<AppButton>(find.byType(AppButton));
     expect(find.text(_l10n.attendanceCheckInAction), findsOneWidget);
     expect(button.onPressed, isNotNull);
+  });
+
+  testWidgets('shows read-only status chip instead of button for parent', (
+    tester,
+  ) async {
+    final repository = _MockAttendanceRepository();
+    when(() => repository.fetchDailyAttendance(any())).thenAnswer(
+      (_) async => right(_entity(checkIn: DateTime(2026, 7, 6, 6, 30))),
+    );
+
+    final bloc = _buildBloc(repository);
+    addTearDown(bloc.close);
+
+    await tester.pumpWidget(
+      _wrap(bloc, now: () => _beforeCutoff, isParent: true),
+    );
+    bloc.add(const DailyAttendanceEvent.dailyAttendanceRequested());
+    await tester.pumpAndSettle();
+
+    expect(find.byType(AppButton), findsNothing);
+    expect(find.text(_l10n.attendanceParentStatusCheckedIn), findsOneWidget);
   });
 
   testWidgets('shows disabled "Checked In" button before cutoff', (
