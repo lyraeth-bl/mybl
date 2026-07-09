@@ -44,38 +44,18 @@ class ParentProfileOverviewSection extends StatelessWidget {
                   ),
                 ),
                 8.h,
-                Row(
-                  mainAxisSize: .min,
-                  children: [
-                    Icon(
-                      Icons.alternate_email,
-                      size: 16,
-                      color: colorScheme.onSurfaceVariant,
-                    ),
-                    Text(
-                      parent.username,
-                      style: textTheme.bodySmall?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ].separatedBy(4.w),
+                Text(
+                  parent.username,
+                  style: textTheme.bodySmall?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
                 ),
                 4.h,
-                Row(
-                  mainAxisSize: .min,
-                  children: [
-                    Icon(
-                      Icons.phone_outlined,
-                      size: 16,
-                      color: colorScheme.onSurfaceVariant,
-                    ),
-                    Text(
-                      parent.telpon,
-                      style: textTheme.bodySmall?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ].separatedBy(4.w),
+                Text(
+                  parent.telpon,
+                  style: textTheme.bodySmall?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
                 ),
               ],
             ),
