@@ -10,6 +10,7 @@ import '../../../../core/app_router/app_router.dart';
 import '../../../../core/internal/src/extensions/extensions.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_responsive_container.dart';
+import '../../../../core/widgets/app_top_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../widgets/decorated_background.dart';
 
@@ -27,12 +28,14 @@ class _WelcomeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final ThemeData theme = Theme.of(context);
+    final ColorScheme colorScheme = theme.colorScheme;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Image.asset("assets/images/sekolah_budi_luhur.png", scale: 6),
+      appBar: AppTopBar(
         backgroundColor: colorScheme.primaryContainer,
+        title: Image.asset("assets/images/sekolah_budi_luhur.png", scale: 4),
+        centerTitle: false,
       ),
       body: const _WelcomeViewContent(),
     );
@@ -46,9 +49,6 @@ void _showRoleSelector(BuildContext context) {
     useSafeArea: true,
     enableDrag: true,
     showDragHandle: true,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-    ),
     builder: (_) => const _WelcomeRoleSelectorSheet(),
   );
 }
@@ -58,22 +58,23 @@ class _WelcomeRoleSelectorSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    final colorScheme = Theme.of(context).colorScheme;
-    final l10n = AppLocalizations.of(context)!;
+    final ThemeData theme = Theme.of(context);
+    final ColorScheme colorScheme = Theme.of(context).colorScheme;
+    final TextTheme textTheme = theme.textTheme;
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
+      padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: .min,
         children: [
           Align(
-            alignment: Alignment.centerLeft,
+            alignment: .centerLeft,
             child: Text(l10n.loginAs, style: textTheme.titleLarge),
           ),
           8.h,
           Align(
-            alignment: Alignment.centerLeft,
+            alignment: .centerLeft,
             child: Text(
               l10n.welcomeRoleSelectorDescription,
               style: textTheme.bodyMedium!.copyWith(
@@ -82,14 +83,14 @@ class _WelcomeRoleSelectorSheet extends StatelessWidget {
             ),
           ),
           24.h,
-          AppButton(
+          AppButton.outlined(
             onPressed: () {
               Navigator.of(context).pop();
               context.push(RouteNames.authStudent);
             },
             child: Text(l10n.student),
           ),
-          12.h,
+          16.h,
           AppButton.outlined(
             onPressed: () {
               Navigator.of(context).pop();
@@ -108,13 +109,15 @@ class _WelcomeViewContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-    final l10n = AppLocalizations.of(context)!;
+    final ThemeData theme = Theme.of(context);
+    final ColorScheme colorScheme = theme.colorScheme;
+    final TextTheme textTheme = theme.textTheme;
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
 
-    return DecoratedBackground(
-      child: SafeArea(
-        child: AppResponsiveContainer(
+    return ColoredBox(
+      color: colorScheme.primaryContainer,
+      child: AppResponsiveContainer(
+        child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
             child: Column(
@@ -124,22 +127,22 @@ class _WelcomeViewContent extends StatelessWidget {
                 Text(
                   l10n.welcomePortalLabel,
                   style: textTheme.titleMedium!.copyWith(
-                    color: colorScheme.onPrimaryContainer.withValues(alpha: .7),
+                    color: colorScheme.onPrimaryContainer,
                     letterSpacing: 1.1,
                   ),
                 ).makeAnimate(delay: 100.ms),
-                4.h,
+                8.h,
                 Text(
                   l10n.welcomeTitle,
                   style: textTheme.headlineLarge!.copyWith(
                     color: colorScheme.onPrimaryContainer,
                   ),
                 ).makeAnimate(delay: 180.ms),
-                12.h,
+                16.h,
                 Text(
                   l10n.welcomeDescription,
                   style: textTheme.bodyMedium!.copyWith(
-                    color: colorScheme.onPrimaryContainer.withValues(alpha: .7),
+                    color: colorScheme.onPrimaryContainer,
                   ),
                 ).makeAnimate(delay: 260.ms),
                 const Spacer(),
