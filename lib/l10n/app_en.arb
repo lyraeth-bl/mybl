@@ -409,5 +409,25 @@
     }
   },
   "reload": "Reload",
-  "comingSoon": "Coming soon"
+  "comingSoon": "Coming soon",
+  "parentProfileChildrenTitle": "Your children",
+  "parentProfileSwitchChildTitle": "Switch active child?",
+  "parentProfileSwitchChildMessage": "You'll now be viewing {childName}'s data.",
+  "@parentProfileSwitchChildMessage": {
+    "placeholders": {
+      "childName": {
+        "type": "String"
+      }
+    }
+  },
+  "parentProfileSwitchChildSuccess": "Switched to {childName}",
+  "@parentProfileSwitchChildSuccess": {
+    "placeholders": {
+      "childName": {
+        "type": "String"
+      }
+    }
+  },
+  "cancel": "Cancel",
+  "confirm": "Confirm"
 }

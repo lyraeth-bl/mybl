@@ -409,5 +409,25 @@
     }
   },
   "reload": "Muat ulang",
-  "comingSoon": "Segera hadir"
+  "comingSoon": "Segera hadir",
+  "parentProfileChildrenTitle": "Anak Anda",
+  "parentProfileSwitchChildTitle": "Ganti anak aktif?",
+  "parentProfileSwitchChildMessage": "Kamu akan melihat data {childName}.",
+  "@parentProfileSwitchChildMessage": {
+    "placeholders": {
+      "childName": {
+        "type": "String"
+      }
+    }
+  },
+  "parentProfileSwitchChildSuccess": "Beralih ke {childName}",
+  "@parentProfileSwitchChildSuccess": {
+    "placeholders": {
+      "childName": {
+        "type": "String"
+      }
+    }
+  },
+  "cancel": "Batal",
+  "confirm": "Konfirmasi"
 }
