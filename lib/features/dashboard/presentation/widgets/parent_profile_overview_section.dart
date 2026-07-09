@@ -45,7 +45,7 @@ class ParentProfileOverviewSection extends StatelessWidget {
                 ),
                 8.h,
                 Row(
-                  mainAxisSize: MainAxisSize.min,
+                  mainAxisSize: .min,
                   children: [
                     Icon(
                       Icons.alternate_email,
@@ -62,7 +62,7 @@ class ParentProfileOverviewSection extends StatelessWidget {
                 ),
                 4.h,
                 Row(
-                  mainAxisSize: MainAxisSize.min,
+                  mainAxisSize: .min,
                   children: [
                     Icon(
                       Icons.phone_outlined,

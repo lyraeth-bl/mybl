@@ -11,7 +11,6 @@ import '../../../../core/di/get_it_constant.dart';
 import '../../../../core/internal/src/extensions/extensions.dart';
 import '../../../../core/widgets/app_empty_state.dart';
 import '../../../../core/widgets/app_toast.dart';
-import '../../../../core/widgets/app_toast_type.dart';
 import '../../../../core/widgets/app_top_bar.dart';
 import '../../../../core/widgets/logout_button.dart';
 import '../../../../core/widgets/refresh_wrapper.dart';
@@ -48,7 +47,7 @@ class _ParentProfileScreenView extends StatelessWidget {
       listener: (context, state) {
         state.whenOrNull(
           successLogout: () =>
-              context.read<SessionBloc>().add(const SessionEvent.loggedOut()),
+              context.read<SessionBloc>().add(const .loggedOut()),
         );
       },
       child: Scaffold(
@@ -75,7 +74,7 @@ class _ParentProfileScreenView extends StatelessWidget {
                     message: l10n.profileLoadFailedSubtitle,
                     retryLabel: l10n.tryAgain,
                     onRetry: () => context.read<ParentBloc>().add(
-                      const ParentEvent.started(forceRefresh: true),
+                      const .started(forceRefresh: true),
                     ),
                   ),
                 ],
@@ -135,7 +134,7 @@ class _ParentProfileReadyBody extends StatelessWidget {
         return RefreshWrapper(
           onRefresh: () => blocRefresh<ParentBloc, ParentEvent, ParentState>(
             context: context,
-            event: const ParentEvent.started(forceRefresh: true),
+            event: const .started(forceRefresh: true),
             isDone: (state) => state.maybeWhen(
               ready: (_, _, _) => true,
               failure: (_) => true,
@@ -150,25 +149,22 @@ class _ParentProfileReadyBody extends StatelessWidget {
                 children: children,
                 selectedChild: selectedChild,
                 onChildSelected: (child) {
-                  context.read<ParentBloc>().add(
-                    ParentEvent.childSelected(child),
-                  );
+                  context.read<ParentBloc>().add(.childSelected(child));
                   AppToast.show(
                     context,
                     l10n.parentProfileSwitchChildSuccess(
                       child.nama.capitalizeEveryWord,
                     ),
-                    type: AppToastType.success,
+                    type: .success,
                   );
                 },
               ),
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.all(16),
+                  padding: const .all(16),
                   child: LogoutButton(
-                    onPressed: () => context.read<AuthBloc>().add(
-                      const AuthEvent.logoutRequested(),
-                    ),
+                    onPressed: () =>
+                        context.read<AuthBloc>().add(const .logoutRequested()),
                     isLoading: isLogoutLoading,
                   ),
                 ),

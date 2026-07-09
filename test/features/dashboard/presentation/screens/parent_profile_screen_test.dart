@@ -104,7 +104,7 @@ void main() {
     addTearDown(bloc.close);
 
     await tester.pumpWidget(_wrap(bloc));
-    bloc.add(const ParentEvent.started());
+    bloc.add(const .started());
     await tester.pump();
 
     expect(find.byType(Scaffold), findsOneWidget);
@@ -127,7 +127,7 @@ void main() {
     addTearDown(bloc.close);
 
     await tester.pumpWidget(_wrap(bloc));
-    bloc.add(const ParentEvent.started());
+    bloc.add(const .started());
     await tester.pumpAndSettle();
 
     expect(find.text(_l10n.profileLoadFailedTitle), findsOneWidget);
@@ -149,7 +149,7 @@ void main() {
     addTearDown(bloc.close);
 
     await tester.pumpWidget(_wrap(bloc));
-    bloc.add(const ParentEvent.started());
+    bloc.add(const .started());
     await tester.pumpAndSettle();
 
     expect(find.text('Siti Aminah'), findsOneWidget);
