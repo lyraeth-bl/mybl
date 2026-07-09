@@ -43,14 +43,14 @@ class _NotificationViewState extends State<_NotificationView> {
 
     WidgetsBinding.instance.addPostFrameCallback(
       (_) => context.read<NotificationBloc>().add(
-        const NotificationEvent.fetchNotificationsRequested(),
+        const .fetchNotificationsRequested(),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
 
     return _NotificationFailureListener(
       child: Scaffold(
@@ -69,7 +69,7 @@ class _NotificationFailureListener extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
 
     return BlocListener<NotificationBloc, NotificationState>(
       listenWhen: (previous, current) =>
@@ -100,7 +100,7 @@ class _NotificationRefreshWrapper extends StatelessWidget {
           NotificationState
         >(
           context: context,
-          event: const NotificationEvent.fetchNotificationsRequested(),
+          event: const .fetchNotificationsRequested(),
           isDone: (state) => state.maybeWhen(
             success: (_) => true,
             failure: (_) => true,
@@ -136,7 +136,6 @@ class _NotificationBody extends StatelessWidget {
                   message: l10n.noNotificationsDesc,
                 )
               else ...[
-                SliverToBoxAdapter(child: 16.h),
                 for (final group in groups)
                   NotificationSliverGroup(
                     group: group,
@@ -170,7 +169,7 @@ void _markAsRead(BuildContext context, AppNotification notification) {
   if (notificationIsRead(notification)) return;
 
   context.read<NotificationBloc>().add(
-    NotificationEvent.notificationReadRequested(notification: notification),
+    .notificationReadRequested(notification: notification),
   );
 }
 
@@ -182,8 +181,6 @@ void _markAllAsRead(BuildContext context, List<AppNotification> notifications) {
 
   final bloc = context.read<NotificationBloc>();
   for (final notification in unreadNotifications) {
-    bloc.add(
-      NotificationEvent.notificationReadRequested(notification: notification),
-    );
+    bloc.add(.notificationReadRequested(notification: notification));
   }
 }
