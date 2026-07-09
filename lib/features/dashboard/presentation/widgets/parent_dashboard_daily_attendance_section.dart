@@ -13,6 +13,7 @@ import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_container.dart';
 import '../../../../core/widgets/app_icon_container.dart';
 import '../../../../core/widgets/app_sliver_group.dart';
+import '../../../../core/widgets/app_toast.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../attendance/presentation/bloc/parent_daily_attendance_bloc/parent_daily_attendance_bloc.dart';
 
@@ -21,87 +22,103 @@ class ParentDashboardDailyAttendanceSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-    final successColor = AppColors.of(context).success;
+    final ThemeData theme = Theme.of(context);
+    final ColorScheme colorScheme = theme.colorScheme;
+    final TextTheme textTheme = theme.textTheme;
+    final Color successColor = AppColors.of(context).success;
+    final Color checkOutColor = AppColors.of(context).checkOut;
     final _ParentDashboardAttendanceIconStyle positiveIconStyle = (
       backgroundColor: successColor.withValues(alpha: 0.18),
       foregroundColor: successColor,
     );
-    final _ParentDashboardAttendanceIconStyle negativeIconStyle = (
-      backgroundColor: colorScheme.error.withValues(alpha: 0.14),
-      foregroundColor: colorScheme.error,
+    final _ParentDashboardAttendanceIconStyle checkOutIconStyle = (
+      backgroundColor: checkOutColor.withValues(alpha: 0.14),
+      foregroundColor: checkOutColor,
     );
-    final l10n = AppLocalizations.of(context)!;
-    final locale = Localizations.localeOf(context).toString();
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
+    final String locale = Localizations.localeOf(context).toString();
 
-    return AppSliverGroup(
-      title: l10n.dailyAttendance,
-      titleStyle: textTheme.titleMedium!.copyWith(color: colorScheme.onSurface),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      action: IconButton(
-        onPressed: () => context.push(RouteNames.attendance),
-        icon: Icon(
-          Icons.chevron_right_rounded,
-          color: colorScheme.onSurfaceVariant,
+    return BlocListener<ParentDailyAttendanceBloc, ParentDailyAttendanceState>(
+      listenWhen: (previous, current) =>
+          current.maybeWhen(failure: (_) => true, orElse: () => false),
+      listener: (context, state) {
+        final failure = state.whenOrNull(failure: (failure) => failure);
+        if (failure == null) return;
+
+        AppToast.error(context, failure.localizedMessage(l10n));
+      },
+      child: AppSliverGroup(
+        title: l10n.dailyAttendance,
+        titleStyle: textTheme.titleMedium!.copyWith(
+          color: colorScheme.onSurface,
         ),
-        tooltip: l10n.dailyAttendance,
-      ),
-      sliver: SliverGrid.count(
-        crossAxisCount: 2,
-        crossAxisSpacing: 14,
-        mainAxisSpacing: 14,
-        childAspectRatio: 1.5,
-        children: [
-          BlocBuilder<ParentDailyAttendanceBloc, ParentDailyAttendanceState>(
-            builder: (context, state) {
-              final isLoading = state.maybeWhen(
-                initial: () => true,
-                loading: () => true,
-                orElse: () => false,
-              );
-              final dailyAttendance = state.whenOrNull(
-                success: (dailyAttendance) => dailyAttendance,
-              );
-
-              return _ParentDashboardTodayAttendanceContainer(
-                title: l10n.checkIn,
-                icon: Icons.call_received,
-                descriptionValue: l10n.westernIndonesiaTime,
-                value: _formatNullableTime(dailyAttendance?.jamCheckIn, locale),
-                isLoading: isLoading,
-                iconBackgroundColor: positiveIconStyle.backgroundColor,
-                iconForegroundColor: positiveIconStyle.foregroundColor,
-              );
-            },
+        action: IconButton(
+          onPressed: () => context.push(RouteNames.attendance),
+          icon: Icon(
+            Icons.chevron_right_rounded,
+            color: colorScheme.onSurfaceVariant,
           ),
-          BlocBuilder<ParentDailyAttendanceBloc, ParentDailyAttendanceState>(
-            builder: (context, state) {
-              final isLoading = state.maybeWhen(
-                initial: () => true,
-                loading: () => true,
-                orElse: () => false,
-              );
-              final dailyAttendance = state.whenOrNull(
-                success: (dailyAttendance) => dailyAttendance,
-              );
+          tooltip: l10n.dailyAttendance,
+        ),
+        sliver: SliverGrid.count(
+          crossAxisCount: 2,
+          crossAxisSpacing: 8,
+          mainAxisSpacing: 8,
+          childAspectRatio: 1.5,
+          children: [
+            BlocBuilder<ParentDailyAttendanceBloc, ParentDailyAttendanceState>(
+              builder: (context, state) {
+                final isLoading = state.maybeWhen(
+                  initial: () => true,
+                  loading: () => true,
+                  orElse: () => false,
+                );
+                final dailyAttendance = state.whenOrNull(
+                  success: (dailyAttendance) => dailyAttendance,
+                );
 
-              return _ParentDashboardTodayAttendanceContainer(
-                title: l10n.checkOut,
-                icon: Icons.call_made,
-                descriptionValue: l10n.westernIndonesiaTime,
-                value: _formatNullableTime(
-                  dailyAttendance?.jamCheckOut,
-                  locale,
-                ),
-                crossAxisAlignment: CrossAxisAlignment.end,
-                isLoading: isLoading,
-                iconBackgroundColor: negativeIconStyle.backgroundColor,
-                iconForegroundColor: negativeIconStyle.foregroundColor,
-              );
-            },
-          ),
-        ],
+                return _ParentDashboardTodayAttendanceContainer(
+                  title: l10n.checkIn,
+                  icon: Icons.call_received,
+                  descriptionValue: l10n.westernIndonesiaTime,
+                  value: _formatNullableTime(
+                    dailyAttendance?.jamCheckIn,
+                    locale,
+                  ),
+                  isLoading: isLoading,
+                  iconBackgroundColor: positiveIconStyle.backgroundColor,
+                  iconForegroundColor: positiveIconStyle.foregroundColor,
+                );
+              },
+            ),
+            BlocBuilder<ParentDailyAttendanceBloc, ParentDailyAttendanceState>(
+              builder: (context, state) {
+                final isLoading = state.maybeWhen(
+                  initial: () => true,
+                  loading: () => true,
+                  orElse: () => false,
+                );
+                final dailyAttendance = state.whenOrNull(
+                  success: (dailyAttendance) => dailyAttendance,
+                );
+
+                return _ParentDashboardTodayAttendanceContainer(
+                  title: l10n.checkOut,
+                  icon: Icons.call_made,
+                  descriptionValue: l10n.westernIndonesiaTime,
+                  value: _formatNullableTime(
+                    dailyAttendance?.jamCheckOut,
+                    locale,
+                  ),
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  isLoading: isLoading,
+                  iconBackgroundColor: checkOutIconStyle.backgroundColor,
+                  iconForegroundColor: checkOutIconStyle.foregroundColor,
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -141,82 +158,94 @@ class _ParentDashboardTodayAttendanceContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
+    final ThemeData theme = Theme.of(context);
+    final ColorScheme colorScheme = theme.colorScheme;
+    final TextTheme textTheme = theme.textTheme;
 
     return AppFramedContainer(
+      backgroundColor: colorScheme.surface,
+      margin: .zero,
       gap: .zero,
-      innerPadding: .symmetric(horizontal: 16, vertical: 8),
-      margin: EdgeInsets.zero,
       aspectRatio: 1.5,
       elevation: 0,
-      borderRadius: BorderRadius.circular(16),
       child: Column(
         crossAxisAlignment: crossAxisAlignment,
-        mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: .center,
+        mainAxisSize: .min,
         children: [
           Row(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: .min,
+            crossAxisAlignment: .center,
             children: [
               AppIconContainer(
                 icon: icon,
                 backgroundColor: iconBackgroundColor,
                 foregroundColor: iconForegroundColor,
+              ).toShimmer(
+                context,
+                isLoading: isLoading,
+                borderRadius: .circular(24),
               ),
-              const SizedBox(width: 12),
               Text(
                 title,
                 style: textTheme.titleSmall!.copyWith(
                   color: colorScheme.onSurface,
-                  fontWeight: FontWeight.bold,
                 ),
                 maxLines: 2,
+              ).toShimmer(
+                context,
+                isLoading: isLoading,
+                width: 80,
+                height: 16,
+                borderRadius: .circular(24),
               ),
-            ],
+            ].separatedBy(16.w),
           ),
-
-          const SizedBox(height: 16),
-
           Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.end,
+            mainAxisSize: .min,
+            mainAxisAlignment: .end,
+            crossAxisAlignment: .end,
             children: [
               Flexible(
                 child:
                     Text(
                       value ?? "--:--",
                       maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                      overflow: .ellipsis,
                       style: textTheme.headlineSmall!.copyWith(
                         color: colorScheme.onSurface,
-                        fontWeight: FontWeight.bold,
                       ),
                     ).toShimmer(
                       context,
                       isLoading: isLoading,
-                      width: 56,
-                      height: 24,
+                      width: 80,
+                      height: 16,
+                      borderRadius: .circular(24),
                     ),
               ),
               if (descriptionValue != null) ...[
-                const SizedBox(width: 8),
+                8.w,
                 Flexible(
-                  child: Text(
-                    descriptionValue!,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: textTheme.bodyMedium!.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                    ),
-                  ),
+                  child:
+                      Text(
+                        descriptionValue!,
+                        maxLines: 1,
+                        overflow: .ellipsis,
+                        style: textTheme.bodyMedium!.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                      ).toShimmer(
+                        context,
+                        isLoading: isLoading,
+                        width: 24,
+                        height: 16,
+                        borderRadius: .circular(24),
+                      ),
                 ),
               ],
             ],
           ),
-        ],
+        ].separatedBy(16.h),
       ),
     );
   }

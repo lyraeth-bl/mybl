@@ -42,7 +42,7 @@ class _ParentDashboardViewState extends State<_ParentDashboardView> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<ParentDailyAttendanceBloc>().add(
-        const ParentDailyAttendanceEvent.dailyAttendanceRequested(),
+        const .dailyAttendanceRequested(),
       );
     });
   }
@@ -53,19 +53,9 @@ class _ParentDashboardViewState extends State<_ParentDashboardView> {
 
     return BlocBuilder<ParentBloc, ParentState>(
       builder: (context, state) {
-        final record = state.maybeWhen(
-          ready: (parent, children, selectedChild) => (
-            nama: parent.nama,
-            child: selectedChild,
-            hasMultipleChildren: children.length > 1,
-            children: children,
-          ),
-          orElse: () => (
-            nama: '',
-            child: null,
-            hasMultipleChildren: false,
-            children: <ChildEntity>[],
-          ),
+        final children = state.maybeWhen(
+          ready: (_, children, _) => children,
+          orElse: () => <ChildEntity>[],
         );
         final isLoading = state.maybeWhen(
           initial: () => true,
@@ -76,10 +66,7 @@ class _ParentDashboardViewState extends State<_ParentDashboardView> {
         return Scaffold(
           appBar: const _ParentDashboardAppTopBar(),
           backgroundColor: colorScheme.surfaceContainer,
-          body: _ParentDashboardBody(
-            children: record.children,
-            isLoading: isLoading,
-          ),
+          body: _ParentDashboardBody(children: children, isLoading: isLoading),
         );
       },
     );
@@ -92,16 +79,17 @@ class _ParentDashboardAppTopBar extends StatelessWidget
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-    final l10n = AppLocalizations.of(context)!;
+    final ThemeData theme = Theme.of(context);
+    final ColorScheme colorScheme = theme.colorScheme;
+    final TextTheme textTheme = theme.textTheme;
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
 
     return AppTopBar(
       backgroundColor: colorScheme.surfaceContainerLow,
       toolbarHeight: 72,
       centerTitle: false,
       title: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           Row(
             children: [
@@ -212,7 +200,7 @@ class _GreetingAndName extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           Text(
             _greeting(l10n),
@@ -231,13 +219,13 @@ class _GreetingAndName extends StatelessWidget {
             ),
             builder: (context, data) {
               if (data.isLoading) {
-                return DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: colorScheme.onSurface,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: const SizedBox(width: 140, height: 20),
-                ).toShimmer(context, isLoading: true);
+                return Text("").toShimmer(
+                  context,
+                  isLoading: true,
+                  width: 200,
+                  height: 16,
+                  borderRadius: .circular(24),
+                );
               }
 
               return Text(

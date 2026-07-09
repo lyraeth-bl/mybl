@@ -25,26 +25,24 @@ class ParentDashboardProfileSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-    final locale = Localizations.localeOf(context).toString();
+    final ThemeData theme = Theme.of(context);
+    final ColorScheme colorScheme = theme.colorScheme;
+    final TextTheme textTheme = theme.textTheme;
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
+    final String locale = Localizations.localeOf(context).toString();
 
     return AppSliverGroup(
       title: l10n.parentDashboardProfileTitle,
       titleStyle: textTheme.titleMedium!.copyWith(color: colorScheme.onSurface),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       action: AppChipContainer.outlined(
         value: DateFormat.yMMMMEEEEd(locale).format(DateTime.now()),
       ),
       child: AppFramedContainer(
-        margin: EdgeInsets.zero,
-        innerPadding: EdgeInsets.zero,
-        gap: EdgeInsets.zero,
-        borderRadius: BorderRadius.circular(16),
-        innerBorderRadius: BorderRadius.circular(12),
+        margin: .zero,
+        innerPadding: .zero,
+        gap: .zero,
         child: isLoading
-            ? const _ChildrenDetailSkeleton()
+            ? _ChildrenDetailSkeleton(isLoading: isLoading)
             : (children == null || children!.isEmpty)
             ? _ChildrenEmptyState(l10n: l10n)
             : Column(
@@ -58,7 +56,7 @@ class ParentDashboardProfileSection extends StatelessWidget {
                     )
                     .toList(),
               ),
-      ).toShimmer(context, isLoading: isLoading),
+      ),
     );
   }
 }
@@ -96,38 +94,47 @@ class _ChildrenEmptyState extends StatelessWidget {
 }
 
 class _ChildrenDetailSkeleton extends StatelessWidget {
-  const _ChildrenDetailSkeleton();
+  const _ChildrenDetailSkeleton({required this.isLoading});
+
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
     return ListTile(
-      leading: AppProfilePicture(
-        backgroundColor: colorScheme.inverseSurface,
-        foregroundColor: colorScheme.onInverseSurface,
-        radius: 22,
-      ),
-      title: Align(
-        alignment: Alignment.centerLeft,
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            color: colorScheme.onSurface,
-            borderRadius: BorderRadius.circular(4),
+      leading:
+          AppProfilePicture(
+            backgroundColor: colorScheme.inverseSurface,
+            foregroundColor: colorScheme.onInverseSurface,
+            radius: 24,
+          ).toShimmer(
+            context,
+            isLoading: isLoading,
+            width: 48,
+            height: 48,
+            borderRadius: .circular(24),
           ),
-          child: const SizedBox(width: 120, height: 16),
+      title: Align(
+        alignment: .centerLeft,
+        child: Text("").toShimmer(
+          context,
+          isLoading: isLoading,
+          width: 200,
+          height: 16,
+          borderRadius: .circular(24),
         ),
       ),
       subtitle: Padding(
-        padding: const EdgeInsets.only(top: 8.0),
+        padding: const .only(top: 8.0),
         child: Align(
-          alignment: Alignment.centerLeft,
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: colorScheme.onSurface,
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: const SizedBox(width: 160, height: 12),
+          alignment: .centerLeft,
+          child: Text("").toShimmer(
+            context,
+            isLoading: isLoading,
+            width: 120,
+            height: 16,
+            borderRadius: .circular(24),
           ),
         ),
       ),
@@ -148,33 +155,34 @@ class _ChildrenDetail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
+    final ThemeData theme = Theme.of(context);
+    final ColorScheme colorScheme = theme.colorScheme;
+    final TextTheme textTheme = theme.textTheme;
 
     return ListTile(
       leading: AppProfilePicture(
         backgroundColor: colorScheme.inverseSurface,
         foregroundColor: colorScheme.onInverseSurface,
-        radius: 22,
+        radius: 24,
       ),
       title: Text(
         name,
         style: textTheme.titleMedium!.copyWith(color: colorScheme.onSurface),
       ),
       subtitle: Padding(
-        padding: const EdgeInsets.only(top: 4.0),
+        padding: const .only(top: 8.0),
         child: Row(
           children: [
             Icon(
               Icons.badge_outlined,
-              size: 14,
+              size: 16,
               color: colorScheme.onSurfaceVariant,
             ),
             Text(nis),
             Text('-'),
             Icon(
               Icons.school_outlined,
-              size: 14,
+              size: 16,
               color: colorScheme.onSurfaceVariant,
             ),
             Text(classRoom),

@@ -145,10 +145,7 @@ void main() {
       bloc.add(const DailyAttendanceEvent.dailyAttendanceRequested());
       await tester.pumpAndSettle();
 
-      expect(
-        find.text(_l10n.attendanceNoScheduleTitleParent),
-        findsOneWidget,
-      );
+      expect(find.text(_l10n.attendanceNoScheduleTitleParent), findsOneWidget);
       expect(
         find.text(_l10n.attendanceNoScheduleSubtitleParent),
         findsOneWidget,

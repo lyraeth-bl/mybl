@@ -207,7 +207,7 @@ class _DashboardTodayAttendanceContainer extends StatelessWidget {
                       Text(
                         descriptionValue!,
                         maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                        overflow: .ellipsis,
                         style: textTheme.bodyMedium!.copyWith(
                           color: colorScheme.onSurfaceVariant,
                         ),
