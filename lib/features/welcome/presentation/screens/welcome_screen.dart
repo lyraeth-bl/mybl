@@ -12,7 +12,6 @@ import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_responsive_container.dart';
 import '../../../../core/widgets/app_top_bar.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../widgets/decorated_background.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
