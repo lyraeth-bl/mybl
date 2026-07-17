@@ -120,10 +120,12 @@ All DI bootstrapping runs in `lib/core/app/initialize_app.dart`. Each feature ex
 - Do not reorder existing DI files for style; preserve the local file style unless it causes a real bug.
 
 **`registerLazySingleton` examples:**
+
 - `SessionBloc` — app-wide auth state, read by `AppRouter`'s redirect via `GoRouterRefreshStream.merged`; must outlive any single screen.
 - `UserBloc` — user/student data shared across multiple profile-related screens; refetching per screen would waste calls and desync state.
 
 **`registerFactory` examples:**
+
 - `AuthBloc` — scoped to the login screen only; disposed once login completes/screen closes, no reason to keep it alive after.
 - `RememberMeCubit` — scoped to the auth screen's login form; simple checkbox toggle, no cross-screen relevance.
 
@@ -181,7 +183,7 @@ Rules:
 
 ### Bloc vs Cubit
 
-- **Bloc:** multiple distinct triggers that map to named events, or a handler needs to branch on *which* thing happened. `SessionBloc` (`Started`/`LoggedIn`/`LoggedOut`), `AuthBloc` (`LoginRequested`/`LoginParentRequested`/`LogoutRequested`), `UserBloc` (`FetchStudentRequested`) — each has 2+ event types with different handling logic.
+- **Bloc:** multiple distinct triggers that map to named events, or a handler needs to branch on _which_ thing happened. `SessionBloc` (`Started`/`LoggedIn`/`LoggedOut`), `AuthBloc` (`LoginRequested`/`LoginParentRequested`/`LogoutRequested`), `UserBloc` (`FetchStudentRequested`) — each has 2+ event types with different handling logic.
 - **Cubit:** one simple piece of state changed via direct method calls, no need to distinguish "why" it changed. `RememberMeCubit` — just toggles a boolean, no event vocabulary needed.
 - Default to Bloc when in doubt — it's the project's dominant pattern. Reach for Cubit only when an event type would be pure ceremony around a single setter-like action.
 
@@ -524,21 +526,21 @@ try {
 
 All shared widgets live in `lib/core/widgets/`. Always reach for these before writing a one-off `TextFormField`, `ElevatedButton`, `OutlinedButton`, `TextButton`, or toast call — never bypass them with raw Material widgets.
 
-| Widget                                    | Use when                                                            |
-| ------------------------------------------ | -------------------------------------------------------------------- |
-| `AppButton` (+ `.outlined`, `.text`)       | Primary/secondary/tertiary action buttons with loading state        |
-| `AppTextField`                             | Form text input with the app's animated filled surface              |
-| `AppTopBar`                                 | Screen `AppBar` with centered title, profile leading, actions        |
-| `AppContainer`                              | Dashboard card with optional header row and tap target               |
-| `AppSliverGroup`                            | Section header + sliver/box content inside a `CustomScrollView`      |
-| `AppIconContainer`                          | Small filled icon surface (leading icons, status badges)             |
-| `AppChipContainer` (+ `.outlined`)          | Compact rounded label/chip without selection/delete behavior         |
-| `AppProfilePicture`                         | Circular avatar with initials/icon fallback when no image            |
-| `AppEmptyState` / `AppEmptyStateSliver`     | Centered empty/error state, with optional retry action                |
-| `AppToast` (`AppToastType`)                 | Semantic toast notifications — never call `ScaffoldMessenger` raw    |
-| `AppResponsiveContainer`                    | Center content and cap width (e.g. forms) on wide screens             |
-| `RefreshWrapper` (+ `blocRefresh`)          | Pull-to-refresh wrapper for scrollable pages                          |
-| `LogoutButton`                              | Logout action button with loading state, used in profile-type screens |
+| Widget                                  | Use when                                                              |
+| --------------------------------------- | --------------------------------------------------------------------- |
+| `AppButton` (+ `.outlined`, `.text`)    | Primary/secondary/tertiary action buttons with loading state          |
+| `AppTextField`                          | Form text input with the app's animated filled surface                |
+| `AppTopBar`                             | Screen `AppBar` with centered title, profile leading, actions         |
+| `AppContainer`                          | Dashboard card with optional header row and tap target                |
+| `AppSliverGroup`                        | Section header + sliver/box content inside a `CustomScrollView`       |
+| `AppIconContainer`                      | Small filled icon surface (leading icons, status badges)              |
+| `AppChipContainer` (+ `.outlined`)      | Compact rounded label/chip without selection/delete behavior          |
+| `AppProfilePicture`                     | Circular avatar with initials/icon fallback when no image             |
+| `AppEmptyState` / `AppEmptyStateSliver` | Centered empty/error state, with optional retry action                |
+| `AppToast` (`AppToastType`)             | Semantic toast notifications — never call `ScaffoldMessenger` raw     |
+| `AppResponsiveContainer`                | Center content and cap width (e.g. forms) on wide screens             |
+| `RefreshWrapper` (+ `blocRefresh`)      | Pull-to-refresh wrapper for scrollable pages                          |
+| `LogoutButton`                          | Logout action button with loading state, used in profile-type screens |
 
 ## Shared Extensions
 
