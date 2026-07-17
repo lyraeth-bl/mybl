@@ -176,6 +176,8 @@
   "privacyContactTitle": "Contact",
   "privacyContactBody": "For questions about this policy or requests regarding your data, contact the school through the Help Center.",
   "privacyPolicy": "Privacy Policy",
+  "privacyOpenFull": "Open full policy",
+  "privacyOpenFailed": "Could not open the link",
   "appVersion": "v {version}",
   "@appVersion": {
     "placeholders": {

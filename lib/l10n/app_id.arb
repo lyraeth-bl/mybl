@@ -176,6 +176,8 @@
   "privacyContactTitle": "Kontak",
   "privacyContactBody": "Untuk pertanyaan tentang kebijakan ini atau permintaan terkait data Anda, hubungi sekolah melalui Pusat Bantuan.",
   "privacyPolicy": "Kebijakan Privasi",
+  "privacyOpenFull": "Buka kebijakan lengkap",
+  "privacyOpenFailed": "Gagal membuka tautan",
   "appVersion": "v {version}",
   "@appVersion": {
     "placeholders": {

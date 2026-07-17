@@ -3,11 +3,17 @@
 // that can be found in the LICENSE file.
 
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/internal/src/extensions/extensions.dart';
+import '../../../../core/widgets/app_button.dart';
+import '../../../../core/widgets/app_toast.dart';
 import '../../../../core/widgets/app_top_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../widgets/settings_card.dart';
+
+const String _privacyPolicyUrl =
+    'https://sites.google.com/budiluhur.sch.id/mybl-privacy';
 
 class PrivacyPolicyScreen extends StatelessWidget {
   const PrivacyPolicyScreen({super.key});
@@ -15,6 +21,18 @@ class PrivacyPolicyScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const _PrivacyPolicyView();
+  }
+}
+
+Future<void> _openFullPolicy(BuildContext context) async {
+  final l10n = AppLocalizations.of(context)!;
+  final launched = await launchUrl(
+    Uri.parse(_privacyPolicyUrl),
+    mode: .externalApplication,
+  );
+
+  if (!launched && context.mounted) {
+    AppToast.error(context, l10n.privacyOpenFailed);
   }
 }
 
@@ -63,6 +81,17 @@ class _PrivacyPolicyView extends StatelessWidget {
                 ),
                 for (final section in sections)
                   _PrivacySectionCard(title: section.title, body: section.body),
+                AppButton.outlined(
+                  onPressed: () => _openFullPolicy(context),
+                  child: Row(
+                    mainAxisSize: .min,
+                    children: [
+                      const Icon(Icons.open_in_new, size: 18),
+                      8.w,
+                      Text(l10n.privacyOpenFull),
+                    ],
+                  ),
+                ),
               ].separatedBy(16.h),
             ),
           ),
