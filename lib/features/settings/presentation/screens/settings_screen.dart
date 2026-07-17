@@ -25,44 +25,20 @@ class _SettingsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(appBar: _SettingsAppBar(), body: _SettingsBody());
-  }
-}
-
-@immutable
-class _SettingsAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const _SettingsAppBar();
-
-  @override
-  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    return AppTopBar(
-      toolbarHeight: 72,
-      title: Text(l10n.settings),
-      centerTitle: true,
-    );
-  }
-
-  @override
-  Size get preferredSize => Size.fromHeight(80);
-}
-
-class _SettingsBody extends StatelessWidget {
-  const _SettingsBody();
-
-  @override
-  Widget build(BuildContext context) {
-    return CustomScrollView(
-      physics: const BouncingScrollPhysics(
-        parent: AlwaysScrollableScrollPhysics(),
+    return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+      appBar: AppTopBar(toolbarHeight: 72, title: Text(l10n.settings)),
+      body: const CustomScrollView(
+        physics: AlwaysScrollableScrollPhysics(),
+        slivers: [
+          SettingsNotificationSection(),
+          SettingsPersonalizationSection(),
+          SettingsSupportSection(),
+          SettingsAppVersionFooter(),
+        ],
       ),
-      slivers: const [
-        SettingsNotificationSection(),
-        SettingsPersonalizationSection(),
-        SettingsSupportSection(),
-        SettingsAppVersionFooter(),
-      ],
     );
   }
 }

@@ -11,27 +11,31 @@
   "dioTimeoutError": "Request timeout. Please try again.",
   "dioUnexpectedError": "Something went wrong. Please try again.",
   "nis": "NIS",
+  "nisHint": "Enter your NIS",
   "pleaseEnterNis": "The nis field is required.",
+  "username": "Username",
+  "usernameHint": "Enter your username",
+  "pleaseEnterUsername": "The username field is required.",
   "password": "Password",
+  "passwordHint": "Enter your password",
   "pleaseEnterPassword": "The password field is required.",
   "letsSignIn": "Let's Sign in",
   "welcomeBack": "Welcome Back",
   "youHaveBeenMissed": "You've been missed!",
   "signIn": "Sign in",
+  "loginHelpNotice": "Having trouble signing in? Please contact the school administration office for help.",
   "logout": "Logout",
-  "rememberMyNis": "Remember my NIS?",
+  "rememberMe": "Remember me",
   "forgetPassword": "Forget your password?",
   "schoolName": "Sekolah Budi Luhur",
   "schoolSlogan": "Cerdas Berbudi Luhur",
   "home": "Home",
-  "menu": "Menu",
   "quickMenu": "Quick Menu",
   "emptyMenu": "Menu not available yet.",
   "profile": "Profile",
   "dailyAttendance": "Daily Attendance",
-  "qrCode": "QR",
   "attendanceQrCode": "Attendance QR Code",
-  "attendanceSummary": "Attendance Summary",
+  "attendanceSummary": "Summary",
   "attendanceCalendar": "Attendance Calendar",
   "attendanceLog": "Attendance Log",
   "attendanceDateFilter": "Attendance date filter",
@@ -51,7 +55,6 @@
       }
     }
   },
-  "attendanceChart": "Attendance Chart",
   "navigation": "Navigation",
   "all": "All",
   "seeAll": "See all",
@@ -60,6 +63,8 @@
   "enjoyYourHolidaySubtitle": "There are no lessons scheduled today.",
   "todayScheduleFinished": "Today’s lessons are finished.",
   "todayScheduleFinishedSubtitle": "All lessons for today have ended.",
+  "noScheduleToday": "No lessons today.",
+  "noScheduleTodaySubtitle": "There is no timetable scheduled for you today.",
   "ongoingNow": "Ongoing now",
   "scheduleDurationMinutes": "{minutes} min",
   "@scheduleDurationMinutes": {
@@ -69,10 +74,28 @@
       }
     }
   },
+  "attendanceWorkingDaysSummary": "{present}/{total} school days",
+  "@attendanceWorkingDaysSummary": {
+    "placeholders": {
+      "present": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "guardianDetails": "Guardian Details",
   "meritAndDemerit": "Merit & Demerit",
   "academicCalendar": "Academic Calendar",
   "academicCalendarLog": "Academic Calendar Log",
+  "academicCalendarLoadFailedTitle": "Calendar's Playing Hide and Seek",
+  "academicCalendarUpcomingEvents": "Upcoming Events",
+  "academicCalendarPastEvents": "Past Events",
+  "academicCalendarPastEventsEmptyTitle": "Nothing to Look Back On",
+  "academicCalendarPastEventsEmptyMessage": "This month kept it quiet — no past events on record.",
+  "academicCalendarUpcomingEventsEmptyTitle": "Calendar's Wide Open",
+  "academicCalendarUpcomingEventsEmptyMessage": "Nothing's booked yet for this month — enjoy the breathing room.",
   "upcoming": "Upcoming",
   "exam": "Exam",
   "academic": "Academic",
@@ -97,7 +120,18 @@
       }
     }
   },
+  "outOfMaxScore": "/ {maxScore}",
+  "@outOfMaxScore": {
+    "placeholders": {
+      "maxScore": {
+        "type": "int"
+      }
+    }
+  },
+  "academicResultSubjectsEmptyTitle": "Report Card's Still Blank",
+  "academicResultSubjectsEmptyMessage": "No grades logged for this semester just yet.",
   "extracurricular": "Extracurricular",
+  "extracurricularShort": "Extracurr.",
   "merit": "Merit",
   "demerit": "Demerit",
   "settings": "Settings",
@@ -105,7 +139,45 @@
   "support": "Support",
   "appTheme": "App Theme",
   "helpCenter": "Help Center",
+  "helpCenterSubtitle": "Find answers or reach out to the school",
+  "faqTitle": "Frequently Asked Questions",
+  "faqGradesQuestion": "How do I check my grades?",
+  "faqGradesAnswer": "Open the Academic menu from the dashboard to see your subject scores for each semester.",
+  "faqAttendanceQuestion": "How do I check my attendance?",
+  "faqAttendanceAnswer": "Open the Attendance menu from the dashboard to see your daily and monthly attendance records.",
+  "faqLanguageThemeQuestion": "How do I change the language or theme?",
+  "faqLanguageThemeAnswer": "Go to Settings, then use the Personalization section to switch the app theme and language.",
+  "faqPasswordQuestion": "I forgot my password. What should I do?",
+  "faqPasswordAnswer": "Contact the school administration office to reset your account password.",
+  "contactSchoolTitle": "Contact School",
+  "contactEmail": "Email",
+  "contactPhone": "Phone",
+  "socialMediaSma": "SMA Budi Luhur Social Media",
+  "socialMediaSmk": "SMK Budi Luhur Social Media",
+  "instagram": "Instagram",
+  "youtube": "YouTube",
+  "tiktok": "TikTok",
+  "website": "Website",
+  "officeHoursTitle": "Office Hours",
+  "officeHoursWeekdays": "Monday\u2013Friday",
+  "contactOpenFailed": "Could not open the app",
+  "privacyLastUpdated": "Last updated: July 2026",
+  "privacyIntroBody": "MyBL is the official student portal of the Budi Luhur school ecosystem, managed by Yayasan Pakarti Luhur. This policy explains what data the app processes and how it is protected.",
+  "privacyDataTitle": "Data We Process",
+  "privacyDataBody": "The app displays academic data provided by the school system, such as your name, student number (NIS), class, attendance records, grades, schedules, extracurricular activities, merit/demerit points, and school notifications. The app does not collect data beyond what the school already manages.",
+  "privacyUsageTitle": "How Data Is Used",
+  "privacyUsageBody": "Your data is used solely to show your academic information inside the app and to deliver school notifications. It is never used for advertising or profiling.",
+  "privacyStorageTitle": "Storage & Security",
+  "privacyStorageBody": "Login credentials are never stored on the device. Access tokens are kept in encrypted secure storage, and academic data is cached locally only to speed up the app. All communication with school servers uses encrypted connections.",
+  "privacyNotificationTitle": "Notifications",
+  "privacyNotificationBody": "If you enable notifications, the app registers a device token with Firebase Cloud Messaging so the school can send you announcements and attendance updates. You can disable notifications at any time from your device settings.",
+  "privacySharingTitle": "Data Sharing",
+  "privacySharingBody": "Your data is not sold or shared with third parties. It is only exchanged between the app and official school servers. Parent accounts can only access data of their own children.",
+  "privacyContactTitle": "Contact",
+  "privacyContactBody": "For questions about this policy or requests regarding your data, contact the school through the Help Center.",
   "privacyPolicy": "Privacy Policy",
+  "privacyOpenFull": "Open full policy",
+  "privacyOpenFailed": "Could not open the link",
   "appVersion": "v {version}",
   "@appVersion": {
     "placeholders": {
@@ -117,6 +189,8 @@
   "language": "Language",
   "indonesian": "Indonesian",
   "english": "English",
+  "indonesianShort": "Indo",
+  "englishShort": "Eng",
   "theme": "Theme",
   "systemTheme": "System",
   "lightTheme": "Light",
@@ -190,9 +264,33 @@
   "absent": "Absent",
   "thisMonthlyAttendance": "Attendance this month",
   "noAttendanceData": "No attendance yet.",
+  "attendanceCheckInAction": "Check In",
+  "attendanceAlreadyCheckedIn": "Checked In",
+  "attendanceCheckOutAction": "Check Out",
+  "attendanceDone": "Done",
+  "attendanceButtonLoading": "Loading...",
+  "attendanceTodayLoadFailedTitle": "Oops, Attendance Went Missing",
+  "attendanceTodayLoadFailedSubtitle": "Signal's being cheeky, pull to refresh!",
+  "attendanceNoScheduleTitle": "No School Today!",
+  "attendanceNoScheduleSubtitle": "Enjoy your day, no attendance to worry about.",
+  "attendanceNoDataWeekdayTitle": "No Attendance Data Yet",
+  "attendanceNoDataWeekdaySubtitle": "Today's attendance isn't available yet. Pull to refresh!",
+  "attendanceNoScheduleTitleParent": "No School For Your Child Today!",
+  "attendanceNoScheduleSubtitleParent": "Enjoy the day off, no attendance to worry about.",
+  "attendanceNoDataWeekdayTitleParent": "No Attendance Data Yet",
+  "attendanceNoDataWeekdaySubtitleParent": "Your child's attendance isn't available yet. Pull to refresh!",
+  "attendanceParentStatusNotCheckedIn": "Not Checked In",
+  "attendanceParentStatusCheckedIn": "Checked In",
+  "attendanceParentStatusCheckedOut": "Checked Out",
   "noAttendanceDetailData": "No detail attendance yet.",
   "days": "Days",
   "noData": "No data.",
+  "profileLoadFailedTitle": "We blanked on your face!",
+  "profileLoadFailedSubtitle": "Give it a pull-to-refresh, our memory's a bit fuzzy.",
+  "timeTableLoadFailedTitle": "Our schedule got shuffled!",
+  "timeTableLoadFailedSubtitle": "Pull to refresh and we'll sort it back out.",
+  "timeTableNoScheduleTitle": "No Classes Scheduled",
+  "timeTableNoScheduleSubtitle": "Nothing on the schedule today, enjoy the break.",
   "noExtracurricularData": "No extracurricular data yet.",
   "schoolYear": "School year",
   "allSchoolYears": "All school years",
@@ -263,5 +361,75 @@
   "guardianAddress": "Guardian address",
   "admissionDate": "Admission date",
   "status": "Status",
-  "detailProfileNotes": "If you find any incorrect information, please report it to your respective administration office for correction."
+  "detailProfileNotes": "If you find any incorrect information, please report it to your respective administration office for correction.",
+  "loginAs": "Who are you logging in as?",
+  "student": "Student",
+  "parent": "Parent / Guardian",
+  "parentChildSelectorSingleChild": "Your child's data",
+  "parentDashboardProfileTitle": "Child Profile",
+  "parentChildSelectorMultipleChildren": "Select a child to monitor",
+  "parentChildSelectorNoChildren": "No children registered",
+  "parentChildSelectorNoChildrenDesc": "Contact the school administration if this is incorrect.",
+  "parentChildSelectorSelectLabel": "Select {name}, class {classroom}",
+  "@parentChildSelectorSelectLabel": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "classroom": {
+        "type": "String"
+      }
+    }
+  },
+  "parentDailyAttendanceTitle": "Daily Attendance · {name}",
+  "@parentDailyAttendanceTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "welcomeRoleSelectorDescription": "Select your role to continue to the sign in page.",
+  "welcomePortalLabel": "PORTAL SEKOLAH",
+  "welcomeTitle": "Sekolah\nBudi Luhur",
+  "welcomeDescription": "Your unified gateway to all school services. Select your role below to sign in and access your personalized dashboard.",
+  "welcomeGetStarted": "GET STARTED",
+  "parentGreetingName": "Mr. {name}",
+  "@parentGreetingName": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "parentDailyAttendanceNoDataDesc": "Attendance data for {name} today will appear here.",
+  "@parentDailyAttendanceNoDataDesc": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "reload": "Reload",
+  "comingSoon": "Coming soon",
+  "parentProfileChildrenTitle": "Your children",
+  "parentProfileSwitchChildTitle": "Switch active child?",
+  "parentProfileSwitchChildMessage": "You'll now be viewing {childName}'s data.",
+  "@parentProfileSwitchChildMessage": {
+    "placeholders": {
+      "childName": {
+        "type": "String"
+      }
+    }
+  },
+  "parentProfileSwitchChildSuccess": "Switched to {childName}",
+  "@parentProfileSwitchChildSuccess": {
+    "placeholders": {
+      "childName": {
+        "type": "String"
+      }
+    }
+  },
+  "cancel": "Cancel",
+  "confirm": "Confirm"
 }

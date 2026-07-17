@@ -10,17 +10,32 @@ class RouteNames {
   // Splash Route
   static const String splash = "/";
 
+  // Welcome Screen
+  static const String welcome = "/welcome";
+
   // Auth Student Screen
   static const String authStudent = "/auth/student";
+
+  // Auth Parent Screen
+  static const String authParent = "/auth/parent";
+
+  // Parent Child Selector
+  static const String parentChildSelector = "/parent/select-child";
 
   // Dashboard
   static const String dashboard = "/dashboard";
 
+  // Parent Dashboard
+  static const String parentDashboard = "/parent/dashboard";
+
+  // Parent Notification
+  static const String parentNotification = "/parent/notification";
+
+  // Parent Profile
+  static const String parentProfile = "/parent/profile";
+
   // Attendance
   static const String attendance = "/attendance";
-
-  // Menu
-  static const String menu = "/menu";
 
   // Profile
   static const String profile = "/profile";
@@ -51,4 +66,10 @@ class RouteNames {
 
   // Settings
   static const String settings = "/settings";
+
+  // Help Center
+  static const String helpCenter = "/settings/help-center";
+
+  // Privacy Policy
+  static const String privacyPolicy = "/settings/privacy-policy";
 }

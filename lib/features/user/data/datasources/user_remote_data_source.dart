@@ -6,26 +6,20 @@ import '../../../../core/api_client/api_client.dart';
 import '../../../../core/internal/src/interfaces/data_interfaces.dart';
 import '../models/student_response/student_response.dart';
 
-/// [UserRemoteDataSource] itu kontrak buat urusan nembak API.
-/// Kerjaan utamanya cuma satu: ambil data terbaru dari server.
 abstract class UserRemoteDataSource {
   Future<StudentResponse> fetch();
 }
 
-/// [UserRemoteDataSourceImpl] adalah implementasi nyata yang pake [HTTPRequest].
-/// Dia ini "Si Paling Update" yang tugasnya terbang ke cloud (lewat internet)
-/// buat nanya, "Eh, data siswa ini apa kabar ya?".
 class UserRemoteDataSourceImpl implements UserRemoteDataSource {
   UserRemoteDataSourceImpl(this._httpRequest);
 
   final HTTPRequest _httpRequest;
 
   @override
-  Future<StudentResponse> fetch() async {
-    // Kita panggil endpoint 'me' buat dapet info profil kita sendiri.
-    final response = await _httpRequest.get(ApiEndpoints.me);
-
-    // Kalo udah dapet, langsung kita sulap jadi [StudentResponse].
-    return StudentResponse.fromJson(response);
-  }
+  Future<StudentResponse> fetch() async => _httpRequest
+      .get(ApiEndpoints.me)
+      .then(
+        (response) =>
+            StudentResponse.fromJson(Map<String, dynamic>.from(response)),
+      );
 }

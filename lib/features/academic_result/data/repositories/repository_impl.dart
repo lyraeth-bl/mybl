@@ -17,9 +17,9 @@ class AcademicResultRepositoryImpl implements AcademicResultRepository {
   final AcademicResultRemoteDataSource _remoteDataSource;
 
   @override
-  Future<Result<AcademicResultResponse>> fetch([
+  Future<Result<AcademicResultResponse>> fetch({
     bool forceRefresh = false,
-  ]) async {
+  }) async {
     try {
       final response = await _remoteDataSource.fetch();
 

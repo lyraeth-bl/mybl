@@ -2,12 +2,13 @@
 // Use of this source code is governed by a MIT License
 // that can be found in the LICENSE file.
 
-import '../../../../core/internal/src/interfaces/data_interfaces.dart';
+import '../../../../core/enums/user_role.dart';
+import '../../../../core/internal/src/types.dart';
 import '../entities/app_configuration_entity/app_configuration_entity.dart';
 
-/// Kontrak kerja buat ngambil data konfigurasi aplikasi.
-///
-/// Ini cuma interface doang, implementasi nyatanya ada di layer data.
-/// Dia bakal ngasih kita [AppConfigurationEntity] lewat [ItemFetcher].
-abstract class AppConfigurationRepository
-    implements ItemFetcher<AppConfigurationEntity> {}
+abstract class AppConfigurationRepository {
+  Future<Result<AppConfigurationEntity>> fetch({
+    required UserRole role,
+    bool forceRefresh = false,
+  });
+}

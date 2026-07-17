@@ -5,13 +5,14 @@
 import 'package:fpdart/fpdart.dart';
 
 import '../../features/sessions/data/datasources/session_local_data_source.dart';
+import '../enums/user_role.dart';
 import '../internal/src/interfaces/data_interfaces.dart';
 
 /// Brangkas cerdas yang pegang kendali atas access token di level core.
 ///
 /// [TokenProvider] ini adalah kontrak buat siapa pun yang mau ngurusin
 /// urusan "nitip" atau "ngambil" token secara global di aplikasi.
-abstract class TokenProvider implements TokenStorage {}
+abstract class TokenProvider implements TokenStorage, RoleStorage<UserRole> {}
 
 /// Implementasi nyata dari si penyedia token dengan sistem cache.
 ///
@@ -60,4 +61,14 @@ class TokenProviderImpl implements TokenProvider {
   @override
   Future<Unit> saveTokenExpiresAt(DateTime expiresAt) =>
       _sessionLocalDataSource.saveTokenExpiresAt(expiresAt);
+
+  @override
+  Future<Unit> clearRole() => _sessionLocalDataSource.clearRole();
+
+  @override
+  Future<UserRole?> readRole() => _sessionLocalDataSource.readRole();
+
+  @override
+  Future<Unit> saveRole(UserRole role) =>
+      _sessionLocalDataSource.saveRole(role);
 }

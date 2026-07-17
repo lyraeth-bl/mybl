@@ -54,21 +54,21 @@ Future<void> initializeApp() async {
 
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
-  initAppRouterDI();
   await initStorageDI();
   initLocalizationDI();
   initThemeDI();
   initAppDI();
   initTokenProviderDI();
   initApiClientDI();
+  initUserDI();
   initNetworkDI();
   initAuthDI();
   initDeviceTokenDI();
   initNotificationsDI();
   initFCMServiceDI();
   initSessionsDI();
+  initAppRouterDI();
   initAppConfigurationDI();
-  initUserDI();
   initAttendanceDI();
   initTimeTableDI();
   initExtracurricularDI();

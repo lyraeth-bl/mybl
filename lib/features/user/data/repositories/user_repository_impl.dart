@@ -25,7 +25,7 @@ class UserRepositoryImpl implements UserRepository {
   final UserRemoteDataSource _remoteDataSource;
 
   @override
-  Future<Result<StudentEntity>> fetch([bool forceRefresh = false]) async {
+  Future<Result<StudentEntity>> fetch({bool forceRefresh = false}) async {
     // Cek dulu di gudang lokal kalo user gak minta maksa refresh.
     if (!forceRefresh) {
       final storedData = _localDataSource.read();

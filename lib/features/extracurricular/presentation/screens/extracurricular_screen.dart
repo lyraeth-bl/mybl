@@ -4,15 +4,13 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 
-import '../../../../core/app_router/app_router.dart';
 import '../../../../core/di/get_it_constant.dart';
-import '../../../../core/widgets/app_profile_picture.dart';
+import '../../../../core/internal/src/extensions/extensions.dart';
+import '../../../../core/widgets/app_empty_state.dart';
 import '../../../../core/widgets/app_top_bar.dart';
 import '../../../../core/widgets/refresh_wrapper.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../../user/presentation/bloc/user_bloc.dart';
 import '../bloc/extracurricular_bloc.dart';
 import '../widgets/extracurricular_content.dart';
 import '../widgets/extracurricular_state_widgets.dart';
@@ -42,17 +40,16 @@ class _ExtracurricularViewState extends State<_ExtracurricularView> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ExtracurricularBloc>().add(
-        const ExtracurricularEvent.fetchExtracurricular(),
-      );
+      context.read<ExtracurricularBloc>().add(const .fetchExtracurricular());
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      appBar: _ExtracurricularAppBar(),
-      body: _ExtracurricularBody(),
+    return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+      appBar: const _ExtracurricularAppBar(),
+      body: const _ExtracurricularBody(),
     );
   }
 }
@@ -66,61 +63,11 @@ class _ExtracurricularAppBar extends StatelessWidget
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    return AppTopBar(
-      toolbarHeight: 72,
-      title: Text(l10n.extracurricular),
-      centerTitle: true,
-      actions: const <Widget>[_ExtracurricularProfileAction()],
-    );
+    return AppTopBar(toolbarHeight: 72, title: Text(l10n.extracurricular));
   }
 
   @override
-  Size get preferredSize => Size.fromHeight(80);
-}
-
-class _ExtracurricularProfileAction extends StatelessWidget {
-  const _ExtracurricularProfileAction();
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final l10n = AppLocalizations.of(context)!;
-
-    return BlocSelector<
-      UserBloc,
-      UserState,
-      ({String? imageUrl, String? name})
-    >(
-      selector: (state) => state.maybeWhen(
-        success: (student) => (
-          imageUrl: student.profileImageUrl,
-          name: student.nama ?? student.namaPanggilan,
-        ),
-        orElse: () => (imageUrl: null, name: null),
-      ),
-      builder: (context, profile) {
-        return Tooltip(
-          message: l10n.profile,
-          child: InkResponse(
-            onTap: () => context.go(RouteNames.profile),
-            customBorder: const CircleBorder(),
-            radius: 24,
-            child: SizedBox.square(
-              dimension: kMinInteractiveDimension,
-              child: Center(
-                child: AppProfilePicture(
-                  imageUrl: profile.imageUrl,
-                  initials: AppProfilePicture.initialFrom(profile.name),
-                  radius: 20,
-                  side: BorderSide(color: colorScheme.outlineVariant, width: 2),
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
+  Size get preferredSize => const Size.fromHeight(72);
 }
 
 class _ExtracurricularBody extends StatelessWidget {
@@ -136,7 +83,7 @@ class _ExtracurricularBody extends StatelessWidget {
             ExtracurricularState
           >(
             context: context,
-            event: const ExtracurricularEvent.fetchExtracurricular(true),
+            event: const .fetchExtracurricular(true),
             isDone: (state) => state.maybeWhen(
               success: (_) => true,
               failure: (_) => true,
@@ -149,22 +96,23 @@ class _ExtracurricularBody extends StatelessWidget {
           BlocBuilder<ExtracurricularBloc, ExtracurricularState>(
             builder: (context, state) {
               return state.maybeWhen(
-                loading: () => const ExtracurricularLoadingContent(),
                 success: (extracurricular) =>
                     ExtracurricularContent(extracurricular: extracurricular),
-                failure: (failure) => SliverFillRemaining(
-                  hasScrollBody: false,
-                  child: ExtracurricularFailure(
-                    message: failure.localizedMessage(
-                      AppLocalizations.of(context)!,
-                    ),
+                failure: (failure) => AppEmptyStateSliver(
+                  icon: Icons.error_outline_rounded,
+                  message: failure.localizedMessage(
+                    AppLocalizations.of(context)!,
+                  ),
+                  retryLabel: AppLocalizations.of(context)!.tryAgain,
+                  onRetry: () => context.read<ExtracurricularBloc>().add(
+                    const .fetchExtracurricular(true),
                   ),
                 ),
                 orElse: () => const ExtracurricularLoadingContent(),
               );
             },
           ),
-          const SliverToBoxAdapter(child: SizedBox(height: 24)),
+          SliverToBoxAdapter(child: 24.h),
         ],
       ),
     );

@@ -9,21 +9,13 @@ import '../../../../core/internal/src/interfaces/data_interfaces.dart';
 import '../models/auth_response_model/auth_response_model.dart';
 import '../models/login_request/login_request.dart';
 
-/// Si paling tau endpoint API mana yang harus dipanggil buat urusan Auth.
-///
-/// Class ini fokus buat ngobrol langsung sama server. Nggak pake mikir logic
-/// bisnis, pokoknya request dan lempar hasil (atau error).
 abstract class AuthRemoteDataSource {
-  /// Manggil API login pake [data] request.
   Future<AuthResponseModel> login(LoginRequest data);
 
-  /// Manggil API logout buat beresin sesi di server.
   Future<Unit> logout();
 }
 
-/// Implementasi nyata dari [AuthRemoteDataSource] pake [HTTPRequest].
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
-  /// Bikin instance bareng [_httpRequest] buat senjata utama manggil API.
   AuthRemoteDataSourceImpl(this._httpRequest);
 
   final HTTPRequest _httpRequest;

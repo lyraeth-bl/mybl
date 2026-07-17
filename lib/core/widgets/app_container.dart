@@ -4,6 +4,9 @@
 
 import 'package:flutter/material.dart';
 
+import '../internal/src/extensions/extensions.dart';
+import 'app_button.dart';
+
 /// A dashboard card with optional header content and Material interaction.
 ///
 /// Use [AppContainer] for compact dashboard sections that need a
@@ -18,12 +21,9 @@ class AppContainer extends StatelessWidget {
     required this.child,
     this.title,
     this.trailing,
-    this.margin = const EdgeInsets.all(16),
-    this.padding = const EdgeInsets.all(16),
-    this.titlePadding = const EdgeInsets.symmetric(
-      horizontal: 16,
-      vertical: 12,
-    ),
+    this.margin = const .all(16),
+    this.padding = const .all(16),
+    this.titlePadding = const .symmetric(horizontal: 16, vertical: 12),
     this.backgroundColor,
     this.headerColor,
     this.foregroundColor,
@@ -33,13 +33,8 @@ class AppContainer extends StatelessWidget {
     this.surfaceTintColor,
     this.elevation = 1,
     this.shape,
-    this.borderRadius = const BorderRadius.only(
-      bottomLeft: Radius.circular(16),
-      bottomRight: Radius.circular(32),
-      topLeft: Radius.circular(32),
-      topRight: Radius.circular(16),
-    ),
-    this.clipBehavior = Clip.antiAlias,
+    this.borderRadius = const .all(.circular(16)),
+    this.clipBehavior = .antiAlias,
     this.aspectRatio,
     this.onTap,
   }) : assert(
@@ -143,10 +138,7 @@ class AppContainer extends StatelessWidget {
         foregroundColor ?? colorScheme.onPrimaryContainer;
     final TextStyle effectiveTitleTextStyle =
         titleTextStyle ??
-        textTheme.titleSmall?.copyWith(
-          color: effectiveForegroundColor,
-          fontWeight: FontWeight.w700,
-        ) ??
+        textTheme.titleSmall?.copyWith(color: effectiveForegroundColor) ??
         TextStyle(color: effectiveForegroundColor, fontWeight: FontWeight.w700);
     final bool hasHeader = title != null || trailing != null;
 
@@ -163,8 +155,8 @@ class AppContainer extends StatelessWidget {
         onTap: onTap,
         customBorder: effectiveShape,
         child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: .min,
+          crossAxisAlignment: .stretch,
           children: <Widget>[
             if (hasHeader)
               IconTheme.merge(
@@ -172,14 +164,14 @@ class AppContainer extends StatelessWidget {
                 child: DefaultTextStyle.merge(
                   style: effectiveTitleTextStyle,
                   maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                  overflow: .ellipsis,
                   child: Padding(
                     padding: titlePadding,
                     child: Row(
                       children: <Widget>[
                         if (title != null) Expanded(child: title!),
                         if (trailing != null) ...<Widget>[
-                          if (title != null) const SizedBox(width: 12),
+                          if (title != null) 16.w,
                           trailing!,
                         ],
                       ],
@@ -220,5 +212,244 @@ class AppContainer extends StatelessWidget {
     }
 
     return result;
+  }
+}
+
+/// A bordered [AppContainer] whose body holds an inset, separately-rounded
+/// panel — a card-within-a-card.
+///
+/// Use [AppFramedContainer] for dashboard sections that need a header row plus
+/// a distinct inner surface (e.g. an icon/title/CTA block). The inner panel's
+/// corners are controlled independently via [innerBorderRadius].
+@immutable
+class AppFramedContainer extends StatelessWidget {
+  /// Creates a framed dashboard card.
+  ///
+  /// The header is shown when either [title] or [trailing] is provided.
+  const AppFramedContainer({
+    super.key,
+    required this.child,
+    this.title,
+    this.trailing,
+    this.margin = const .all(16),
+    this.gap = const .all(12),
+    this.innerPadding = const .all(16),
+    this.titlePadding = const .symmetric(horizontal: 16, vertical: 12),
+    this.backgroundColor,
+    this.innerColor,
+    this.headerColor,
+    this.foregroundColor,
+    this.titleTextStyle,
+    this.borderRadius = const .all(.circular(16)),
+    this.innerBorderRadius = const .all(.circular(16)),
+    this.borderColor,
+    this.innerBorderColor,
+    this.elevation = 0,
+    this.aspectRatio,
+    this.onTap,
+  }) : assert(
+         aspectRatio == null || aspectRatio > 0,
+         'aspectRatio must be greater than zero.',
+       );
+
+  /// The content displayed inside the inner panel.
+  final Widget child;
+
+  /// The widget displayed at the start of the optional header.
+  final Widget? title;
+
+  /// The widget displayed at the end of the optional header.
+  final Widget? trailing;
+
+  /// The empty space that surrounds the card.
+  final EdgeInsetsGeometry? margin;
+
+  /// The space between the card edge and the inner panel.
+  final EdgeInsetsGeometry gap;
+
+  /// The padding inside the inner panel, around [child].
+  final EdgeInsetsGeometry innerPadding;
+
+  /// The padding around the optional header row.
+  final EdgeInsetsGeometry titlePadding;
+
+  /// The background color behind the inner panel.
+  ///
+  /// Defaults to [ColorScheme.surface].
+  final Color? backgroundColor;
+
+  /// The background color of the inner panel.
+  ///
+  /// Defaults to [ColorScheme.surface].
+  final Color? innerColor;
+
+  /// The background color of the optional header.
+  ///
+  /// Defaults to [ColorScheme.surfaceContainerLow].
+  final Color? headerColor;
+
+  /// The default color for text and icons in the optional header.
+  ///
+  /// Defaults to [ColorScheme.onSurfaceVariant].
+  final Color? foregroundColor;
+
+  /// The default text style applied to [title].
+  final TextStyle? titleTextStyle;
+
+  /// The border radius of the outer card.
+  final BorderRadiusGeometry borderRadius;
+
+  /// The border radius of the inner panel.
+  final BorderRadiusGeometry innerBorderRadius;
+
+  /// The color of the outer card border.
+  ///
+  /// Defaults to [ColorScheme.outlineVariant].
+  final Color? borderColor;
+
+  /// The color of the inner panel border.
+  ///
+  /// Defaults to [ColorScheme.outlineVariant].
+  final Color? innerBorderColor;
+
+  /// The z-coordinate at which to place the outer card.
+  final double elevation;
+
+  /// The width-to-height ratio for the whole card.
+  ///
+  /// When null, the card sizes itself to its content.
+  final double? aspectRatio;
+
+  /// Called when the card is tapped.
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    final ColorScheme colorScheme = theme.colorScheme;
+
+    return AppContainer(
+      margin: margin,
+      padding: gap,
+      titlePadding: titlePadding,
+      title: title,
+      trailing: trailing,
+      titleTextStyle: titleTextStyle,
+      headerColor: headerColor ?? colorScheme.surfaceContainer,
+      foregroundColor: foregroundColor ?? colorScheme.onSurfaceVariant,
+      backgroundColor: backgroundColor ?? colorScheme.surfaceContainer,
+      elevation: elevation,
+      aspectRatio: aspectRatio,
+      borderRadius: null,
+      shape: RoundedRectangleBorder(
+        borderRadius: borderRadius,
+        side: BorderSide(color: borderColor ?? colorScheme.outlineVariant),
+      ),
+      onTap: onTap,
+      child: Container(
+        padding: innerPadding,
+        decoration: BoxDecoration(
+          color: innerColor ?? colorScheme.surface,
+          borderRadius: innerBorderRadius,
+          border: .all(color: innerBorderColor ?? colorScheme.outlineVariant),
+        ),
+        child: child,
+      ),
+    );
+  }
+}
+
+/// A centered empty-state placeholder for a card body with no data.
+///
+/// Use [AppNoData] inside an [AppContainer] or [AppFramedContainer] body to
+/// communicate an empty state: an [icon], a bold [title], an optional
+/// supporting [message], and an optional call-to-action button.
+@immutable
+class AppNoData extends StatelessWidget {
+  /// Creates an empty-state placeholder.
+  ///
+  /// The action button is shown only when both [actionLabel] and [onAction]
+  /// are provided.
+  const AppNoData({
+    super.key,
+    required this.title,
+    this.icon = Icons.inbox_outlined,
+    this.message,
+    this.actionLabel,
+    this.onAction,
+    this.padding = const .symmetric(horizontal: 16, vertical: 8),
+    this.iconSize = 32,
+  });
+
+  /// The bold headline describing the empty state.
+  final String title;
+
+  /// The icon displayed above the [title].
+  final IconData icon;
+
+  /// The optional supporting text shown below the [title].
+  final String? message;
+
+  /// The optional label for the call-to-action button.
+  final String? actionLabel;
+
+  /// Called when the call-to-action button is tapped.
+  final VoidCallback? onAction;
+
+  /// The padding around the content.
+  final EdgeInsetsGeometry padding;
+
+  /// The size of the [icon].
+  final double iconSize;
+
+  @override
+  Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    final ColorScheme colorScheme = theme.colorScheme;
+    final TextTheme textTheme = theme.textTheme;
+    final bool hasAction = actionLabel != null && onAction != null;
+
+    return Padding(
+      padding: padding,
+      child: Column(
+        mainAxisSize: .min,
+        children: <Widget>[
+          Icon(icon, size: iconSize, color: colorScheme.onSurfaceVariant),
+          16.h,
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: textTheme.titleMedium?.copyWith(
+              color: colorScheme.onSurface,
+            ),
+          ),
+          if (message != null) ...<Widget>[
+            8.h,
+            Text(
+              message!,
+              textAlign: TextAlign.center,
+              style: textTheme.bodyMedium?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ],
+          if (hasAction) ...<Widget>[
+            16.h,
+            AppButton.outlined(
+              onPressed: onAction,
+              minimumSize: const Size(0, 40),
+              side: BorderSide(color: colorScheme.outlineVariant),
+              borderRadius: .circular(8),
+              child: Text(
+                actionLabel!,
+                style: textTheme.titleSmall!.copyWith(
+                  color: colorScheme.onSurface,
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
   }
 }

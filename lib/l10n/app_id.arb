@@ -11,27 +11,31 @@
   "dioTimeoutError": "Response dari servernya kelamaan, coba ulang lagi ya.",
   "dioUnexpectedError": "Ada yang aneh, coba ulang lagi ya.",
   "nis": "NIS",
+  "nisHint": "Masukkan NIS kamu",
   "pleaseEnterNis": "NIS tidak boleh kosong, isi dulu ya...",
+  "username": "Username",
+  "usernameHint": "Masukkan username kamu",
+  "pleaseEnterUsername": "Username tidak boleh kosong, isi dulu ya...",
   "password": "Password",
+  "passwordHint": "Masukkan password kamu",
   "pleaseEnterPassword": "Password juga tidak boleh kosong ya...",
   "letsSignIn": "Ayo Masuk",
   "logout": "Keluar",
   "welcomeBack": "Selamat Datang Kembali",
   "youHaveBeenMissed": "Kami merindukanmu!",
   "signIn": "Masuk",
-  "rememberMyNis": "Ingat NIS saya?",
+  "loginHelpNotice": "Ada masalah saat masuk? Silakan hubungi bagian administrasi sekolah untuk bantuan.",
+  "rememberMe": "Ingat saya",
   "forgetPassword": "Lupa password anda?",
   "schoolName": "Sekolah Budi Luhur",
   "schoolSlogan": "Cerdas Berbudi Luhur",
   "home": "Beranda",
-  "menu": "Menu",
   "quickMenu": "Menu Cepat",
   "emptyMenu": "Menu belum tersedia.",
   "profile": "Profil",
   "dailyAttendance": "Absensi Harian",
-  "qrCode": "QR",
   "attendanceQrCode": "QR Code Absensi",
-  "attendanceSummary": "Ringkasan Absensi",
+  "attendanceSummary": "Ringkasan",
   "attendanceCalendar": "Kalender Absensi",
   "attendanceLog": "Riwayat Absensi",
   "attendanceDateFilter": "Filter tanggal absensi",
@@ -51,7 +55,6 @@
       }
     }
   },
-  "attendanceChart": "Grafik Absensi",
   "navigation": "Navigasi",
   "all": "Semua",
   "seeAll": "Lihat Semua",
@@ -60,6 +63,8 @@
   "enjoyYourHolidaySubtitle": "Tidak ada jadwal pelajaran hari ini.",
   "todayScheduleFinished": "Hari ini sudah selesai.",
   "todayScheduleFinishedSubtitle": "Semua pelajaran hari ini sudah berakhir.",
+  "noScheduleToday": "Tidak ada pelajaran hari ini.",
+  "noScheduleTodaySubtitle": "Tidak ada jadwal pelajaran untuk kamu hari ini.",
   "ongoingNow": "Sedang berlangsung",
   "scheduleDurationMinutes": "{minutes} menit",
   "@scheduleDurationMinutes": {
@@ -69,10 +74,28 @@
       }
     }
   },
+  "attendanceWorkingDaysSummary": "{present}/{total} hari sekolah",
+  "@attendanceWorkingDaysSummary": {
+    "placeholders": {
+      "present": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "guardianDetails": "Detail Orang Tua",
   "meritAndDemerit": "Merit & Demerit",
   "academicCalendar": "Kalendar Akademik",
   "academicCalendarLog": "Riwayat Kalendar Akademik",
+  "academicCalendarLoadFailedTitle": "Kalendarnya Lagi Main Petak Umpet",
+  "academicCalendarUpcomingEvents": "Acara Mendatang",
+  "academicCalendarPastEvents": "Acara yang Lalu",
+  "academicCalendarPastEventsEmptyTitle": "Belum Ada Kenangan",
+  "academicCalendarPastEventsEmptyMessage": "Bulan ini sepi acara, nggak ada riwayat yang tercatat.",
+  "academicCalendarUpcomingEventsEmptyTitle": "Kalender Masih Kosong",
+  "academicCalendarUpcomingEventsEmptyMessage": "Belum ada acara terjadwal bulan ini, santai dulu ya.",
   "upcoming": "Mendatang",
   "exam": "Ujian",
   "academic": "Akademik",
@@ -97,7 +120,18 @@
       }
     }
   },
+  "outOfMaxScore": "/ {maxScore}",
+  "@outOfMaxScore": {
+    "placeholders": {
+      "maxScore": {
+        "type": "int"
+      }
+    }
+  },
+  "academicResultSubjectsEmptyTitle": "Rapor Masih Kosong",
+  "academicResultSubjectsEmptyMessage": "Belum ada nilai yang tercatat buat semester ini.",
   "extracurricular": "Ekstrakulikuler",
+  "extracurricularShort": "Ekskul",
   "merit": "Merit",
   "demerit": "Demerit",
   "settings": "Pengaturan",
@@ -105,7 +139,45 @@
   "support": "Dukungan",
   "appTheme": "Tema Aplikasi",
   "helpCenter": "Pusat Bantuan",
+  "helpCenterSubtitle": "Cari jawaban atau hubungi sekolah",
+  "faqTitle": "Pertanyaan yang Sering Diajukan",
+  "faqGradesQuestion": "Bagaimana cara melihat nilai saya?",
+  "faqGradesAnswer": "Buka menu Akademik dari dashboard untuk melihat nilai mata pelajaran setiap semester.",
+  "faqAttendanceQuestion": "Bagaimana cara melihat kehadiran saya?",
+  "faqAttendanceAnswer": "Buka menu Kehadiran dari dashboard untuk melihat catatan kehadiran harian dan bulanan.",
+  "faqLanguageThemeQuestion": "Bagaimana cara mengganti bahasa atau tema?",
+  "faqLanguageThemeAnswer": "Buka Pengaturan, lalu gunakan bagian Personalisasi untuk mengganti tema dan bahasa aplikasi.",
+  "faqPasswordQuestion": "Saya lupa kata sandi. Apa yang harus dilakukan?",
+  "faqPasswordAnswer": "Hubungi kantor administrasi sekolah untuk mengatur ulang kata sandi akun Anda.",
+  "contactSchoolTitle": "Kontak Sekolah",
+  "contactEmail": "Email",
+  "contactPhone": "Telepon",
+  "socialMediaSma": "Media Sosial SMA Budi Luhur",
+  "socialMediaSmk": "Media Sosial SMK Budi Luhur",
+  "instagram": "Instagram",
+  "youtube": "YouTube",
+  "tiktok": "TikTok",
+  "website": "Website",
+  "officeHoursTitle": "Jam Operasional",
+  "officeHoursWeekdays": "Senin\u2013Jumat",
+  "contactOpenFailed": "Gagal membuka aplikasi",
+  "privacyLastUpdated": "Terakhir diperbarui: Juli 2026",
+  "privacyIntroBody": "MyBL adalah portal siswa resmi ekosistem sekolah Budi Luhur yang dikelola Yayasan Pakarti Luhur. Kebijakan ini menjelaskan data apa saja yang diproses aplikasi dan bagaimana data tersebut dilindungi.",
+  "privacyDataTitle": "Data yang Diproses",
+  "privacyDataBody": "Aplikasi menampilkan data akademik yang disediakan sistem sekolah, seperti nama, nomor induk siswa (NIS), kelas, catatan kehadiran, nilai, jadwal, ekstrakurikuler, poin prestasi/pelanggaran, dan notifikasi sekolah. Aplikasi tidak mengumpulkan data di luar yang sudah dikelola sekolah.",
+  "privacyUsageTitle": "Penggunaan Data",
+  "privacyUsageBody": "Data Anda hanya digunakan untuk menampilkan informasi akademik di dalam aplikasi dan mengirimkan notifikasi sekolah. Data tidak pernah dipakai untuk iklan atau profiling.",
+  "privacyStorageTitle": "Penyimpanan & Keamanan",
+  "privacyStorageBody": "Kredensial login tidak pernah disimpan di perangkat. Token akses disimpan di secure storage terenkripsi, dan data akademik hanya di-cache lokal untuk mempercepat aplikasi. Seluruh komunikasi dengan server sekolah menggunakan koneksi terenkripsi.",
+  "privacyNotificationTitle": "Notifikasi",
+  "privacyNotificationBody": "Jika Anda mengaktifkan notifikasi, aplikasi mendaftarkan token perangkat ke Firebase Cloud Messaging agar sekolah dapat mengirim pengumuman dan pembaruan kehadiran. Notifikasi dapat dimatikan kapan saja dari pengaturan perangkat.",
+  "privacySharingTitle": "Pembagian Data",
+  "privacySharingBody": "Data Anda tidak dijual atau dibagikan ke pihak ketiga. Data hanya dipertukarkan antara aplikasi dan server resmi sekolah. Akun orang tua hanya dapat mengakses data anaknya sendiri.",
+  "privacyContactTitle": "Kontak",
+  "privacyContactBody": "Untuk pertanyaan tentang kebijakan ini atau permintaan terkait data Anda, hubungi sekolah melalui Pusat Bantuan.",
   "privacyPolicy": "Kebijakan Privasi",
+  "privacyOpenFull": "Buka kebijakan lengkap",
+  "privacyOpenFailed": "Gagal membuka tautan",
   "appVersion": "v {version}",
   "@appVersion": {
     "placeholders": {
@@ -117,6 +189,8 @@
   "language": "Bahasa",
   "indonesian": "Indonesia",
   "english": "Inggris",
+  "indonesianShort": "Indo",
+  "englishShort": "Ing",
   "theme": "Tema",
   "systemTheme": "Sistem",
   "lightTheme": "Terang",
@@ -190,9 +264,33 @@
   "absent": "Absen",
   "thisMonthlyAttendance": "Absensi bulan ini",
   "noAttendanceData": "Tidak ada data absensi.",
+  "attendanceCheckInAction": "Checkin",
+  "attendanceAlreadyCheckedIn": "Sudah Checkin",
+  "attendanceCheckOutAction": "Checkout",
+  "attendanceDone": "Selesai",
+  "attendanceButtonLoading": "Memuat...",
+  "attendanceTodayLoadFailedTitle": "Waduh, Absensinya Ngumpet",
+  "attendanceTodayLoadFailedSubtitle": "Sinyal lagi jahil nih, coba tarik buat refresh ya!",
+  "attendanceNoScheduleTitle": "Hari Ini Libur!",
+  "attendanceNoScheduleSubtitle": "Nikmatin harimu, gak ada absen yang perlu ditunggu.",
+  "attendanceNoDataWeekdayTitle": "Belum Ada Data Absen",
+  "attendanceNoDataWeekdaySubtitle": "Data absen hari ini belum tersedia. Tarik buat refresh ya!",
+  "attendanceNoScheduleTitleParent": "Anak Libur Hari Ini!",
+  "attendanceNoScheduleSubtitleParent": "Nikmatin harinya, gak ada absen yang perlu ditunggu.",
+  "attendanceNoDataWeekdayTitleParent": "Belum Ada Data Absen",
+  "attendanceNoDataWeekdaySubtitleParent": "Data absen anak hari ini belum tersedia. Tarik buat refresh ya!",
+  "attendanceParentStatusNotCheckedIn": "Belum Checkin",
+  "attendanceParentStatusCheckedIn": "Sudah Checkin",
+  "attendanceParentStatusCheckedOut": "Sudah Checkout",
   "noAttendanceDetailData": "Tidak ada detail absensi.",
   "days": "Hari",
   "noData": "Tidak ada data.",
+  "profileLoadFailedTitle": "Yah, muka kamu keselip!",
+  "profileLoadFailedSubtitle": "Coba tarik buat refresh, ingatannya lagi lemot.",
+  "timeTableLoadFailedTitle": "Jadwalnya kecampur, nih!",
+  "timeTableLoadFailedSubtitle": "Tarik buat refresh, biar dirapiin lagi.",
+  "timeTableNoScheduleTitle": "Belum Ada Jadwal",
+  "timeTableNoScheduleSubtitle": "Tidak ada pelajaran di hari ini, waktunya santai sejenak.",
   "noExtracurricularData": "Belum ada data ekstrakurikuler.",
   "schoolYear": "Tajaran",
   "allSchoolYears": "Semua tajaran",
@@ -263,5 +361,75 @@
   "guardianAddress": "Alamat wali",
   "admissionDate": "Tanggal masuk",
   "status": "Status",
-  "detailProfileNotes": "Jika terdapat ketidaksesuaian data, segera laporkan ke TU unit masing-masing untuk dilakukan perbaikan."
+  "detailProfileNotes": "Jika terdapat ketidaksesuaian data, segera laporkan ke TU unit masing-masing untuk dilakukan perbaikan.",
+  "loginAs": "Login sebagai siapa?",
+  "student": "Siswa",
+  "parent": "Orang Tua / Wali",
+  "parentChildSelectorSingleChild": "Data anak Anda",
+  "parentDashboardProfileTitle": "Profile Anak",
+  "parentChildSelectorMultipleChildren": "Pilih data anak yang ingin dipantau",
+  "parentChildSelectorNoChildren": "Tidak ada anak yang terdaftar",
+  "parentChildSelectorNoChildrenDesc": "Hubungi administrasi sekolah jika data ini tidak sesuai.",
+  "parentChildSelectorSelectLabel": "Pilih {name}, kelas {classroom}",
+  "@parentChildSelectorSelectLabel": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "classroom": {
+        "type": "String"
+      }
+    }
+  },
+  "parentDailyAttendanceTitle": "Absensi Harian · {name}",
+  "@parentDailyAttendanceTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "welcomeRoleSelectorDescription": "Pilih peran Anda untuk melanjutkan ke halaman masuk.",
+  "welcomePortalLabel": "PORTAL SEKOLAH",
+  "welcomeTitle": "Sekolah\nBudi Luhur",
+  "welcomeDescription": "Akses terpadu untuk seluruh layanan Sekolah Budi Luhur. Pilih peran Anda di bawah untuk masuk dan menggunakan fitur yang tersedia.",
+  "welcomeGetStarted": "MULAI",
+  "parentGreetingName": "Bpk. {name}",
+  "@parentGreetingName": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "parentDailyAttendanceNoDataDesc": "Data kehadiran {name} hari ini akan muncul di sini.",
+  "@parentDailyAttendanceNoDataDesc": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "reload": "Muat ulang",
+  "comingSoon": "Segera hadir",
+  "parentProfileChildrenTitle": "Anak Anda",
+  "parentProfileSwitchChildTitle": "Ganti anak aktif?",
+  "parentProfileSwitchChildMessage": "Kamu akan melihat data {childName}.",
+  "@parentProfileSwitchChildMessage": {
+    "placeholders": {
+      "childName": {
+        "type": "String"
+      }
+    }
+  },
+  "parentProfileSwitchChildSuccess": "Beralih ke {childName}",
+  "@parentProfileSwitchChildSuccess": {
+    "placeholders": {
+      "childName": {
+        "type": "String"
+      }
+    }
+  },
+  "cancel": "Batal",
+  "confirm": "Konfirmasi"
 }

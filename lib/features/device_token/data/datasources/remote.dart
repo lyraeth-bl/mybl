@@ -5,14 +5,21 @@
 import 'package:fpdart/fpdart.dart';
 
 import '../../../../core/api_client/api_client.dart';
+import '../../../../core/enums/user_role.dart';
 import '../../../../core/internal/src/interfaces/data_interfaces.dart';
 import '../models/device_token_request/device_token_request.dart';
 import '../models/device_token_response/device_token_response.dart';
 
 abstract class DeviceTokenRemoteDataSource {
-  Future<DeviceTokenResponse> registerDeviceToken(DeviceTokenRequest data);
+  Future<DeviceTokenResponse> registerDeviceToken(
+    DeviceTokenRequest data,
+    UserRole role,
+  );
 
-  Future<Unit> revokeDeviceToken({required String fcmToken});
+  Future<Unit> revokeDeviceToken({
+    required String fcmToken,
+    required UserRole role,
+  });
 }
 
 class DeviceTokenRemoteDataSourceImpl implements DeviceTokenRemoteDataSource {
@@ -23,23 +30,27 @@ class DeviceTokenRemoteDataSourceImpl implements DeviceTokenRemoteDataSource {
   @override
   Future<DeviceTokenResponse> registerDeviceToken(
     DeviceTokenRequest data,
+    UserRole role,
   ) async {
-    final request = data.toJson();
+    final endpoint = role == UserRole.parent
+        ? ApiEndpoints.parentDeviceTokens
+        : ApiEndpoints.deviceTokens;
 
-    final response = await _httpRequest.post(
-      ApiEndpoints.deviceTokens,
-      data: request,
-    );
+    final response = await _httpRequest.post(endpoint, data: data.toJson());
 
     return DeviceTokenResponse.fromJson(response);
   }
 
   @override
-  Future<Unit> revokeDeviceToken({required String fcmToken}) async {
-    await _httpRequest.delete(
-      ApiEndpoints.deviceTokens,
-      data: {'token': fcmToken},
-    );
+  Future<Unit> revokeDeviceToken({
+    required String fcmToken,
+    required UserRole role,
+  }) async {
+    final endpoint = role == UserRole.parent
+        ? ApiEndpoints.parentDeviceTokens
+        : ApiEndpoints.deviceTokens;
+
+    await _httpRequest.delete(endpoint, data: {'token': fcmToken});
 
     return unit;
   }

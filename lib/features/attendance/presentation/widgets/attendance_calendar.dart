@@ -107,7 +107,7 @@ class _AttendanceDayCell extends StatelessWidget {
 
     final (bgColor, textColor) = switch (status) {
       AttendanceStatus.present => (
-        appColors.success.withValues(alpha: 0.2),
+        appColors.success.withValues(alpha: 0.35),
         appColors.success,
       ),
       AttendanceStatus.late => (
@@ -115,7 +115,7 @@ class _AttendanceDayCell extends StatelessWidget {
         colorScheme.onPrimaryContainer,
       ),
       AttendanceStatus.excused => (
-        appColors.warning.withValues(alpha: 0.2),
+        appColors.warning.withValues(alpha: 0.35),
         appColors.warning,
       ),
       AttendanceStatus.absent => (
@@ -126,17 +126,17 @@ class _AttendanceDayCell extends StatelessWidget {
 
     return Center(
       child: SizedBox.square(
-        dimension: 40,
+        dimension: 44,
         child: DecoratedBox(
           decoration: BoxDecoration(
             color: bgColor,
             shape: BoxShape.rectangle,
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(10),
           ),
           child: Center(
             child: Text(
               '${day.day}',
-              style: textTheme.labelSmall!.copyWith(
+              style: textTheme.labelMedium!.copyWith(
                 color: textColor,
                 fontWeight: FontWeight.bold,
               ),

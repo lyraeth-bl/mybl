@@ -3,9 +3,9 @@
 // that can be found in the LICENSE file.
 
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
+import '../../../../core/internal/src/extensions/extensions.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/app_notification/app_notification.dart';
 import '../bloc/notification_bloc.dart';
@@ -22,11 +22,10 @@ List<NotificationGroup> groupNotifications(
   List<AppNotification> notifications,
 ) {
   final l10n = AppLocalizations.of(context)!;
-  final locale = Localizations.localeOf(context).toString();
   final groups = <String, List<AppNotification>>{};
 
   for (final notification in notifications) {
-    final title = _formatGroupTitle(notification.sentAt, l10n, locale);
+    final title = _formatGroupTitle(context, notification.sentAt, l10n);
     groups.putIfAbsent(title, () => <AppNotification>[]).add(notification);
   }
 
@@ -80,7 +79,11 @@ List<AppNotification> notificationsFromState(NotificationState state) {
   );
 }
 
-String _formatGroupTitle(DateTime date, AppLocalizations l10n, String locale) {
+String _formatGroupTitle(
+  BuildContext context,
+  DateTime date,
+  AppLocalizations l10n,
+) {
   final now = DateTime.now();
   final currentDay = DateTime(now.year, now.month, now.day);
   final notificationDay = DateTime(date.year, date.month, date.day);
@@ -89,7 +92,7 @@ String _formatGroupTitle(DateTime date, AppLocalizations l10n, String locale) {
   if (difference == 0) return l10n.today;
   if (difference == 1) return l10n.yesterday;
 
-  return DateFormat('EEEE, d MMMM yyyy', locale).format(date);
+  return date.toDayDateMonthYearFormat(context);
 }
 
 bool _timeagoLocaleMessagesRegistered = false;

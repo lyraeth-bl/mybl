@@ -4,6 +4,7 @@
 
 import 'package:fpdart/fpdart.dart';
 
+import '../../../../core/enums/user_role.dart';
 import '../../../../core/internal/src/types.dart';
 import '../repositories/repository.dart';
 
@@ -12,6 +13,9 @@ class RevokeDeviceTokenUseCase {
 
   final DeviceTokenRepository _deviceTokenRepository;
 
-  Future<Result<Unit>> call({required String fcmToken}) =>
-      _deviceTokenRepository.revokeDeviceToken(fcmToken: fcmToken);
+  Future<Result<Unit>> call({
+    required String fcmToken,
+    required UserRole role,
+  }) =>
+      _deviceTokenRepository.revokeDeviceToken(fcmToken: fcmToken, role: role);
 }

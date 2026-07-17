@@ -2,15 +2,21 @@
 // Use of this source code is governed by a MIT License
 // that can be found in the LICENSE file.
 
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/academic_calendar/presentation/screens/academic_calendar_screen.dart';
 import '../../features/academic_result/presentation/screens/academic_result_screen.dart';
 import '../../features/attendance/presentation/screens/attendance_screen.dart';
+import '../../features/auth/presentation/screens/auth_parent_screen.dart';
 import '../../features/auth/presentation/screens/auth_student_screen.dart';
+import '../../features/auth/presentation/screens/parent_child_selector_screen.dart';
+import '../../features/dashboard/presentation/screens/parent_profile_screen.dart';
+import '../../features/dashboard/presentation/shell/parent_main_shell.dart';
+import '../../features/dashboard/presentation/shell/student_main_shell.dart';
+import '../../features/user/presentation/bloc/parent_bloc/parent_bloc.dart';
+import '../../features/welcome/presentation/screens/welcome_screen.dart';
 import '../../features/dashboard/presentation/screens/dashboard_screen.dart';
-import '../../features/dashboard/presentation/widgets/main_shell.dart';
+import '../../features/dashboard/presentation/screens/parent_dashboard_screen.dart';
 import '../../features/discipline/presentation/screens/merit_demerit_screen.dart';
 import '../../features/extracurricular/presentation/screens/extracurricular_screen.dart';
 import '../../features/guardians_detail/presentation/screens/guardians_detail_screen.dart';
@@ -18,154 +24,35 @@ import '../../features/notifications/presentation/screens/notification_screen.da
 import '../../features/profile/presentation/screens/profile_detail_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/sessions/presentation/bloc/session_bloc.dart';
+import '../../features/settings/presentation/screens/help_center_screen.dart';
+import '../../features/settings/presentation/screens/privacy_policy_screen.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
 import '../../features/splash/presentation/screens/splash_screen.dart';
 import '../../features/time_table/presentation/screens/time_table_screen.dart';
+import '../enums/user_role.dart';
 import 'go_router_refresh_stream.dart';
 
 part 'route_names.dart';
 
-/// Konfigurasi routing aplikasi menggunakan [GoRouter].
-///
-/// ---
-///
-/// ## Kenapa Migrasi dari GetX ke GoRouter?
-///
-/// Sebelumnya project ini menggunakan GetX untuk routing. Kita migrasi ke
-/// GoRouter karena beberapa alasan:
-///
-/// - **Lebih ringan** — GoRouter hanya fokus ke routing, tidak membawa
-///   state management dan dependency injection seperti GetX, jadi tidak ada
-///   "magic" yang tersembunyi.
-/// - **Declarative & readable** — Semua route didefinisikan di satu tempat,
-///   mudah dibaca dan di-trace alurnya.
-/// - **Flutter-first** — GoRouter adalah package official dari Flutter team,
-///   jadi lebih terjamin maintenance dan kompatibilitasnya ke depan.
-/// - **Deep link ready** — Support deep link tanpa konfigurasi tambahan yang
-///   rumit.
-///
-/// ---
-///
-/// ## Cara Pakai
-///
-/// ### 1. Navigasi Dasar
-///
-/// ```dart
-/// // GetX (lama) — tidak perlu context
-/// Get.toNamed(RouteNames.dashboard);
-///
-/// // GoRouter (sekarang) — butuh context
-/// context.go(RouteNames.dashboard);
-/// ```
-///
-/// ### 2. Replace Halaman (tanpa bisa back)
-///
-/// ```dart
-/// // GetX (lama)
-/// Get.offNamed(RouteNames.login);
-/// Get.offAllNamed(RouteNames.splash);
-///
-/// // GoRouter (sekarang)
-/// context.go(RouteNames.login); // go() otomatis replace history
-/// ```
-///
-/// > **Catatan:** Di GoRouter, `context.go()` akan replace halaman saat ini
-/// > (tidak bisa back), sedangkan `context.push()` akan menumpuk halaman
-/// > di atas halaman sebelumnya (bisa back).
-///
-/// ### 3. Push Halaman (bisa back)
-///
-/// ```dart
-/// // GetX (lama)
-/// Get.toNamed(RouteNames.detail);
-///
-/// // GoRouter (sekarang)
-/// context.push(RouteNames.detail);
-/// ```
-///
-/// ### 4. Navigasi dengan Parameter
-///
-/// ```dart
-/// // Path parameter
-/// context.go('/user/123');
-///
-/// // Query parameter
-/// context.go('/product?name=sepatu');
-///
-/// // Ambil parameternya di halaman tujuan
-/// final id = GoRouterState.of(context).pathParameters['id'];
-/// final name = GoRouterState.of(context).uri.queryParameters['name'];
-/// ```
-///
-/// ### 5. Navigasi tanpa Context (jika terpaksa)
-///
-/// Sebisa mungkin pakai `context.go()`, tapi kalau memang tidak ada context
-/// (misalnya dari service atau bloc), bisa akses instance-nya via DI:
-///
-/// ```dart
-/// di<AppRouter>().goRouter.go(RouteNames.login);
-/// ```
-///
-/// ---
-///
-/// ## Setup di MaterialApp
-///
-/// Class ini sudah diregistrasi sebagai singleton di DI, jadi tinggal
-/// panggil di `MyBLApp`:
-///
-/// ```dart
-/// MaterialApp.router(
-///   routerConfig: di<AppRouter>().goRouter,
-/// );
-/// ```
-///
-/// ---
-///
-/// ## Menambah Route Baru
-///
-/// Semua nama route didefinisikan di [RouteNames] (file `route_names.dart`).
-/// Untuk menambah halaman baru, cukup:
-///
-/// **1. Tambah nama route di `route_names.dart`:**
-/// ```dart
-/// static const String profile = '/profile';
-/// ```
-///
-/// **2. Daftarkan route-nya di list `routes` di bawah:**
-/// ```dart
-/// GoRoute(
-///   path: RouteNames.profile,
-///   builder: (context, state) => const ProfilePage(),
-/// ),
-/// ```
-///
-/// ---
-///
-/// ## Ringkasan Padanan GetX → GoRouter
-///
-/// | GetX                        | GoRouter                                   |
-/// |-----------------------------|--------------------------------------------|
-/// | `Get.toNamed('/x')`         | `context.push('/x')`                       |
-/// | `Get.offNamed('/x')`        | `context.go('/x')`                         |
-/// | `Get.offAllNamed('/x')`     | `context.go('/x')`                         |
-/// | `Get.back()`                | `context.pop()`                            |
-/// | `Get.arguments`             | `GoRouterState.of(context).extra`          |
-/// | `Get.parameters`            | `GoRouterState.of(context).pathParameters` |
 class AppRouter {
-  AppRouter(this._sessionBloc);
+  AppRouter(this._sessionBloc, this._parentBloc);
 
   final SessionBloc _sessionBloc;
+  final ParentBloc _parentBloc;
 
   late final GoRouter goRouter = GoRouter(
     initialLocation: RouteNames.splash,
 
-    refreshListenable: GoRouterRefreshStream(_sessionBloc.stream),
+    refreshListenable: GoRouterRefreshStream.merged([
+      _sessionBloc.stream,
+      _parentBloc.stream,
+    ]),
 
     redirect: (context, state) {
       final sessionState = _sessionBloc.state;
 
       final isReady = sessionState.maybeWhen(
-        authenticated: (_) => true,
+        authenticated: (_, _) => true,
         unauthenticated: () => true,
         orElse: () => false,
       );
@@ -173,22 +60,75 @@ class AppRouter {
       if (!isReady) return null;
 
       final isLoggedIn = sessionState.maybeWhen(
-        authenticated: (_) => true,
+        authenticated: (_, _) => true,
+        orElse: () => false,
+      );
+
+      final isParent = sessionState.maybeWhen(
+        authenticated: (_, role) => role == UserRole.parent,
         orElse: () => false,
       );
 
       final isOnSplashScreen = state.matchedLocation == RouteNames.splash;
-      final isOnLoginScreen = state.matchedLocation == RouteNames.authStudent;
+
+      final isOnAuthScreen =
+          state.matchedLocation == RouteNames.welcome ||
+          state.matchedLocation == RouteNames.authStudent ||
+          state.matchedLocation == RouteNames.authParent;
+
+      final isOnChildSelector =
+          state.matchedLocation == RouteNames.parentChildSelector;
 
       if (isOnSplashScreen) return null;
 
-      if (!isLoggedIn && !isOnLoginScreen) {
-        return RouteNames.authStudent;
+      // Belum login.
+      if (!isLoggedIn) {
+        return isOnAuthScreen ? null : RouteNames.welcome;
       }
 
-      if (isLoggedIn && (isOnLoginScreen)) return RouteNames.dashboard;
+      // Login sebagai student.
+      if (!isParent) {
+        final isOnParentOnlyRoute = state.matchedLocation.startsWith(
+          '/parent/',
+        );
+        return (isOnAuthScreen || isOnParentOnlyRoute)
+            ? RouteNames.dashboard
+            : null;
+      }
 
-      return null;
+      // Login sebagai parent — keputusan rute menunggu ParentBloc selesai
+      // hidrasi (baca profil + anak + anak terpilih dari storage).
+      final parentState = _parentBloc.state;
+
+      final isParentHydrating = parentState.maybeWhen(
+        ready: (_, _, _) => false,
+        failure: (_) => false,
+        orElse: () => true,
+      );
+
+      if (isParentHydrating) {
+        // Pindahkan dari auth screen ke selector (yang menampilkan loading);
+        // selain itu diam di tempat sampai hidrasi selesai.
+        return isOnAuthScreen ? RouteNames.parentChildSelector : null;
+      }
+
+      final hasSelectedChild = parentState.maybeWhen(
+        ready: (_, _, selectedChild) => selectedChild != null,
+        orElse: () => false,
+      );
+
+      if (hasSelectedChild) {
+        // Parent diarahkan ke dashboard parent (placeholder), bukan dashboard
+        // student — supaya tidak menembak endpoint student-only.
+        final mustLeave =
+            isOnAuthScreen ||
+            isOnChildSelector ||
+            state.matchedLocation == RouteNames.dashboard;
+        return mustLeave ? RouteNames.parentDashboard : null;
+      }
+
+      // Parent sudah ter-hidrasi tapi belum memilih anak.
+      return isOnChildSelector ? null : RouteNames.parentChildSelector;
     },
 
     routes: [
@@ -198,8 +138,54 @@ class AppRouter {
       ),
 
       GoRoute(
+        path: RouteNames.welcome,
+        builder: (context, state) => const WelcomeScreen(),
+      ),
+
+      GoRoute(
         path: RouteNames.authStudent,
         builder: (context, state) => const AuthStudentScreen(),
+      ),
+
+      GoRoute(
+        path: RouteNames.authParent,
+        builder: (context, state) => const AuthParentScreen(),
+      ),
+
+      GoRoute(
+        path: RouteNames.parentChildSelector,
+        builder: (context, state) => const ParentChildSelectorScreen(),
+      ),
+
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) =>
+            ParentMainShell(navigationShell: navigationShell),
+        branches: <StatefulShellBranch>[
+          StatefulShellBranch(
+            routes: <GoRoute>[
+              GoRoute(
+                path: RouteNames.parentDashboard,
+                builder: (context, state) => const ParentDashboardScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: <GoRoute>[
+              GoRoute(
+                path: RouteNames.parentNotification,
+                builder: (context, state) => const NotificationScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: <GoRoute>[
+              GoRoute(
+                path: RouteNames.parentProfile,
+                builder: (context, state) => const ParentProfileScreen(),
+              ),
+            ],
+          ),
+        ],
       ),
 
       GoRoute(
@@ -252,24 +238,25 @@ class AppRouter {
         builder: (context, state) => const SettingsScreen(),
       ),
 
+      GoRoute(
+        path: RouteNames.helpCenter,
+        builder: (context, state) => const HelpCenterScreen(),
+      ),
+
+      GoRoute(
+        path: RouteNames.privacyPolicy,
+        builder: (context, state) => const PrivacyPolicyScreen(),
+      ),
+
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) =>
-            MainShell(navigationShell: navigationShell),
+            StudentMainShell(navigationShell: navigationShell),
         branches: <StatefulShellBranch>[
           StatefulShellBranch(
             routes: <GoRoute>[
               GoRoute(
                 path: RouteNames.dashboard,
                 builder: (context, state) => const DashboardScreen(),
-              ),
-            ],
-          ),
-
-          StatefulShellBranch(
-            routes: <GoRoute>[
-              GoRoute(
-                path: RouteNames.menu,
-                builder: (context, state) => const SizedBox.shrink(),
               ),
             ],
           ),

@@ -76,7 +76,7 @@ class MenuSheetItem {
       case 'academicResult':
         return l10n.academicResult;
       case 'extracurricular':
-        return l10n.extracurricular;
+        return l10n.extracurricularShort;
       case 'settings':
         return l10n.settings;
       default:

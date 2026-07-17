@@ -3,7 +3,9 @@
 // that can be found in the LICENSE file.
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../../core/app_router/app_router.dart';
 import '../../../../core/widgets/app_sliver_group.dart';
 import '../../../../l10n/app_localizations.dart';
 import 'settings_card.dart';
@@ -22,11 +24,11 @@ class SettingsSupportSection extends StatelessWidget {
       title: l10n.support,
       titleStyle: textTheme.titleMedium?.copyWith(
         color: colorScheme.onSurface,
-        fontWeight: FontWeight.bold,
+        fontWeight: .bold,
       ),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      contentPadding: const .symmetric(horizontal: 16, vertical: 8),
       child: SettingsCard(
-        padding: EdgeInsets.zero,
+        padding: .zero,
         child: Column(
           children: [
             SettingsMenuTile(
@@ -34,14 +36,14 @@ class SettingsSupportSection extends StatelessWidget {
               iconBackgroundColor: colorScheme.errorContainer,
               iconForegroundColor: colorScheme.onErrorContainer,
               title: l10n.helpCenter,
-              onTap: () {},
+              onTap: () => context.push(RouteNames.helpCenter),
             ),
             SettingsMenuTile(
               icon: Icons.shield_outlined,
               iconBackgroundColor: colorScheme.secondaryContainer,
               iconForegroundColor: colorScheme.onSecondaryContainer,
               title: l10n.privacyPolicy,
-              onTap: () {},
+              onTap: () => context.push(RouteNames.privacyPolicy),
             ),
           ],
         ),

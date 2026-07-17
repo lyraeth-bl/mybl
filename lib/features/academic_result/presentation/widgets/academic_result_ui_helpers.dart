@@ -4,6 +4,7 @@
 
 import 'package:flutter/material.dart';
 
+import '../../../../core/theme/app_theme.dart';
 import '../../domain/entities/academic_result/academic_result.dart';
 
 class AcademicResultSubjectView {
@@ -55,30 +56,16 @@ List<AcademicResultSubjectView> academicResultSubjectsForSemester(
   int semester,
 ) {
   return categories
-      .map((category) {
-        final results = category.listResult
-            .where((result) => academicResultSemesterOf(result) == semester)
-            .toList();
-        final average = results.isEmpty
-            ? 0.0
-            : results.fold<double>(0, (total, result) => total + result.nilai) /
-                  results.length;
-
-        return AcademicResultSubjectView(
+      .map(
+        (category) => AcademicResultSubjectView(
           category: category,
-          results: results,
-          average: average,
-          totalData: results.length,
-        );
-      })
+          results: category.resultsForSemester(semester),
+          average: category.averageForSemester(semester),
+          totalData: category.totalDataForSemester(semester),
+        ),
+      )
       .where((subject) => subject.totalData > 0)
       .toList();
-}
-
-int academicResultSemesterOf(AcademicResultEntity result) {
-  final normalized = result.semester.toLowerCase();
-  if (normalized.contains('2') || normalized.contains('genap')) return 2;
-  return 1;
 }
 
 String academicResultFormatScore(double value) {
@@ -90,20 +77,17 @@ String academicResultFormatScore(double value) {
       : fixed.replaceFirst(RegExp(r'0$'), '');
 }
 
-String academicResultGrade(double value) {
-  if (value >= 90) return 'A';
-  if (value >= 85) return 'B+';
-  if (value >= 80) return 'B';
-  if (value >= 75) return 'C+';
-  if (value >= 70) return 'C';
-  if (value >= 60) return 'D';
-  return 'E';
+Color academicResultScoreColor(BuildContext context, double value) {
+  final appColors = AppColors.of(context);
+  if (value >= 80) return appColors.success;
+  if (value >= 70) return appColors.warning;
+  return Theme.of(context).colorScheme.error;
 }
 
-Color academicResultScoreColor(BuildContext context, double value) {
-  final colorScheme = Theme.of(context).colorScheme;
-  if (value >= 90) return colorScheme.primary;
-  if (value >= 80) return colorScheme.tertiary;
-  if (value >= 70) return colorScheme.secondary;
-  return colorScheme.error;
+Color academicResultScoreForeground(BuildContext context, double value) {
+  final scoreColor = academicResultScoreColor(context, value);
+  if (Theme.of(context).brightness != Brightness.light) return scoreColor;
+
+  final hsl = HSLColor.fromColor(scoreColor);
+  return hsl.withLightness((hsl.lightness * 0.6).clamp(0.0, 1.0)).toColor();
 }

@@ -10,7 +10,7 @@ class SettingsCard extends StatelessWidget {
   const SettingsCard({
     super.key,
     required this.child,
-    this.padding = const EdgeInsets.all(16),
+    this.padding = const .all(16),
   });
 
   final Widget child;
@@ -18,13 +18,10 @@ class SettingsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return AppContainer(
-      margin: EdgeInsets.zero,
-      padding: padding,
-      backgroundColor: colorScheme.surfaceContainerLow,
-      borderRadius: BorderRadius.circular(16),
+    return AppFramedContainer(
+      margin: .zero,
+      gap: .zero,
+      innerPadding: padding,
       elevation: 0,
       child: child,
     );

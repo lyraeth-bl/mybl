@@ -14,21 +14,21 @@ class AppChipContainer extends StatelessWidget {
     super.key,
     this.value,
     this.child,
-    this.padding = const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+    this.padding = const .symmetric(horizontal: 12, vertical: 6),
     this.margin,
     this.backgroundColor,
     this.foregroundColor,
     this.textStyle,
     this.textAlign,
     this.maxLines = 1,
-    this.overflow = TextOverflow.ellipsis,
+    this.overflow = .ellipsis,
     this.shape,
     this.borderRadius,
     this.side,
     this.elevation = 0,
     this.shadowColor,
     this.surfaceTintColor,
-    this.clipBehavior = Clip.none,
+    this.clipBehavior = .none,
     this.constraints,
     this.onTap,
   }) : assert(
@@ -43,7 +43,46 @@ class AppChipContainer extends StatelessWidget {
          shape == null || borderRadius == null,
          'Only one of shape and borderRadius may be provided.',
        ),
-       assert(elevation >= 0, 'Elevation must be greater than or equal to 0.');
+       assert(elevation >= 0, 'Elevation must be greater than or equal to 0.'),
+       _outlined = false;
+
+  /// Creates an outlined variant of the chip: transparent fill, bordered.
+  ///
+  /// Defaults [foregroundColor] to [ColorScheme.onSurface] and [side] to a
+  /// 1-width border in [ColorScheme.outline] when not overridden.
+  const AppChipContainer.outlined({
+    super.key,
+    this.value,
+    this.child,
+    this.padding = const .symmetric(horizontal: 12, vertical: 6),
+    this.margin,
+    this.foregroundColor,
+    this.textStyle,
+    this.textAlign,
+    this.maxLines = 1,
+    this.overflow = .ellipsis,
+    this.borderRadius,
+    this.side,
+    this.constraints,
+    this.onTap,
+  }) : assert(
+         value != null || child != null,
+         'Either value or child must be provided.',
+       ),
+       assert(
+         value == null || child == null,
+         'Only one of value and child may be provided.',
+       ),
+       backgroundColor = Colors.transparent,
+       shape = null,
+       elevation = 0,
+       shadowColor = null,
+       surfaceTintColor = null,
+       clipBehavior = Clip.none,
+       _outlined = true;
+
+  /// Whether this chip was created via [AppChipContainer.outlined].
+  final bool _outlined;
 
   /// The text displayed by the chip.
   ///
@@ -122,17 +161,20 @@ class AppChipContainer extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final effectiveForegroundColor =
-        foregroundColor ?? colorScheme.onPrimaryContainer;
+        foregroundColor ??
+        (_outlined ? colorScheme.onSurface : colorScheme.onPrimaryContainer);
     final effectiveTextStyle = (textStyle ?? theme.textTheme.labelSmall)
-        ?.copyWith(
-          color: effectiveForegroundColor,
-          fontWeight: FontWeight.w600,
-        );
+        ?.copyWith(color: effectiveForegroundColor);
+    final effectiveSide =
+        side ??
+        (_outlined
+            ? BorderSide(color: colorScheme.outlineVariant)
+            : BorderSide.none);
     final effectiveShape =
         shape ??
         RoundedRectangleBorder(
-          borderRadius: borderRadius ?? BorderRadius.circular(999),
-          side: side ?? BorderSide.none,
+          borderRadius: borderRadius ?? .circular(999),
+          side: effectiveSide,
         );
 
     Widget current = IconTheme.merge(

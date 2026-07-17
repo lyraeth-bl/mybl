@@ -6,21 +6,27 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../../../core/failure/failure.dart';
+import '../../../../../core/internal/src/types.dart';
 import '../../../domain/entities/attendance_entity/attendance_entity.dart';
-import '../../../domain/usecases/fetch_daily_attendance_use_case.dart';
 
 part 'daily_attendance_bloc.freezed.dart';
 part 'daily_attendance_event.dart';
 part 'daily_attendance_state.dart';
 
+/// Signature bersama antara [FetchDailyAttendanceUseCase] (student) dan
+/// [FetchParentDailyAttendanceUseCase] (parent), supaya satu bloc & satu
+/// screen bisa dipakai dua role tanpa duplikasi.
+typedef DailyAttendanceFetcher =
+    Future<Result<AttendanceEntity?>> Function([bool forceRefresh]);
+
 class DailyAttendanceBloc
     extends Bloc<DailyAttendanceEvent, DailyAttendanceState> {
-  DailyAttendanceBloc(this._dailyAttendanceUseCase)
+  DailyAttendanceBloc(this._fetchDailyAttendance)
     : super(const DailyAttendanceState.initial()) {
     on<_DailyAttendanceRequested>(_onDailyAttendanceRequested);
   }
 
-  final FetchDailyAttendanceUseCase _dailyAttendanceUseCase;
+  final DailyAttendanceFetcher _fetchDailyAttendance;
 
   Future<void> _onDailyAttendanceRequested(
     _DailyAttendanceRequested event,
@@ -28,7 +34,7 @@ class DailyAttendanceBloc
   ) async {
     emit(const DailyAttendanceState.loading());
 
-    final result = await _dailyAttendanceUseCase(event.forceRefresh);
+    final result = await _fetchDailyAttendance(event.forceRefresh);
 
     return result.match(
       (failure) => emit(DailyAttendanceState.failure(failure)),

@@ -12,4 +12,10 @@
 class SecureStorageNames {
   static const String accessTokenKey = "auth-kAccessToken";
   static const String accessTokenExpiryKey = "auth-kAccessTokenExpiry";
+
+  static const String parentAccessTokenKey = "auth-kParentAccessToken";
+  static const String parentAccessTokenExpiryKey =
+      "auth-kParentAccessTokenExpiry";
+
+  static const String userRoleKey = "auth-kUserRole";
 }

@@ -4,6 +4,7 @@
 
 import 'package:flutter/material.dart';
 
+import '../../../../core/internal/src/extensions/extensions.dart';
 import '../../../../core/widgets/app_container.dart';
 import '../../../../core/widgets/app_profile_picture.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -16,46 +17,50 @@ class ProfileOverviewSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-    final l10n = AppLocalizations.of(context)!;
-    final name = student.nama ?? l10n.emptyName;
+    final ThemeData theme = Theme.of(context);
+    final ColorScheme colorScheme = theme.colorScheme;
+    final TextTheme textTheme = theme.textTheme;
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
+    final String name = student.nama ?? l10n.emptyName;
 
     return SliverToBoxAdapter(
-      child: AppContainer(
-        backgroundColor: colorScheme.surfaceContainerLow,
-        elevation: 0,
-        borderRadius: BorderRadius.circular(16),
-        child: Column(
-          children: [
-            AppProfilePicture(
-              backgroundColor: colorScheme.primaryContainer,
-              foregroundColor: colorScheme.onPrimaryContainer,
-              imageUrl: student.profileImageUrl,
-              initials: AppProfilePicture.initialFrom(
-                student.nama ?? student.namaPanggilan,
-              ),
-              radius: 48,
+      child: Column(
+        children: [
+          16.h,
+          AppFramedContainer(
+            gap: .zero,
+            elevation: 0,
+            child: Column(
+              children: [
+                AppProfilePicture(
+                  backgroundColor: colorScheme.primaryContainer,
+                  foregroundColor: colorScheme.onPrimaryContainer,
+                  imageUrl: student.profileImageUrl,
+                  initials: AppProfilePicture.initialFrom(
+                    student.nama ?? student.namaPanggilan,
+                  ),
+                  radius: 48,
+                ),
+                24.h,
+                Text(
+                  name.capitalizeEveryWord,
+                  textAlign: .center,
+                  style: textTheme.titleMedium?.copyWith(
+                    color: colorScheme.onSurface,
+                  ),
+                ),
+                8.h,
+                Text(
+                  '${student.nis} / ${student.nisn ?? '-'}',
+                  textAlign: .center,
+                  style: textTheme.bodySmall?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 24),
-            Text(
-              name,
-              textAlign: TextAlign.center,
-              style: textTheme.titleMedium?.copyWith(
-                color: colorScheme.onSurface,
-                fontWeight: .bold,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              '${student.nis} / ${student.nisn ?? '-'}',
-              textAlign: TextAlign.center,
-              style: textTheme.bodySmall?.copyWith(
-                color: colorScheme.onSurfaceVariant,
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

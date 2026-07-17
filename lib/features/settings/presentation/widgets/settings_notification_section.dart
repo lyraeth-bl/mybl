@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/di/get_it_constant.dart';
 import '../../../../core/internal/src/extensions/extensions.dart';
 import '../../../../core/notifications/fcm_service.dart';
+import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_sliver_group.dart';
 import '../../../../l10n/app_localizations.dart';
 import 'settings_card.dart';
@@ -49,11 +50,11 @@ class _SettingsNotificationSectionState
       title: l10n.notifications,
       titleStyle: textTheme.titleMedium?.copyWith(
         color: colorScheme.onSurface,
-        fontWeight: FontWeight.bold,
+        fontWeight: .bold,
       ),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      contentPadding: const .symmetric(horizontal: 16, vertical: 8),
       child: SettingsCard(
-        padding: EdgeInsets.zero,
+        padding: .zero,
         child: FutureBuilder<bool>(
           future: _statusFuture,
           builder: (context, snapshot) {
@@ -70,7 +71,6 @@ class _SettingsNotificationSectionState
                   : isEnabled
                   ? l10n.notificationStatusActive
                   : l10n.notificationStatusInactive,
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               trailing: _NotificationStatusBadge(
                 isLoading: isLoading,
                 isEnabled: isEnabled,
@@ -90,7 +90,7 @@ class _SettingsNotificationSectionState
       isScrollControlled: true,
       showDragHandle: true,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        borderRadius: .vertical(top: .circular(28)),
       ),
       builder: (sheetContext) => const _NotificationSettingsSheet(),
     );
@@ -128,10 +128,10 @@ class _NotificationStatusBadge extends StatelessWidget {
             ).toShimmer(context, borderRadius: BorderRadius.circular(999))
           : Container(
               key: ValueKey(isEnabled),
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              padding: const .symmetric(horizontal: 10, vertical: 6),
               decoration: BoxDecoration(
                 color: backgroundColor,
-                borderRadius: BorderRadius.circular(999),
+                borderRadius: .circular(999),
               ),
               child: Text(
                 isEnabled
@@ -139,7 +139,7 @@ class _NotificationStatusBadge extends StatelessWidget {
                     : l10n.notificationStatusInactive,
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
                   color: foregroundColor,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: .bold,
                 ),
               ),
             ),
@@ -159,10 +159,10 @@ class _NotificationSettingsSheet extends StatefulWidget {
 
 class _NotificationSettingsSheetState
     extends State<_NotificationSettingsSheet> {
-  _NotificationSettingsStatus _status = _NotificationSettingsStatus.idle;
+  _NotificationSettingsStatus _status = .idle;
 
   Future<void> _enableNotifications() async {
-    setState(() => _status = _NotificationSettingsStatus.loading);
+    setState(() => _status = .loading);
 
     final result = await di<FCMService>().activateForAuthenticatedUser();
 
@@ -170,9 +170,9 @@ class _NotificationSettingsSheetState
 
     setState(() {
       _status = switch (result) {
-        FCMActivationResult.enabled => _NotificationSettingsStatus.enabled,
-        FCMActivationResult.denied => _NotificationSettingsStatus.denied,
-        FCMActivationResult.failed => _NotificationSettingsStatus.failed,
+        FCMActivationResult.enabled => .enabled,
+        FCMActivationResult.denied => .denied,
+        FCMActivationResult.failed => .failed,
       };
     });
   }
@@ -182,33 +182,33 @@ class _NotificationSettingsSheetState
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     final l10n = AppLocalizations.of(context)!;
-    final isLoading = _status == _NotificationSettingsStatus.loading;
+    final isLoading = _status == .loading;
     final content = switch (_status) {
-      _NotificationSettingsStatus.idle => (
+      .idle => (
         icon: Icons.notifications_active_outlined,
         title: l10n.notificationPermissionTitle,
         description: l10n.notificationPermissionDesc,
         buttonLabel: l10n.enableNotifications,
       ),
-      _NotificationSettingsStatus.loading => (
+      .loading => (
         icon: Icons.notifications_outlined,
         title: l10n.notificationPermissionLoadingTitle,
         description: l10n.notificationPermissionLoadingDesc,
         buttonLabel: l10n.enableNotifications,
       ),
-      _NotificationSettingsStatus.enabled => (
+      .enabled => (
         icon: Icons.notifications_active,
         title: l10n.notificationPermissionEnabledTitle,
         description: l10n.notificationPermissionEnabledDesc,
         buttonLabel: l10n.close,
       ),
-      _NotificationSettingsStatus.denied => (
+      .denied => (
         icon: Icons.notifications_off_outlined,
         title: l10n.notificationPermissionDeniedTitle,
         description: l10n.notificationPermissionDeniedDesc,
         buttonLabel: l10n.close,
       ),
-      _NotificationSettingsStatus.failed => (
+      .failed => (
         icon: Icons.error_outline,
         title: l10n.notificationPermissionFailedTitle,
         description: l10n.notificationPermissionFailedDesc,
@@ -218,54 +218,38 @@ class _NotificationSettingsSheetState
 
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+        padding: const .fromLTRB(24, 8, 24, 24),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: .min,
+          crossAxisAlignment: .stretch,
           children: [
             Icon(content.icon, size: 48, color: colorScheme.primary),
-            const SizedBox(height: 16),
+            16.h,
             Text(
               content.title,
-              textAlign: TextAlign.center,
+              textAlign: .center,
               style: textTheme.titleLarge?.copyWith(
                 color: colorScheme.onSurface,
-                fontWeight: FontWeight.bold,
+                fontWeight: .bold,
               ),
             ).toShimmer(context, isLoading: isLoading),
-            const SizedBox(height: 8),
+            8.h,
             Text(
               content.description,
-              textAlign: TextAlign.center,
+              textAlign: .center,
               style: textTheme.bodyMedium?.copyWith(
                 color: colorScheme.onSurfaceVariant,
                 height: 1.4,
               ),
             ).toShimmer(context, isLoading: isLoading),
-            const SizedBox(height: 24),
-            FilledButton.icon(
-              onPressed: isLoading
-                  ? null
-                  : switch (_status) {
-                      _NotificationSettingsStatus.idle ||
-                      _NotificationSettingsStatus.failed =>
-                        _enableNotifications,
-                      _ => () => Navigator.of(context).pop(),
-                    },
-              icon: isLoading
-                  ? SizedBox.square(
-                      dimension: 18,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: colorScheme.onSurface.withValues(alpha: 0.38),
-                      ),
-                    )
-                  : Icon(
-                      _status == _NotificationSettingsStatus.enabled
-                          ? Icons.check
-                          : Icons.notifications_active_outlined,
-                    ),
-              label: Text(content.buttonLabel),
+            24.h,
+            AppButton(
+              loading: isLoading,
+              onPressed: switch (_status) {
+                .idle || .failed => _enableNotifications,
+                _ => () => Navigator.of(context).pop(),
+              },
+              child: Text(content.buttonLabel),
             ),
           ],
         ),

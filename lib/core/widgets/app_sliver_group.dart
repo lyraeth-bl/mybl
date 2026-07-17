@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
+import '../internal/src/extensions/extensions.dart';
+
 /// A Material-styled group for composing a section header with sliver content.
 ///
 /// Use [AppSliverGroup] inside a [CustomScrollView] when a scrollable section needs
@@ -16,13 +18,13 @@ class AppSliverGroup extends StatelessWidget {
     this.child,
     this.sliver,
     this.action,
-    this.headerPadding = const EdgeInsetsDirectional.fromSTEB(16, 16, 16, 8),
-    this.contentPadding = EdgeInsets.zero,
+    this.headerPadding = const .fromSTEB(16, 16, 16, 8),
+    this.contentPadding = const .symmetric(horizontal: 16, vertical: 8),
     this.headerHeight = 56,
-    this.headerAlignment = AlignmentDirectional.bottomStart,
+    this.headerAlignment = .bottomStart,
     this.titleStyle,
     this.titleMaxLines = 1,
-    this.titleOverflow = TextOverflow.ellipsis,
+    this.titleOverflow = .ellipsis,
     this.backgroundColor,
     this.pinned = false,
     this.floating = false,
@@ -228,7 +230,7 @@ class _AppSliverGroupHeaderDelegate extends SliverPersistentHeaderDelegate {
             child: Transform.translate(
               offset: Offset(currentOffset * direction, 0),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: .spaceBetween,
                 children: <Widget>[
                   Expanded(
                     child: Text(
@@ -238,10 +240,7 @@ class _AppSliverGroupHeaderDelegate extends SliverPersistentHeaderDelegate {
                       style: effectiveTitleStyle,
                     ),
                   ),
-                  if (action != null) ...<Widget>[
-                    const SizedBox(width: 8),
-                    action!,
-                  ],
+                  if (action != null) ...<Widget>[8.w, action!],
                 ],
               ),
             ),

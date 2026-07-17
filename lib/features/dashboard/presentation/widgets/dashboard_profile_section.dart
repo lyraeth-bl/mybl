@@ -9,6 +9,7 @@ import '../../../../core/internal/src/extensions/extensions.dart';
 import '../../../../core/widgets/app_container.dart';
 import '../../../../core/widgets/app_profile_picture.dart';
 import '../../../../core/widgets/app_sliver_group.dart';
+import '../../../../core/widgets/app_toast.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../user/presentation/bloc/user_bloc.dart';
 
@@ -17,23 +18,23 @@ class DashboardProfileSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
     final l10n = AppLocalizations.of(context)!;
 
     return AppSliverGroup(
       title: _dashboardGreeting(l10n, DateTime.now()),
-      titleStyle: textTheme.titleMedium!.copyWith(
-        color: colorScheme.onSurface,
-        fontWeight: .bold,
-      ),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: AppContainer(
-        backgroundColor: colorScheme.surfaceContainerLow,
-        margin: EdgeInsets.zero,
+      titleStyle: textTheme.titleMedium!.copyWith(color: colorScheme.onSurface),
+      child: AppFramedContainer(
+        gap: .zero,
+        margin: .zero,
         elevation: 0,
-        borderRadius: BorderRadius.circular(16),
-        child: BlocBuilder<UserBloc, UserState>(
+        child: BlocConsumer<UserBloc, UserState>(
+          listener: (context, state) => state.whenOrNull(
+            failure: (failure) =>
+                AppToast.error(context, failure.localizedMessage(l10n)),
+          ),
           builder: (context, state) {
             final isLoading = state.maybeWhen(
               loading: () => true,
@@ -46,7 +47,11 @@ class DashboardProfileSection extends StatelessWidget {
             );
 
             if (!isLoading && student == null) {
-              return const SizedBox.shrink();
+              return AppNoData(
+                icon: Icons.face_retouching_off,
+                title: l10n.profileLoadFailedTitle,
+                message: l10n.profileLoadFailedSubtitle,
+              );
             }
 
             String normalizeClass() {
@@ -69,35 +74,30 @@ class DashboardProfileSection extends StatelessWidget {
                   initials: AppProfilePicture.initialFrom(
                     student?.nama ?? student?.namaPanggilan,
                   ),
-                  side: BorderSide(color: colorScheme.outlineVariant, width: 2),
                 ).toShimmer(
                   context,
                   isLoading: isLoading,
-                  borderRadius: BorderRadius.circular(999),
+                  borderRadius: .circular(24),
                 ),
-
-                const SizedBox(width: 16),
-
                 Expanded(
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: .start,
                     children: [
                       Text(
-                        student?.nama ?? student?.namaPanggilan ?? "",
+                        student?.nama?.capitalizeEveryWord ??
+                            student?.namaPanggilan ??
+                            "",
                         style: textTheme.titleMedium!.copyWith(
                           color: colorScheme.onSurface,
-                          fontWeight: FontWeight.bold,
                         ),
                         maxLines: 2,
                       ).toShimmer(
                         context,
                         isLoading: isLoading,
-                        width: 120,
-                        height: 12,
+                        width: 160,
+                        height: 16,
+                        borderRadius: .circular(24),
                       ),
-
-                      const SizedBox(height: 8),
-
                       Text(
                         normalizeClass(),
                         style: textTheme.labelMedium!.copyWith(
@@ -107,12 +107,13 @@ class DashboardProfileSection extends StatelessWidget {
                         context,
                         isLoading: isLoading,
                         width: 80,
-                        height: 12,
+                        height: 16,
+                        borderRadius: .circular(24),
                       ),
-                    ],
+                    ].separatedBy(8.h),
                   ),
                 ),
-              ],
+              ].separatedBy(16.w),
             );
           },
         ),

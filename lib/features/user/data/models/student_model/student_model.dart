@@ -147,7 +147,7 @@ abstract class StudentModel with _$StudentModel {
     @JsonKey(name: "StatNaik") required String statusNaik,
     @JsonKey(name: "UnameOrtu") required String usernameOrangTua,
     @JsonKey(name: "OrtuPass", includeToJson: false)
-    required String passwordOrangTua,
+    required String? passwordOrangTua,
     @JsonKey(name: "StatUjian") String? statusUjian,
     @JsonKey(name: "foto") String? profileImageUrl,
     @JsonKey(name: "unit") String? unit,

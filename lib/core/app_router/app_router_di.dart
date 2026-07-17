@@ -3,9 +3,12 @@
 // that can be found in the LICENSE file.
 
 import '../../features/sessions/presentation/bloc/session_bloc.dart';
+import '../../features/user/presentation/bloc/parent_bloc/parent_bloc.dart';
 import '../di/get_it_constant.dart';
 import 'app_router.dart';
 
 void initAppRouterDI() {
-  di.registerLazySingleton<AppRouter>(() => AppRouter(di<SessionBloc>()));
+  di.registerLazySingleton<AppRouter>(
+    () => AppRouter(di<SessionBloc>(), di<ParentBloc>()),
+  );
 }

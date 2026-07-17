@@ -26,22 +26,26 @@ class AcademicResultSemesterFilterSection extends StatelessWidget {
 
     return SliverToBoxAdapter(
       child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+        scrollDirection: .horizontal,
+        padding: const .fromLTRB(16, 8, 16, 8),
         child: Row(
-          children: isLoading
-              ? const [
-                  _SemesterLoadingChip(width: 116),
-                  SizedBox(width: 10),
-                  _SemesterLoadingChip(width: 116),
-                ]
-              : [1, 2].map((semester) {
-                  return _SemesterChip(
-                    label: '${l10n.semester} $semester',
-                    selected: selectedSemester == semester,
-                    onTap: () => onChanged(semester),
-                  );
-                }).toList(),
+          children: [1, 2]
+              .map((semester) {
+                return _SemesterChip(
+                  label: '${l10n.semester} $semester',
+                  selected: selectedSemester == semester,
+                  onTap: () => onChanged(semester),
+                  isLoading: isLoading,
+                ).toShimmer(
+                  context,
+                  isLoading: isLoading,
+                  height: 48,
+                  width: 80,
+                  borderRadius: .circular(24),
+                );
+              })
+              .toList()
+              .separatedBy(8.w),
         ),
       ),
     );
@@ -53,42 +57,33 @@ class _SemesterChip extends StatelessWidget {
     required this.label,
     required this.selected,
     required this.onTap,
+    required this.isLoading,
   });
 
   final String label;
   final bool selected;
   final VoidCallback onTap;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final ThemeData theme = Theme.of(context);
+    final ColorScheme colorScheme = theme.colorScheme;
 
     return AppChipContainer(
       onTap: onTap,
-      margin: const EdgeInsetsDirectional.only(end: 10),
-      padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
+      padding: const .symmetric(horizontal: 16, vertical: 8),
+      constraints: const BoxConstraints(minHeight: 48),
       backgroundColor: selected
-          ? colorScheme.primary
-          : colorScheme.surfaceContainerLow,
-      foregroundColor: selected ? colorScheme.onPrimary : colorScheme.onSurface,
+          ? colorScheme.primaryContainer
+          : colorScheme.surfaceContainer,
+      foregroundColor: selected
+          ? colorScheme.onPrimaryContainer
+          : colorScheme.onSurface,
       side: selected
           ? BorderSide.none
           : BorderSide(color: colorScheme.outlineVariant),
-      child: Text(label),
+      child: Center(child: Text(label)),
     );
-  }
-}
-
-class _SemesterLoadingChip extends StatelessWidget {
-  const _SemesterLoadingChip({required this.width});
-
-  final double width;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: width,
-      height: 36,
-    ).toShimmer(context, borderRadius: BorderRadius.circular(999));
   }
 }

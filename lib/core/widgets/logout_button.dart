@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_bl/core/widgets/app_button.dart';
 
 import '../../l10n/app_localizations.dart';
 
@@ -17,15 +18,11 @@ class LogoutButton extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context)!;
 
-    return FilledButton.icon(
-      style: FilledButton.styleFrom(
-        backgroundColor: colorScheme.errorContainer,
-        foregroundColor: colorScheme.onErrorContainer,
-        minimumSize: const Size.fromHeight(48),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      ),
+    return AppButton(
       onPressed: isLoading ? null : onPressed,
-      label: isLoading
+      backgroundColor: colorScheme.errorContainer,
+      foregroundColor: colorScheme.onErrorContainer,
+      child: isLoading
           ? SizedBox.square(
               dimension: 20,
               child: CircularProgressIndicator(
@@ -35,7 +32,6 @@ class LogoutButton extends StatelessWidget {
               ),
             )
           : Text(l10n.logout),
-      icon: isLoading ? null : Icon(Icons.logout),
     );
   }
 }

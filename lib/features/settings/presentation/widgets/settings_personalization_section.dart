@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/app/bloc/app_bloc.dart';
+import '../../../../core/internal/src/extensions/extensions.dart';
 import '../../../../core/widgets/app_sliver_group.dart';
 import '../../../../l10n/app_localizations.dart';
 import 'settings_card.dart';
@@ -23,12 +24,12 @@ class SettingsPersonalizationSection extends StatelessWidget {
       title: l10n.personalization,
       titleStyle: textTheme.titleMedium?.copyWith(
         color: colorScheme.onSurface,
-        fontWeight: FontWeight.bold,
+        fontWeight: .bold,
       ),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      contentPadding: const .symmetric(horizontal: 16, vertical: 8),
       child: const SettingsCard(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          crossAxisAlignment: .stretch,
           children: [
             _ThemeSelector(),
             Divider(height: 28),
@@ -59,26 +60,26 @@ class _ThemeSelector extends StatelessWidget {
                 child: _ThemeOptionButton(
                   icon: Icons.light_mode_outlined,
                   label: l10n.lightTheme,
-                  selected: themeMode == ThemeMode.light,
-                  onTap: () => _changeTheme(context, ThemeMode.light),
+                  selected: themeMode == .light,
+                  onTap: () => _changeTheme(context, .light),
                 ),
               ),
-              const SizedBox(width: 8),
+              8.w,
               Expanded(
                 child: _ThemeOptionButton(
                   icon: Icons.dark_mode_outlined,
                   label: l10n.darkTheme,
-                  selected: themeMode == ThemeMode.dark,
-                  onTap: () => _changeTheme(context, ThemeMode.dark),
+                  selected: themeMode == .dark,
+                  onTap: () => _changeTheme(context, .dark),
                 ),
               ),
-              const SizedBox(width: 8),
+              8.w,
               Expanded(
                 child: _ThemeOptionButton(
                   icon: Icons.settings_system_daydream_outlined,
                   label: l10n.systemTheme,
-                  selected: themeMode == ThemeMode.system,
-                  onTap: () => _changeTheme(context, ThemeMode.system),
+                  selected: themeMode == .system,
+                  onTap: () => _changeTheme(context, .system),
                 ),
               ),
             ],
@@ -111,7 +112,7 @@ class _LanguageSelector extends StatelessWidget {
                 title: l10n.language,
               ),
             ),
-            const SizedBox(width: 12),
+            12.w,
             _LanguageSegmentedControl(
               languageCode: languageCode,
               onChanged: (value) => _changeLanguage(context, value),
@@ -141,10 +142,10 @@ class _SettingsControlGroup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+      crossAxisAlignment: .stretch,
       children: [
         _SettingsControlLabel(icon: icon, title: title),
-        const SizedBox(height: 12),
+        12.h,
         child,
       ],
     );
@@ -165,15 +166,15 @@ class _SettingsControlLabel extends StatelessWidget {
     return Row(
       children: [
         Icon(icon, size: 20, color: colorScheme.primary),
-        const SizedBox(width: 12),
+        12.w,
         Expanded(
           child: Text(
             title,
             maxLines: 1,
-            overflow: TextOverflow.ellipsis,
+            overflow: .ellipsis,
             style: textTheme.titleSmall?.copyWith(
               color: colorScheme.onSurface,
-              fontWeight: FontWeight.w600,
+              fontWeight: .w600,
             ),
           ),
         ),
@@ -208,24 +209,24 @@ class _ThemeOptionButton extends StatelessWidget {
 
     return Material(
       color: backgroundColor,
-      borderRadius: BorderRadius.circular(8),
-      clipBehavior: Clip.antiAlias,
+      borderRadius: .circular(8),
+      clipBehavior: .antiAlias,
       child: InkWell(
         onTap: onTap,
         child: SizedBox(
           height: 72,
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: .center,
             children: [
               Icon(icon, size: 24, color: foregroundColor),
-              const SizedBox(height: 8),
+              8.h,
               Text(
                 label,
                 maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+                overflow: .ellipsis,
                 style: textTheme.labelSmall?.copyWith(
                   color: foregroundColor,
-                  fontWeight: FontWeight.w700,
+                  fontWeight: .w700,
                 ),
               ),
             ],
@@ -248,12 +249,11 @@ class _LanguageSegmentedControl extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
 
     return SegmentedButton<String>(
       showSelectedIcon: false,
       style: ButtonStyle(
-        visualDensity: VisualDensity.compact,
-        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
         backgroundColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
             return colorScheme.primary;
@@ -268,9 +268,9 @@ class _LanguageSegmentedControl extends StatelessWidget {
         }),
         side: WidgetStateProperty.all(BorderSide.none),
       ),
-      segments: const [
-        ButtonSegment(value: 'id', label: Text('Indo')),
-        ButtonSegment(value: 'en', label: Text('Eng')),
+      segments: [
+        ButtonSegment(value: 'id', label: Text(l10n.indonesianShort)),
+        ButtonSegment(value: 'en', label: Text(l10n.englishShort)),
       ],
       selected: {languageCode},
       onSelectionChanged: (selection) => onChanged(selection.first),

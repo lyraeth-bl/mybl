@@ -24,9 +24,9 @@ class AppProfilePicture extends StatelessWidget {
     this.backgroundColor,
     this.foregroundColor,
     this.textStyle,
-    this.side = BorderSide.none,
-    this.clipBehavior = Clip.antiAlias,
-    this.fit = BoxFit.cover,
+    this.side = .none,
+    this.clipBehavior = .antiAlias,
+    this.fit = .cover,
   }) : assert(
          child == null || initials == null,
          'Only one of child or initials can be provided.',
@@ -129,7 +129,7 @@ class AppProfilePicture extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final effectiveForegroundColor =
-        foregroundColor ?? colorScheme.onSurfaceVariant;
+        foregroundColor ?? colorScheme.onPrimaryContainer;
 
     if (child != null) {
       return IconTheme.merge(
@@ -149,7 +149,6 @@ class AppProfilePicture extends StatelessWidget {
             textStyle ??
             theme.textTheme.titleMedium?.copyWith(
               color: effectiveForegroundColor,
-              fontWeight: FontWeight.bold,
             ),
       );
     }

@@ -7,15 +7,23 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/internal/src/extensions/extensions.dart';
 import '../../../../core/widgets/app_chip_container.dart';
+import '../../../../core/widgets/app_container.dart';
+import '../../../../core/widgets/app_empty_state.dart';
 import '../../../../core/widgets/app_sliver_group.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../user/presentation/bloc/user_bloc.dart';
 import '../../domain/entities/academic_calendar_entity.dart';
 import '../bloc/academic_calendar_bloc.dart';
 import 'academic_calendar_event_card.dart';
 import 'academic_calendar_status.dart';
 
 class AcademicCalendarEventListSection extends StatefulWidget {
-  const AcademicCalendarEventListSection({super.key});
+  const AcademicCalendarEventListSection({
+    super.key,
+    required this.focusedMonth,
+  });
+
+  final DateTime focusedMonth;
 
   @override
   State<AcademicCalendarEventListSection> createState() =>
@@ -26,6 +34,34 @@ class _AcademicCalendarEventListSectionState
     extends State<AcademicCalendarEventListSection> {
   AcademicCalendarStatus? _selectedStatus;
 
+  void _retryFetch() {
+    final unit = context.read<UserBloc>().state.maybeWhen(
+      success: (student) => student.unit?.trim(),
+      orElse: () => null,
+    );
+    if (unit == null || unit.isEmpty) return;
+
+    context.read<AcademicCalendarBloc>().add(
+      AcademicCalendarEvent.fetchAcademicCalendar(
+        year: widget.focusedMonth.year,
+        month: widget.focusedMonth.month,
+        unit: unit,
+        forceRefresh: true,
+      ),
+    );
+  }
+
+  bool get _isPastMonth {
+    final now = DateTime.now();
+    final focused = DateTime(
+      widget.focusedMonth.year,
+      widget.focusedMonth.month,
+    );
+    final current = DateTime(now.year, now.month);
+
+    return focused.isBefore(current);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -33,11 +69,10 @@ class _AcademicCalendarEventListSectionState
     final textTheme = Theme.of(context).textTheme;
 
     return AppSliverGroup(
-      title: l10n.upcoming,
-      titleStyle: textTheme.titleMedium!.copyWith(
-        color: colorScheme.onSurface,
-        fontWeight: FontWeight.bold,
-      ),
+      title: _isPastMonth
+          ? l10n.academicCalendarPastEvents
+          : l10n.academicCalendarUpcomingEvents,
+      titleStyle: textTheme.titleMedium!.copyWith(color: colorScheme.onSurface),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       sliver: BlocBuilder<AcademicCalendarBloc, AcademicCalendarState>(
         buildWhen: (previous, current) {
@@ -85,11 +120,12 @@ class _AcademicCalendarEventListSectionState
           }
 
           if (failure != null) {
-            return SliverToBoxAdapter(
-              child: AcademicCalendarEventListMessage(
-                icon: Icons.error_outline,
-                message: failure.localizedMessage(l10n),
-              ),
+            return AppEmptyStateSliver(
+              icon: Icons.wifi_off_rounded,
+              title: l10n.academicCalendarLoadFailedTitle,
+              message: failure.localizedMessage(l10n),
+              retryLabel: l10n.tryAgain,
+              onRetry: _retryFetch,
             );
           }
 
@@ -102,9 +138,26 @@ class _AcademicCalendarEventListSectionState
                     selectedStatus: _selectedStatus,
                     onChanged: _changeStatus,
                   ),
-                  AcademicCalendarEventListMessage(
-                    icon: Icons.event_busy_outlined,
-                    message: l10n.noData,
+                  const SizedBox(height: 16),
+                  AppContainer(
+                    margin: EdgeInsets.zero,
+                    padding: const EdgeInsets.symmetric(vertical: 24),
+                    backgroundColor: colorScheme.surface,
+                    elevation: 0,
+                    borderRadius: null,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      side: BorderSide(color: colorScheme.outlineVariant),
+                    ),
+                    child: AppNoData(
+                      icon: Icons.event_busy_outlined,
+                      title: _isPastMonth
+                          ? l10n.academicCalendarPastEventsEmptyTitle
+                          : l10n.academicCalendarUpcomingEventsEmptyTitle,
+                      message: _isPastMonth
+                          ? l10n.academicCalendarPastEventsEmptyMessage
+                          : l10n.academicCalendarUpcomingEventsEmptyMessage,
+                    ),
                   ),
                 ],
               ),
@@ -181,7 +234,7 @@ class _AcademicCalendarFilterBar extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
 
     return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
+      scrollDirection: .horizontal,
       child: Row(
         children: [
           _StatusFilterChip(
@@ -221,11 +274,13 @@ class _StatusFilterChip extends StatelessWidget {
       value: label,
       onTap: onTap,
       margin: const EdgeInsetsDirectional.only(end: 8),
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       backgroundColor: selected
-          ? colorScheme.primary
-          : colorScheme.surfaceContainerLowest,
-      foregroundColor: selected ? colorScheme.onPrimary : colorScheme.onSurface,
+          ? colorScheme.primaryContainer
+          : colorScheme.surface,
+      foregroundColor: selected
+          ? colorScheme.onPrimaryContainer
+          : colorScheme.onSurface,
       side: selected
           ? BorderSide.none
           : BorderSide(color: colorScheme.outlineVariant),

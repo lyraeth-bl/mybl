@@ -10,6 +10,7 @@ import '../../../../core/internal/src/extensions/extensions.dart';
 import '../../../../core/widgets/app_chip_container.dart';
 import '../../../../core/widgets/app_container.dart';
 import '../../../../core/widgets/app_sliver_group.dart';
+import '../../../../core/widgets/app_toast.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/attendance_summary/attendance_summary.dart';
 import '../bloc/monthly_attendance_bloc/monthly_attendance_bloc.dart';
@@ -27,7 +28,11 @@ class AttendanceSummarySection extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final locale = Localizations.localeOf(context).toString();
 
-    return BlocBuilder<MonthlyAttendanceBloc, MonthlyAttendanceState>(
+    return BlocConsumer<MonthlyAttendanceBloc, MonthlyAttendanceState>(
+      listener: (context, state) => state.whenOrNull(
+        failure: (failure) =>
+            AppToast.error(context, failure.localizedMessage(l10n)),
+      ),
       buildWhen: (prev, curr) {
         final prevData = (
           month: prev.maybeWhen(
@@ -106,16 +111,17 @@ class AttendanceSummarySection extends StatelessWidget {
             vertical: 8,
           ),
           action: AppChipContainer(value: _monthLabel(month, year, locale)),
-          child: AppContainer(
-            backgroundColor: colorScheme.surfaceContainerLow,
+          child: AppFramedContainer(
+            backgroundColor: colorScheme.surface,
             margin: EdgeInsets.zero,
+            gap: EdgeInsets.zero,
             elevation: 0,
-            borderRadius: BorderRadius.circular(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
                       l10n.thisMonthlyAttendance,
@@ -123,11 +129,25 @@ class AttendanceSummarySection extends StatelessWidget {
                         color: colorScheme.onSurface,
                       ),
                     ),
-                    Text(
-                      percent,
-                      style: textTheme.labelMedium?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                      ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          percent,
+                          style: textTheme.labelMedium?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                        Text(
+                          l10n.attendanceWorkingDaysSummary(
+                            summary.present + summary.late,
+                            summary.workingDaysElapsed,
+                          ),
+                          style: textTheme.labelSmall?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -208,20 +228,13 @@ class _AttendanceSummaryCard extends StatelessWidget {
         children: [
           AnimatedSwitcher(
             duration: const Duration(milliseconds: 200),
-            child:
-                Text(
-                  value,
-                  style: textTheme.titleLarge?.copyWith(
-                    color: colorScheme.onSurface,
-                    fontWeight: .bold,
-                  ),
-                ).toShimmer(
-                  context,
-                  alignment: Alignment.center,
-                  width: 24,
-                  height: 28,
-                  isLoading: isLoading,
-                ),
+            child: Text(
+              value,
+              style: textTheme.titleLarge?.copyWith(
+                color: colorScheme.onSurface,
+                fontWeight: .bold,
+              ),
+            ).toShimmer(context, width: 24, height: 28, isLoading: isLoading),
           ),
           const SizedBox(height: 4),
           Text(

@@ -5,6 +5,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../../../../core/enums/user_role.dart';
 import '../../../../core/failure/failure.dart';
 import '../../domain/entities/app_configuration_entity/app_configuration_entity.dart';
 import '../../domain/usecases/fetch_app_config_use_case.dart';
@@ -13,29 +14,45 @@ part 'app_configuration_bloc.freezed.dart';
 part 'app_configuration_event.dart';
 part 'app_configuration_state.dart';
 
-/// Si paling sibuk buat ngurusin status konfigurasi aplikasi di UI.
-///
-/// [AppConfigurationBloc] ini tugasnya minta tolong ke [FetchAppConfigUseCase]
-/// buat cari tau settings atau config terbaru, terus dia bakal kasih tau
-/// UI apakah lagi loading, sukses, atau malah gagal.
 class AppConfigurationBloc
     extends Bloc<AppConfigurationEvent, AppConfigurationState> {
-  /// Butuh jasa titip config biar tau apa yang harus di-update.
   AppConfigurationBloc(this._appConfigUseCase)
     : super(const AppConfigurationState.initial()) {
     on<_AppConfigurationRequested>(_onAppConfigurationRequested);
+    on<_AppConfigurationRetried>(_onAppConfigurationRetried);
   }
 
   final FetchAppConfigUseCase _appConfigUseCase;
+  UserRole _role = UserRole.student;
 
-  /// Proses pengambilan data config pas ada yang minta.
+  Future<void> _onAppConfigurationRetried(
+    _AppConfigurationRetried event,
+    Emitter<AppConfigurationState> emit,
+  ) => _fetch(role: _role, forceRefresh: true, emit: emit);
+
   Future<void> _onAppConfigurationRequested(
     _AppConfigurationRequested event,
     Emitter<AppConfigurationState> emit,
-  ) async {
+  ) {
+    _role = event.role;
+    return _fetch(
+      role: event.role,
+      forceRefresh: event.forceRefresh,
+      emit: emit,
+    );
+  }
+
+  Future<void> _fetch({
+    required UserRole role,
+    required bool forceRefresh,
+    required Emitter<AppConfigurationState> emit,
+  }) async {
     emit(const AppConfigurationState.loading());
 
-    final result = await _appConfigUseCase.call(event.forceRefresh);
+    final result = await _appConfigUseCase.call(
+      role: role,
+      forceRefresh: forceRefresh,
+    );
 
     return result.match(
       (failure) => emit(AppConfigurationState.failure(failure)),

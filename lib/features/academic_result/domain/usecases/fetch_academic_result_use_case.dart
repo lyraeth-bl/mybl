@@ -11,6 +11,6 @@ class FetchAcademicResultUseCase {
 
   final AcademicResultRepository _academicResultRepository;
 
-  Future<Result<AcademicResultResponse>> call([bool forceRefresh = false]) =>
-      _academicResultRepository.fetch(forceRefresh);
+  Future<Result<AcademicResultResponse>> call({bool forceRefresh = false}) =>
+      _academicResultRepository.fetch(forceRefresh: forceRefresh);
 }

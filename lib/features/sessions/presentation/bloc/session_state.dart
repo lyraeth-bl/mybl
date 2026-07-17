@@ -6,8 +6,10 @@ sealed class SessionState with _$SessionState {
 
   const factory SessionState.loading() = _Loading;
 
-  const factory SessionState.authenticated({required String accessToken}) =
-      _Authenticated;
+  const factory SessionState.authenticated({
+    required String accessToken,
+    required UserRole role,
+  }) = _Authenticated;
 
   const factory SessionState.unauthenticated() = _Unauthenticated;
 }

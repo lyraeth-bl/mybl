@@ -1,0 +1,417 @@
+// Copyright (c) 2026 Mahsa Nurfarhan Hidayat / Yayasan Pakarti Luhur. All rights reserved.
+// Use of this source code is governed by a MIT License
+// that can be found in the LICENSE file.
+
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:my_bl/core/enums/user_role.dart';
+
+import '../../../../core/internal/src/extensions/extensions.dart';
+import '../../../../core/widgets/app_button.dart';
+import '../../../../core/widgets/app_text_field.dart';
+import '../../../../core/widgets/app_toast.dart';
+import '../../../../l10n/app_localizations.dart';
+import '../../../sessions/presentation/bloc/session_bloc.dart';
+import '../../../user/presentation/bloc/parent_bloc/parent_bloc.dart';
+import '../bloc/auth_bloc.dart';
+import '../cubit/remember_me/remember_me_cubit.dart';
+
+class AuthLoginForm extends StatefulWidget {
+  const AuthLoginForm({super.key, required this.role, this.accentColor});
+
+  final UserRole role;
+  final Color? accentColor;
+
+  @override
+  State<AuthLoginForm> createState() => _AuthLoginFormState();
+}
+
+class _AuthLoginFormState extends State<AuthLoginForm>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _animationController = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 300),
+  );
+
+  late final Animation<double> _fadeInAnimation = CurvedAnimation(
+    parent: _animationController,
+    curve: Curves.easeOut,
+  );
+
+  final TextEditingController _nisController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  void _onSignIn(BuildContext context, AppLocalizations l10n) {
+    final nis = _nisController.text.trim();
+    final password = _passwordController.text.trim();
+
+    if (nis.isEmpty) {
+      final message = widget.role == UserRole.parent
+          ? l10n.pleaseEnterUsername
+          : l10n.pleaseEnterNis;
+      AppToast.warning(context, message, showProgressBar: false);
+      return;
+    }
+
+    if (password.isEmpty) {
+      AppToast.warning(
+        context,
+        l10n.pleaseEnterPassword,
+        showProgressBar: false,
+      );
+      return;
+    }
+
+    FocusScope.of(context).unfocus();
+
+    if (widget.role == UserRole.parent) {
+      context.read<AuthBloc>().add(
+        AuthEvent.loginParentRequested(nis: nis, password: password),
+      );
+    } else {
+      context.read<AuthBloc>().add(
+        AuthEvent.loginRequested(nis: nis, password: password),
+      );
+    }
+  }
+
+  void _getSavedIdentifier() {
+    final savedIdentifier = context
+        .read<RememberMeCubit>()
+        .state
+        .savedIdentifier;
+
+    if (savedIdentifier.isNotEmpty) {
+      _nisController.text = savedIdentifier;
+    }
+  }
+
+  bool get _canSubmit =>
+      _nisController.text.trim().isNotEmpty &&
+      _passwordController.text.trim().isNotEmpty;
+
+  @override
+  void initState() {
+    super.initState();
+    _nisController.addListener(_onFieldChanged);
+    _passwordController.addListener(_onFieldChanged);
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (MediaQuery.of(context).disableAnimations) {
+        _animationController.value = 1.0;
+      } else {
+        _animationController.forward();
+      }
+      await context.read<RememberMeCubit>().loadSavedIdentifier(widget.role);
+      _getSavedIdentifier();
+    });
+  }
+
+  void _onFieldChanged() => setState(() {});
+
+  @override
+  void dispose() {
+    _nisController.removeListener(_onFieldChanged);
+    _passwordController.removeListener(_onFieldChanged);
+    _animationController.dispose();
+    _nisController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final screenSize = MediaQuery.sizeOf(context);
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final accentColor = widget.accentColor ?? colorScheme.primary;
+
+    return BlocListener<AuthBloc, AuthState>(
+      listenWhen: (previous, current) => current.maybeWhen(
+        successLogin: (_, _) => true,
+        successParentLogin: (_, _, _, _) => true,
+        orElse: () => false,
+      ),
+      listener: (context, state) {
+        state.whenOrNull(
+          successLogin: (accessToken, expiresAt) {
+            context.read<RememberMeCubit>().onLoginSuccess(
+              widget.role,
+              _nisController.text.trim(),
+            );
+
+            context.read<SessionBloc>().add(
+              SessionEvent.loggedIn(
+                accessToken: accessToken,
+                expiresAt: expiresAt,
+                role: UserRole.student,
+              ),
+            );
+          },
+          successParentLogin: (accessToken, expiresAt, nama, children) {
+            context.read<RememberMeCubit>().onLoginSuccess(
+              widget.role,
+              _nisController.text.trim(),
+            );
+
+            context.read<SessionBloc>().add(
+              SessionEvent.loggedIn(
+                accessToken: accessToken,
+                expiresAt: expiresAt,
+                role: UserRole.parent,
+              ),
+            );
+
+            context.read<ParentBloc>().add(
+              ParentEvent.loginSucceeded(nama: nama, children: children),
+            );
+          },
+        );
+      },
+      child: Align(
+        alignment: Alignment.topCenter,
+        child: FadeTransition(
+          opacity: _fadeInAnimation,
+          child: Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.viewInsetsOf(context).bottom,
+            ),
+            child: SizedBox(
+              height: screenSize.height,
+              child: NotificationListener<OverscrollIndicatorNotification>(
+                onNotification: (notification) {
+                  notification.disallowIndicator();
+                  return true;
+                },
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    // Top scroll padding (120) + bottom padding (24) + extra (4) = 148
+                    const scrollVerticalPadding = 148.0;
+                    return SingleChildScrollView(
+                      physics: const ClampingScrollPhysics(),
+                      padding: const EdgeInsets.fromLTRB(24, 120, 24, 24),
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          minHeight:
+                              constraints.maxHeight > scrollVerticalPadding
+                              ? constraints.maxHeight - scrollVerticalPadding
+                              : 0,
+                        ),
+                        child: IntrinsicHeight(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                l10n.letsSignIn,
+                                style: textTheme.headlineLarge!.copyWith(
+                                  color: colorScheme.onSurface,
+                                ),
+                              ),
+
+                              8.h,
+
+                              Text(
+                                '${l10n.welcomeBack},\n${l10n.youHaveBeenMissed}',
+                                style: textTheme.titleMedium!.copyWith(
+                                  color: colorScheme.onSurfaceVariant,
+                                  height: 1.5,
+                                ),
+                              ),
+
+                              32.h,
+
+                              Text(
+                                widget.role == UserRole.parent
+                                    ? l10n.username
+                                    : l10n.nis,
+                                style: textTheme.titleSmall!.copyWith(
+                                  color: colorScheme.onSurface,
+                                ),
+                              ),
+
+                              12.h,
+
+                              AppTextField(
+                                keyboardType: widget.role == UserRole.parent
+                                    ? TextInputType.text
+                                    : TextInputType.number,
+                                controller: _nisController,
+                                decoration: InputDecoration(
+                                  hintText: widget.role == UserRole.parent
+                                      ? l10n.usernameHint
+                                      : l10n.nisHint,
+                                ),
+                                side: BorderSide(
+                                  color: colorScheme.outlineVariant,
+                                ),
+                                backgroundColor: colorScheme.surface,
+                                style: TextStyle(
+                                  color: colorScheme.onSurfaceVariant,
+                                ),
+                                focusedSide: BorderSide(
+                                  color: accentColor,
+                                  width: 1.5,
+                                ),
+                                focusedBackgroundColor: colorScheme.surface,
+                                populatedBackgroundColor: colorScheme.surface,
+                              ),
+
+                              16.h,
+
+                              Text(
+                                l10n.password,
+                                style: textTheme.titleSmall!.copyWith(
+                                  color: colorScheme.onSurface,
+                                ),
+                              ),
+
+                              12.h,
+
+                              AppTextField(
+                                controller: _passwordController,
+                                decoration: InputDecoration(
+                                  hintText: l10n.passwordHint,
+                                ),
+                                obscureText: true,
+                                side: BorderSide(
+                                  color: colorScheme.outlineVariant,
+                                ),
+                                backgroundColor: colorScheme.surface,
+                                style: TextStyle(
+                                  color: colorScheme.onSurfaceVariant,
+                                ),
+                                focusedSide: BorderSide(
+                                  color: accentColor,
+                                  width: 1.5,
+                                ),
+                                focusedBackgroundColor: colorScheme.surface,
+                                populatedBackgroundColor: colorScheme.surface,
+                              ),
+
+                              16.h,
+
+                              _RememberMeCheckbox(
+                                accentColor: accentColor,
+                                colorScheme: colorScheme,
+                                textTheme: textTheme,
+                                l10n: l10n,
+                              ),
+
+                              const Spacer(),
+
+                              BlocBuilder<AuthBloc, AuthState>(
+                                buildWhen: (prev, curr) {
+                                  final prevLoading = prev.maybeWhen(
+                                    loading: () => true,
+                                    orElse: () => false,
+                                  );
+                                  final currLoading = curr.maybeWhen(
+                                    loading: () => true,
+                                    orElse: () => false,
+                                  );
+                                  return prevLoading != currLoading;
+                                },
+                                builder: (context, state) {
+                                  final isLoading = state.maybeWhen(
+                                    loading: () => true,
+                                    orElse: () => false,
+                                  );
+
+                                  return AppButton(
+                                    loading: isLoading,
+                                    onPressed: _canSubmit && !isLoading
+                                        ? () => _onSignIn(context, l10n)
+                                        : null,
+                                    progressIndicatorSize: 28,
+                                    child: Text(l10n.signIn),
+                                  );
+                                },
+                              ),
+
+                              const SizedBox(height: 32),
+
+                              Center(
+                                child: Text(
+                                  l10n.loginHelpNotice,
+                                  textAlign: TextAlign.center,
+                                  style: textTheme.bodyMedium?.copyWith(
+                                    color: colorScheme.onSurfaceVariant,
+                                    height: 1.4,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _RememberMeCheckbox extends StatelessWidget {
+  const _RememberMeCheckbox({
+    required this.accentColor,
+    required this.colorScheme,
+    required this.textTheme,
+    required this.l10n,
+  });
+
+  final Color accentColor;
+  final ColorScheme colorScheme;
+  final TextTheme textTheme;
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<RememberMeCubit, RememberMeState>(
+      buildWhen: (prev, curr) => prev.isChecked != curr.isChecked,
+      builder: (context, state) {
+        return Semantics(
+          label: l10n.rememberMe,
+          checked: state.isChecked,
+          child: InkWell(
+            onTap: () => context.read<RememberMeCubit>().toggleCheckBox(
+              !state.isChecked,
+            ),
+            borderRadius: BorderRadius.circular(8),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: Row(
+                children: [
+                  ExcludeSemantics(
+                    child: Checkbox(
+                      value: state.isChecked,
+                      activeColor: accentColor,
+                      checkColor: colorScheme.surface,
+                      side: BorderSide(color: colorScheme.outline, width: 1.5),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      onChanged: (val) => context
+                          .read<RememberMeCubit>()
+                          .toggleCheckBox(val ?? false),
+                    ),
+                  ),
+                  Text(
+                    l10n.rememberMe,
+                    style: textTheme.labelMedium?.copyWith(
+                      color: colorScheme.onSurface,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}

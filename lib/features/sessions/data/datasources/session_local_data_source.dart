@@ -5,6 +5,7 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:fpdart/fpdart.dart';
 
+import '../../../../core/enums/user_role.dart';
 import '../../../../core/internal/src/interfaces/data_interfaces.dart';
 import '../../../../core/storage/storage_keys/secure_storage_names.dart';
 
@@ -12,7 +13,8 @@ import '../../../../core/storage/storage_keys/secure_storage_names.dart';
 ///
 /// [SessionLocalDataSource] ini cuma janji (interface) kalau siapapun yang
 /// mengimplementasikannya harus bisa baca, simpen, dan hapus token.
-abstract class SessionLocalDataSource implements TokenStorage {}
+abstract class SessionLocalDataSource
+    implements TokenStorage, ParentTokenStorage, RoleStorage<UserRole> {}
 
 /// Eksekutor utama buat urusan simpen-menyimpan token di perangkat.
 ///
@@ -78,6 +80,73 @@ class SessionLocalDataSourceImpl implements SessionLocalDataSource {
       key: SecureStorageNames.accessTokenExpiryKey,
       value: expiresAt.toIso8601String(),
     );
+    return unit;
+  }
+
+  @override
+  Future<String?> readParentAccessToken() async =>
+      _secureStorage.read(key: SecureStorageNames.parentAccessTokenKey);
+
+  @override
+  Future<Unit> saveParentAccessToken(String accessToken) async {
+    await _secureStorage.write(
+      key: SecureStorageNames.parentAccessTokenKey,
+      value: accessToken,
+    );
+    return unit;
+  }
+
+  @override
+  Future<Unit> clearParentAccessToken() async {
+    await _secureStorage.delete(key: SecureStorageNames.parentAccessTokenKey);
+    return unit;
+  }
+
+  @override
+  Future<DateTime?> readParentTokenExpiresAt() async {
+    final raw = await _secureStorage.read(
+      key: SecureStorageNames.parentAccessTokenExpiryKey,
+    );
+    if (raw == null) return null;
+    return DateTime.tryParse(raw);
+  }
+
+  @override
+  Future<Unit> saveParentTokenExpiresAt(DateTime expiresAt) async {
+    await _secureStorage.write(
+      key: SecureStorageNames.parentAccessTokenExpiryKey,
+      value: expiresAt.toIso8601String(),
+    );
+    return unit;
+  }
+
+  @override
+  Future<Unit> clearParentTokenExpiresAt() async {
+    await _secureStorage.delete(
+      key: SecureStorageNames.parentAccessTokenExpiryKey,
+    );
+    return unit;
+  }
+
+  @override
+  Future<Unit> saveRole(UserRole role) async {
+    await _secureStorage.write(
+      key: SecureStorageNames.userRoleKey,
+      value: role.name,
+    );
+    return unit;
+  }
+
+  @override
+  Future<UserRole?> readRole() async {
+    final raw = await _secureStorage.read(key: SecureStorageNames.userRoleKey);
+    if (raw == null) return null;
+    return UserRole.values.byName(raw);
+  }
+
+  @override
+  Future<Unit> clearRole() async {
+    await _secureStorage.delete(key: SecureStorageNames.userRoleKey);
     return unit;
   }
 }

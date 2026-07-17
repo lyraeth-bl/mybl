@@ -6,12 +6,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/di/get_it_constant.dart';
+import '../../../../core/internal/src/extensions/extensions.dart';
+import '../../../../core/widgets/app_empty_state.dart';
+import '../../../../core/widgets/app_toast.dart';
 import '../../../../core/widgets/app_top_bar.dart';
 import '../../../../core/widgets/refresh_wrapper.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/app_notification/app_notification.dart';
 import '../bloc/notification_bloc.dart';
-import '../widgets/notification_header.dart';
 import '../widgets/notification_helpers.dart';
 import '../widgets/notification_list_section.dart';
 
@@ -41,37 +43,23 @@ class _NotificationViewState extends State<_NotificationView> {
 
     WidgetsBinding.instance.addPostFrameCallback(
       (_) => context.read<NotificationBloc>().add(
-        const NotificationEvent.fetchNotificationsRequested(),
+        const .fetchNotificationsRequested(),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return const _NotificationFailureListener(
-      child: Scaffold(appBar: _NotificationAppBar(), body: _NotificationBody()),
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
+
+    return _NotificationFailureListener(
+      child: Scaffold(
+        backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+        appBar: AppTopBar(toolbarHeight: 72, title: Text(l10n.notifications)),
+        body: const _NotificationBody(),
+      ),
     );
   }
-}
-
-@immutable
-class _NotificationAppBar extends StatelessWidget
-    implements PreferredSizeWidget {
-  const _NotificationAppBar();
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-
-    return AppTopBar(
-      toolbarHeight: 72,
-      title: Text(l10n.notifications),
-      centerTitle: true,
-    );
-  }
-
-  @override
-  Size get preferredSize => Size.fromHeight(80);
 }
 
 class _NotificationFailureListener extends StatelessWidget {
@@ -81,7 +69,7 @@ class _NotificationFailureListener extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
 
     return BlocListener<NotificationBloc, NotificationState>(
       listenWhen: (previous, current) =>
@@ -90,9 +78,7 @@ class _NotificationFailureListener extends StatelessWidget {
         final failure = state.whenOrNull(failure: (failure) => failure);
         if (failure == null) return;
 
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(failure.localizedMessage(l10n))));
+        AppToast.error(context, failure.localizedMessage(l10n));
       },
       child: child,
     );
@@ -114,7 +100,7 @@ class _NotificationRefreshWrapper extends StatelessWidget {
           NotificationState
         >(
           context: context,
-          event: const NotificationEvent.fetchNotificationsRequested(),
+          event: const .fetchNotificationsRequested(),
           isDone: (state) => state.maybeWhen(
             success: (_) => true,
             failure: (_) => true,
@@ -138,17 +124,18 @@ class _NotificationBody extends StatelessWidget {
         builder: (context, state) {
           final notifications = notificationsFromState(state);
           final groups = groupNotifications(context, notifications);
+          final l10n = AppLocalizations.of(context)!;
 
           return CustomScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             slivers: [
               if (groups.isEmpty)
-                const SliverFillRemaining(
-                  hasScrollBody: false,
-                  child: NotificationEmptyState(),
+                AppEmptyStateSliver(
+                  icon: Icons.notifications_none_outlined,
+                  title: l10n.noNotifications,
+                  message: l10n.noNotificationsDesc,
                 )
               else ...[
-                const SliverToBoxAdapter(child: SizedBox(height: 16)),
                 for (final group in groups)
                   NotificationSliverGroup(
                     group: group,
@@ -157,7 +144,7 @@ class _NotificationBody extends StatelessWidget {
                     onMarkAllAsRead: (notifications) =>
                         _markAllAsRead(context, notifications),
                   ),
-                const SliverToBoxAdapter(child: SizedBox(height: 24)),
+                SliverToBoxAdapter(child: 24.h),
               ],
             ],
           );
@@ -182,7 +169,7 @@ void _markAsRead(BuildContext context, AppNotification notification) {
   if (notificationIsRead(notification)) return;
 
   context.read<NotificationBloc>().add(
-    NotificationEvent.notificationReadRequested(notification: notification),
+    .notificationReadRequested(notification: notification),
   );
 }
 
@@ -194,8 +181,6 @@ void _markAllAsRead(BuildContext context, List<AppNotification> notifications) {
 
   final bloc = context.read<NotificationBloc>();
   for (final notification in unreadNotifications) {
-    bloc.add(
-      NotificationEvent.notificationReadRequested(notification: notification),
-    );
+    bloc.add(.notificationReadRequested(notification: notification));
   }
 }

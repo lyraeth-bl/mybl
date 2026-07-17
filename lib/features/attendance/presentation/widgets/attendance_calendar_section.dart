@@ -3,8 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/theme/app_theme.dart';
-import '../../../../core/widgets/app_container.dart';
-import '../../../../core/widgets/app_sliver_group.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/attendance_entity/attendance_entity.dart';
 import '../../domain/entities/attendance_status/attendance_status.dart';
@@ -24,13 +22,7 @@ class AttendanceCalendarSection extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final locale = Localizations.localeOf(context).toString();
 
-    return AppSliverGroup(
-      title: l10n.attendanceCalendar,
-      titleStyle: textTheme.titleMedium!.copyWith(
-        color: colorScheme.onSurface,
-        fontWeight: .bold,
-      ),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+    return SliverToBoxAdapter(
       child: BlocBuilder<MonthlyAttendanceBloc, MonthlyAttendanceState>(
         buildWhen: (prev, curr) {
           final prevData = (
@@ -100,56 +92,56 @@ class AttendanceCalendarSection extends StatelessWidget {
           );
 
           return RepaintBoundary(
-            child: AppContainer(
-              backgroundColor: colorScheme.surfaceContainerLow,
-              margin: EdgeInsets.zero,
-              elevation: 0,
-              borderRadius: BorderRadius.circular(16),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      IconButton.filledTonal(
-                        onPressed: isLoading
-                            ? null
-                            : () => context.read<MonthlyAttendanceBloc>().add(
-                                const MonthlyAttendanceEvent.previousMonthRequested(),
-                              ),
-                        icon: const Icon(Icons.chevron_left),
-                        tooltip: l10n.previousMonth,
-                      ),
-                      Text(
-                        _monthLabel(month, year, locale),
-                        style: textTheme.titleMedium?.copyWith(
-                          color: colorScheme.onSurface,
-                          fontWeight: .bold,
+            child: ColoredBox(
+              color: colorScheme.surface,
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        IconButton.filledTonal(
+                          onPressed: isLoading
+                              ? null
+                              : () => context.read<MonthlyAttendanceBloc>().add(
+                                  const MonthlyAttendanceEvent.previousMonthRequested(),
+                                ),
+                          icon: const Icon(Icons.chevron_left),
+                          tooltip: l10n.previousMonth,
                         ),
-                      ),
-                      IconButton.filledTonal(
-                        onPressed: isLoading
-                            ? null
-                            : () => context.read<MonthlyAttendanceBloc>().add(
-                                const MonthlyAttendanceEvent.nextMonthRequested(),
-                              ),
-                        icon: const Icon(Icons.chevron_right),
-                        tooltip: l10n.nextMonth,
-                      ),
-                    ],
-                  ),
+                        Text(
+                          _monthLabel(month, year, locale),
+                          style: textTheme.titleMedium?.copyWith(
+                            color: colorScheme.onSurface,
+                            fontWeight: .bold,
+                          ),
+                        ),
+                        IconButton.filledTonal(
+                          onPressed: isLoading
+                              ? null
+                              : () => context.read<MonthlyAttendanceBloc>().add(
+                                  const MonthlyAttendanceEvent.nextMonthRequested(),
+                                ),
+                          icon: const Icon(Icons.chevron_right),
+                          tooltip: l10n.nextMonth,
+                        ),
+                      ],
+                    ),
 
-                  const SizedBox(height: 16),
+                    const SizedBox(height: 16),
 
-                  AttendanceCalendar(
-                    focusedDay: focusedDay,
-                    attendanceData: attendanceMap,
-                    entityData: entityMap,
-                  ),
+                    AttendanceCalendar(
+                      focusedDay: focusedDay,
+                      attendanceData: attendanceMap,
+                      entityData: entityMap,
+                    ),
 
-                  const SizedBox(height: 16),
+                    const SizedBox(height: 16),
 
-                  const _AttendanceLegends(),
-                ],
+                    const _AttendanceLegends(),
+                  ],
+                ),
               ),
             ),
           );

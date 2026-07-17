@@ -4,6 +4,7 @@
 
 import 'dart:async';
 
+import 'package:async/async.dart';
 import 'package:flutter/material.dart';
 
 class GoRouterRefreshStream extends ChangeNotifier {
@@ -13,6 +14,14 @@ class GoRouterRefreshStream extends ChangeNotifier {
     notifyListeners();
     _subscription = stream.asBroadcastStream().listen((_) {
       // Trigger re-check state setiap state berubah.
+      notifyListeners();
+    });
+  }
+
+  GoRouterRefreshStream.merged(List<Stream<dynamic>> streams) {
+    notifyListeners();
+    final merged = StreamGroup.merge(streams);
+    _subscription = merged.listen((_) {
       notifyListeners();
     });
   }

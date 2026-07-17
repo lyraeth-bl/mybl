@@ -1,6 +1,6 @@
 name: my_bl
 description: "A Budi Luhur App."
-publish_to: 'none'
+publish_to: "none"
 version: 1.0.0+1
 
 environment:
@@ -29,7 +29,6 @@ dependencies:
   flutter_animate: ^4.5.2
   cached_network_image: ^3.4.1
   table_calendar: ^3.2.0
-  fl_chart: ^1.2.0
   shimmer: ^3.0.0
   qr: ^4.0.0
   package_info_plus: ^10.1.0
@@ -39,6 +38,9 @@ dependencies:
   firebase_core: ^4.9.0
   timeago: ^3.7.1
   flutter_native_splash: ^2.4.7
+  toastification: ^3.2.0
+  async: ^2.13.1
+  url_launcher: ^6.3.2
 
 dev_dependencies:
   flutter_test:
@@ -49,6 +51,7 @@ dev_dependencies:
   json_serializable: ^6.13.1
   hive_ce_generator: ^1.11.1
   flutter_launcher_icons: ^0.14.4
+  mocktail: ^1.0.5
 
 flutter:
   generate: true
@@ -65,6 +68,7 @@ flutter_native_splash:
 flutter_launcher_icons:
   android: true
   ios: false
-  image_path: "assets/images/bl_logo.png"
+  image_path: "store_assets/play_store_512.png"
   adaptive_icon_background: "#FFFFFF"
-  adaptive_icon_foreground: "assets/images/bl_logo.png"
+  adaptive_icon_foreground: "store_assets/app_icon_foreground.png"
+  adaptive_icon_monochrome: "store_assets/app_icon_monochrome.png"

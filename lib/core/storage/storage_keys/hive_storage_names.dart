@@ -32,8 +32,20 @@ class HiveStorageNames {
   // NIS user jika user mengaktifkan fitur [RememberMe].
   static const String authNISKey = "authNIS";
 
+  // Username user jika user mengaktifkan fitur [RememberMe].
+  static const String authUsernameKey = "authUsername";
+
   // Data student.
   static const String studentDetailKey = "studentDetail";
+
+  // Data profil parent (dari /parent/me).
+  static const String parentDetailKey = "parentDetail";
+
+  // Daftar anak milik parent (dari response login).
+  static const String parentChildrenKey = "parentChildren";
+
+  // Anak yang terakhir dipilih parent.
+  static const String parentSelectedChildKey = "parentSelectedChild";
 
   // Data absensi bulanan.
   static const String userMonthlyAttendanceKey = "userMonthlyAttendance";

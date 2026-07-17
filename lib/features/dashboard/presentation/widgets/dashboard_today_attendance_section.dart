@@ -20,35 +20,33 @@ class DashboardTodayAttendanceSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-    final successColor = AppColors.of(context).success;
+    final ThemeData theme = Theme.of(context);
+    final ColorScheme colorScheme = theme.colorScheme;
+    final TextTheme textTheme = theme.textTheme;
+    final Color successColor = AppColors.of(context).success;
+    final Color checkOutColor = AppColors.of(context).checkOut;
     final _DashboardAttendanceIconStyle positiveIconStyle = (
       backgroundColor: successColor.withValues(alpha: 0.18),
       foregroundColor: successColor,
     );
-    final _DashboardAttendanceIconStyle negativeIconStyle = (
-      backgroundColor: colorScheme.error.withValues(alpha: 0.14),
-      foregroundColor: colorScheme.error,
+    final _DashboardAttendanceIconStyle checkOutIconStyle = (
+      backgroundColor: checkOutColor.withValues(alpha: 0.14),
+      foregroundColor: checkOutColor,
     );
-    final l10n = AppLocalizations.of(context)!;
-    final now = DateTime.now();
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
+    final DateTime now = DateTime.now();
     final locale = Localizations.localeOf(context).toString();
 
     return AppSliverGroup(
       title: l10n.dailyAttendance,
-      titleStyle: textTheme.titleMedium!.copyWith(
-        color: colorScheme.onSurface,
-        fontWeight: .bold,
-      ),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      action: AppChipContainer(
+      titleStyle: textTheme.titleMedium!.copyWith(color: colorScheme.onSurface),
+      action: AppChipContainer.outlined(
         value: DateFormat.yMMMMEEEEd(locale).format(now),
       ),
       sliver: SliverGrid.count(
         crossAxisCount: 2,
-        crossAxisSpacing: 14,
-        mainAxisSpacing: 14,
+        crossAxisSpacing: 8,
+        mainAxisSpacing: 8,
         childAspectRatio: 1.5,
         children: [
           BlocBuilder<DailyAttendanceBloc, DailyAttendanceState>(
@@ -92,56 +90,11 @@ class DashboardTodayAttendanceSection extends StatelessWidget {
                 ),
                 crossAxisAlignment: .end,
                 isLoading: isLoading,
-                iconBackgroundColor: negativeIconStyle.backgroundColor,
-                iconForegroundColor: negativeIconStyle.foregroundColor,
+                iconBackgroundColor: checkOutIconStyle.backgroundColor,
+                iconForegroundColor: checkOutIconStyle.foregroundColor,
               );
             },
           ),
-          // BlocBuilder<MonthlyAttendanceBloc, MonthlyAttendanceState>(
-          //   builder: (context, state) {
-          //     final isLoading = state.maybeWhen(
-          //       loading: (_, _) => true,
-          //       orElse: () => false,
-          //     );
-          //     final summary = state.maybeWhen(
-          //       success: (_, _, _, _, _, summary) => summary,
-          //       orElse: () => const AttendanceSummary(),
-          //     );
-          //
-          //     return _DashboardTodayAttendanceContainer(
-          //       title: l10n.totalAbsent,
-          //       icon: Icons.arrow_upward,
-          //       value: summary.absent.toString(),
-          //       descriptionValue: l10n.days,
-          //       isLoading: isLoading,
-          //       iconBackgroundColor: negativeIconStyle.backgroundColor,
-          //       iconForegroundColor: negativeIconStyle.foregroundColor,
-          //     );
-          //   },
-          // ),
-          // BlocBuilder<MonthlyAttendanceBloc, MonthlyAttendanceState>(
-          //   builder: (context, state) {
-          //     final isLoading = state.maybeWhen(
-          //       loading: (_, _) => true,
-          //       orElse: () => false,
-          //     );
-          //     final summary = state.maybeWhen(
-          //       success: (_, _, _, _, _, summary) => summary,
-          //       orElse: () => const AttendanceSummary(),
-          //     );
-          //
-          //     return _DashboardTodayAttendanceContainer(
-          //       title: l10n.totalPresent,
-          //       icon: Icons.today,
-          //       value: summary.present.toString(),
-          //       descriptionValue: l10n.days,
-          //       crossAxisAlignment: .end,
-          //       isLoading: isLoading,
-          //       iconBackgroundColor: positiveIconStyle.backgroundColor,
-          //       iconForegroundColor: positiveIconStyle.foregroundColor,
-          //     );
-          //   },
-          // ),
         ],
       ),
     );
@@ -182,15 +135,16 @@ class _DashboardTodayAttendanceContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
+    final ThemeData theme = Theme.of(context);
+    final ColorScheme colorScheme = theme.colorScheme;
+    final TextTheme textTheme = theme.textTheme;
 
-    return AppContainer(
-      backgroundColor: colorScheme.surfaceContainerLow,
-      margin: EdgeInsets.zero,
+    return AppFramedContainer(
+      backgroundColor: colorScheme.surface,
+      margin: .zero,
+      gap: .zero,
       aspectRatio: 1.5,
       elevation: 0,
-      borderRadius: BorderRadius.circular(16),
       child: Column(
         crossAxisAlignment: crossAxisAlignment,
         mainAxisAlignment: .center,
@@ -204,24 +158,29 @@ class _DashboardTodayAttendanceContainer extends StatelessWidget {
                 icon: icon,
                 backgroundColor: iconBackgroundColor,
                 foregroundColor: iconForegroundColor,
+              ).toShimmer(
+                context,
+                isLoading: isLoading,
+                borderRadius: .circular(24),
               ),
-              const SizedBox(width: 12),
               Text(
                 title,
                 style: textTheme.titleSmall!.copyWith(
                   color: colorScheme.onSurface,
-                  fontWeight: .bold,
                 ),
                 maxLines: 2,
+              ).toShimmer(
+                context,
+                isLoading: isLoading,
+                width: 80,
+                height: 16,
+                borderRadius: .circular(24),
               ),
-            ],
+            ].separatedBy(16.w),
           ),
-
-          const SizedBox(height: 16),
-
           Row(
             mainAxisSize: .min,
-            mainAxisAlignment: MainAxisAlignment.end,
+            mainAxisAlignment: .end,
             crossAxisAlignment: .end,
             children: [
               Flexible(
@@ -229,34 +188,41 @@ class _DashboardTodayAttendanceContainer extends StatelessWidget {
                     Text(
                       value ?? "--:--",
                       maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                      overflow: .ellipsis,
                       style: textTheme.headlineSmall!.copyWith(
                         color: colorScheme.onSurface,
-                        fontWeight: .bold,
                       ),
                     ).toShimmer(
                       context,
                       isLoading: isLoading,
-                      width: 56,
-                      height: 24,
+                      width: 80,
+                      height: 16,
+                      borderRadius: .circular(24),
                     ),
               ),
               if (descriptionValue != null) ...[
-                const SizedBox(width: 8),
+                8.w,
                 Flexible(
-                  child: Text(
-                    descriptionValue!,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: textTheme.bodyMedium!.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                    ),
-                  ),
+                  child:
+                      Text(
+                        descriptionValue!,
+                        maxLines: 1,
+                        overflow: .ellipsis,
+                        style: textTheme.bodyMedium!.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                      ).toShimmer(
+                        context,
+                        isLoading: isLoading,
+                        width: 24,
+                        height: 16,
+                        borderRadius: .circular(24),
+                      ),
                 ),
               ],
             ],
           ),
-        ],
+        ].separatedBy(16.h),
       ),
     );
   }

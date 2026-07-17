@@ -17,7 +17,7 @@ class AppIconContainer extends StatelessWidget {
     super.key,
     required this.icon,
     this.margin,
-    this.padding = const EdgeInsets.all(6),
+    this.padding = const .all(8),
     this.backgroundColor,
     this.foregroundColor,
     this.iconSize,
@@ -26,7 +26,7 @@ class AppIconContainer extends StatelessWidget {
     this.elevation = 0,
     this.shadowColor,
     this.surfaceTintColor,
-    this.clipBehavior = Clip.none,
+    this.clipBehavior = .none,
     this.onTap,
   }) : assert(elevation >= 0, 'elevation must be non-negative.');
 

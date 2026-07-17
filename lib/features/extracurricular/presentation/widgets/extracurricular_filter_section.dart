@@ -23,21 +23,17 @@ class ExtracurricularFilterSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
+    final ThemeData theme = Theme.of(context);
+    final ColorScheme colorScheme = theme.colorScheme;
+    final TextTheme textTheme = theme.textTheme;
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
     final schoolYears = _schoolYears;
 
     return AppSliverGroup(
       title: l10n.schoolYear,
-      titleStyle: textTheme.titleMedium?.copyWith(
-        color: colorScheme.onSurface,
-        fontWeight: FontWeight.bold,
-      ),
-      contentPadding: EdgeInsets.zero,
+      titleStyle: textTheme.titleMedium?.copyWith(color: colorScheme.onSurface),
       child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+        scrollDirection: .horizontal,
         child: Row(
           children: [
             _SchoolYearChip(
@@ -87,12 +83,14 @@ class _SchoolYearChip extends StatelessWidget {
     return AppChipContainer(
       value: label,
       onTap: onTap,
-      margin: const EdgeInsetsDirectional.only(end: 10),
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+      margin: const .only(right: 8),
+      padding: const .symmetric(horizontal: 24, vertical: 16),
       backgroundColor: selected
-          ? colorScheme.primary
-          : colorScheme.surfaceContainerLow,
-      foregroundColor: selected ? colorScheme.onPrimary : colorScheme.onSurface,
+          ? colorScheme.primaryContainer
+          : colorScheme.surfaceContainer,
+      foregroundColor: selected
+          ? colorScheme.onPrimaryContainer
+          : colorScheme.onSurface,
       side: selected
           ? BorderSide.none
           : BorderSide(color: colorScheme.outlineVariant),

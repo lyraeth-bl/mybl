@@ -7,11 +7,6 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 
-/// Extension buat bikin widget lo jadi berkilau (shimmer) pas lagi loading.
-///
-/// Tinggal panggil [toShimmer] di widget mana aja, nanti dia bakal otomatis
-/// ngebungkus widget itu pake [Shimmer.fromColors]. Lo bisa custom lebar, tinggi,
-/// sampe radius pojokannya biar pas ama bentuk asli widget-nya.
 extension ShimmerFormatting on Widget {
   Widget toShimmer(
     BuildContext context, {
@@ -19,57 +14,154 @@ extension ShimmerFormatting on Widget {
     double? width,
     double? height,
     BorderRadiusGeometry? borderRadius,
-    AlignmentGeometry? alignment,
   }) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     if (!isLoading) return this;
 
-    Widget shimmerChild = Container(
-      width: width,
-      height: height,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: borderRadius ?? BorderRadius.circular(8),
-      ),
-      child: (width == null && height == null) ? this : null,
-    );
+    Widget child = this;
 
     if (width != null || height != null) {
-      shimmerChild = Align(
-        alignment: alignment ?? Alignment.centerLeft,
-
-        child: shimmerChild,
+      child = Container(
+        width: width,
+        height: height,
+        decoration: BoxDecoration(
+          color: colorScheme.onSurface,
+          borderRadius: borderRadius,
+        ),
       );
     }
 
+    if (borderRadius != null) {
+      child = ClipRRect(borderRadius: borderRadius, child: child);
+    }
+
     return Shimmer.fromColors(
-      baseColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-      highlightColor: Theme.of(context).colorScheme.surface,
-      child: shimmerChild,
+      baseColor: colorScheme.surfaceContainerHighest,
+      highlightColor: colorScheme.surface,
+      child: child,
     );
   }
 }
 
-/// Extension biar list widget lo nggak kaku-kaku amat.
-///
-/// Pake [makeListAnimate] biar list item lo muncul satu-satu pake animasi fade-in
-/// dan slide-up yang smooth. Cocok banget dipake pas data baru beres di-fetch.
-extension AnimateListExtension on List<Widget> {
-  List<Widget> makeListAnimate() {
-    if (isEmpty) return this;
+enum AnimationType {
+  fadeSlideUp,
+  fadeSlideDown,
+  fadeSlideLeft,
+  fadeSlideRight,
+  fadeOnly,
+  scaleIn,
+}
 
-    return animate(interval: 100.ms)
-        .fadeIn(duration: 400.ms, curve: Curves.easeOut)
-        .slideY(begin: 0.1, end: 0, duration: 400.ms, curve: Curves.easeOut);
+extension AnimateWidgetExtension on Widget {
+  Widget makeAnimate({
+    AnimationType type = AnimationType.fadeSlideUp,
+    Duration duration = const Duration(milliseconds: 400),
+    Curve curve = Curves.easeOut,
+    Duration delay = Duration.zero,
+  }) {
+    final animated = animate(
+      delay: delay,
+    ).fadeIn(duration: duration, curve: curve);
+
+    switch (type) {
+      case AnimationType.fadeSlideUp:
+        return animated.slideY(
+          begin: 0.1,
+          end: 0,
+          duration: duration,
+          curve: curve,
+        );
+      case AnimationType.fadeSlideDown:
+        return animated.slideY(
+          begin: -0.1,
+          end: 0,
+          duration: duration,
+          curve: curve,
+        );
+      case AnimationType.fadeSlideLeft:
+        return animated.slideX(
+          begin: 0.1,
+          end: 0,
+          duration: duration,
+          curve: curve,
+        );
+      case AnimationType.fadeSlideRight:
+        return animated.slideX(
+          begin: -0.1,
+          end: 0,
+          duration: duration,
+          curve: curve,
+        );
+      case AnimationType.fadeOnly:
+        return animated;
+      case AnimationType.scaleIn:
+        return animated.scale(
+          begin: const Offset(0.9, 0.9),
+          end: const Offset(1, 1),
+          duration: duration,
+          curve: curve,
+        );
+    }
   }
 }
 
-/// Extension buat bikin shape ala-ala Google yang pojokannya beda-beda.
-///
-/// Biasanya dipake buat list item yang nempel-nempel. Yang paling atas (index 0)
-/// bakal lebih bulet di atas, yang paling bawah bakal lebih bulet di bawah,
-/// dan yang tengah bakal lebih kotak.
+extension AnimateListExtension on List<Widget> {
+  List<Widget> makeListAnimate({
+    AnimationType type = AnimationType.fadeSlideUp,
+    Duration interval = const Duration(milliseconds: 100),
+    Duration duration = const Duration(milliseconds: 250),
+    Curve curve = Curves.easeOut,
+  }) {
+    if (isEmpty) return this;
+    final animated = animate(
+      interval: interval,
+    ).fadeIn(duration: duration, curve: curve);
+
+    switch (type) {
+      case AnimationType.fadeSlideUp:
+        return animated.slideY(
+          begin: 0.1,
+          end: 0,
+          duration: duration,
+          curve: curve,
+        );
+      case AnimationType.fadeSlideDown:
+        return animated.slideY(
+          begin: -0.1,
+          end: 0,
+          duration: duration,
+          curve: curve,
+        );
+      case AnimationType.fadeSlideLeft:
+        return animated.slideX(
+          begin: 0.1,
+          end: 0,
+          duration: duration,
+          curve: curve,
+        );
+      case AnimationType.fadeSlideRight:
+        return animated.slideX(
+          begin: -0.1,
+          end: 0,
+          duration: duration,
+          curve: curve,
+        );
+      case AnimationType.fadeOnly:
+        return animated;
+      case AnimationType.scaleIn:
+        return animated.scale(
+          begin: const Offset(0.9, 0.9),
+          end: const Offset(1, 1),
+          duration: duration,
+          curve: curve,
+        );
+    }
+  }
+}
+
 extension GoogleListShape on int {
-  /// Bikin shape vertikal buat list. [lastIndex] itu index terakhir dari list-nya.
   ShapeBorder makeVerticalGoogleShape(int lastIndex) {
     if (this == 0) {
       return RoundedRectangleBorder(
@@ -90,7 +182,6 @@ extension GoogleListShape on int {
     return RoundedRectangleBorder(borderRadius: BorderRadius.circular(4));
   }
 
-  /// Bikin shape horizontal buat list. [lastIndex] itu index terakhir dari list-nya.
   ShapeBorder makeHorizontalGoogleShape(int lastIndex) {
     if (this == 0) {
       return RoundedRectangleBorder(
@@ -117,19 +208,57 @@ extension GoogleListShape on int {
 }
 
 extension DateAndTimeFormatterExtension on DateTime {
-  String get toHourMinuteFormat => DateFormat("HH : mm").format(toLocal());
+  String toHourMinuteFormat() => DateFormat("HH:mm").format(toLocal());
 
-  String get toHourMinuteSecondFormat =>
-      DateFormat("HH : mm : ss").format(toLocal());
+  String toHourMinuteSecondFormat() => DateFormat("HH:mm:ss").format(toLocal());
 
-  String get toDayMonthYearFormat =>
-      DateFormat('dd MMMM yyyy').format(toLocal());
+  String toDayMonthYearFormat(BuildContext context) {
+    final locale = Localizations.localeOf(context).languageCode;
+    return DateFormat('dd MMMM yyyy', locale).format(toLocal());
+  }
 
-  String get toDayDateMonthYearFormat =>
-      DateFormat("EEEE, d MMMM yyyy").format(toLocal());
+  String toDayDateMonthYearFormat(BuildContext context) {
+    final locale = Localizations.localeOf(context).languageCode;
+    return DateFormat("EEEE, d MMMM yyyy", locale).format(toLocal());
+  }
 }
 
 extension StringExtension on String {
   String get capitalize =>
-      "${this[0].toUpperCase()}${substring(1).toLowerCase()}";
+      isEmpty ? this : "${this[0].toUpperCase()}${substring(1).toLowerCase()}";
+
+  String get capitalizeEveryWord =>
+      split(' ').map((word) => word.capitalize).join(' ');
+
+  String get takeFirstWordAndCapitalize => split(' ').first.capitalize;
+}
+
+extension SpaceExtension on num {
+  SizedBox get h => SizedBox(height: toDouble());
+
+  SizedBox get w => SizedBox(width: toDouble());
+}
+
+extension SpacingExtension on List<Widget> {
+  List<Widget> separatedBy(Widget separator) {
+    if (length < 2) return this;
+    final spaced = <Widget>[];
+    for (var i = 0; i < length; i++) {
+      spaced.add(this[i]);
+      if (i != length - 1) spaced.add(separator);
+    }
+    return spaced;
+  }
+}
+
+extension MediaQueryExtension on BuildContext {
+  Size get screenSize => MediaQuery.sizeOf(this);
+
+  double get screenWidth => screenSize.width;
+
+  double get screenHeight => screenSize.height;
+
+  EdgeInsets get viewInsets => MediaQuery.viewInsetsOf(this);
+
+  EdgeInsets get padding => MediaQuery.paddingOf(this);
 }

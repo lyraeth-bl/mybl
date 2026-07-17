@@ -60,18 +60,12 @@ class _AcademicResultContentState extends State<AcademicResultContent> {
             widget.academicResult?.data.categories ?? const [],
             _selectedSemester,
           );
-    final totalData = subjects.fold(
-      0,
-      (total, subject) => total + subject.totalData,
-    );
-    final average = totalData == 0
-        ? 0.0
-        : subjects.fold<double>(
-                0,
-                (total, subject) =>
-                    total + (subject.average * subject.totalData),
-              ) /
-              totalData;
+    final totalData =
+        widget.academicResult?.data.totalDataForSemester(_selectedSemester) ??
+        0;
+    final average =
+        widget.academicResult?.data.averageForSemester(_selectedSemester) ??
+        0.0;
 
     return SliverMainAxisGroup(
       slivers: [
@@ -89,7 +83,7 @@ class _AcademicResultContentState extends State<AcademicResultContent> {
         ),
         AcademicResultSubjectListSection(
           subjects: subjects,
-          emptyMessage: l10n.noData,
+          emptyMessage: l10n.academicResultSubjectsEmptyMessage,
           isLoading: widget.isLoading,
         ),
       ],
