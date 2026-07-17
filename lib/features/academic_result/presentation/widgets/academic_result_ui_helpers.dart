@@ -83,3 +83,11 @@ Color academicResultScoreColor(BuildContext context, double value) {
   if (value >= 70) return appColors.warning;
   return Theme.of(context).colorScheme.error;
 }
+
+Color academicResultScoreForeground(BuildContext context, double value) {
+  final scoreColor = academicResultScoreColor(context, value);
+  if (Theme.of(context).brightness != Brightness.light) return scoreColor;
+
+  final hsl = HSLColor.fromColor(scoreColor);
+  return hsl.withLightness((hsl.lightness * 0.6).clamp(0.0, 1.0)).toColor();
+}

@@ -114,7 +114,7 @@ class MyBlTheme {
     extensions: const <ThemeExtension<dynamic>>[
       AppColors(
         success: Colors.green,
-        warning: Colors.yellow,
+        warning: Color(0xFFF9A825),
         checkOut: Colors.red,
       ),
     ],
@@ -140,7 +140,7 @@ class MyBlTheme {
     extensions: const <ThemeExtension<dynamic>>[
       AppColors(
         success: Colors.greenAccent,
-        warning: Colors.yellowAccent,
+        warning: Color(0xFFFFB74D),
         checkOut: Colors.redAccent,
       ),
     ],

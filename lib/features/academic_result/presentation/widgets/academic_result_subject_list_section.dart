@@ -164,7 +164,12 @@ class _SubjectCard extends StatelessWidget {
                 children: [
                   Text(
                     academicResultGradeLabel(subject.average),
-                    style: textTheme.titleLarge?.copyWith(color: scoreColor),
+                    style: textTheme.titleLarge?.copyWith(
+                      color: academicResultScoreForeground(
+                        context,
+                        subject.average,
+                      ),
+                    ),
                   ).toShimmer(
                     context,
                     isLoading: isLoading,
@@ -175,7 +180,10 @@ class _SubjectCard extends StatelessWidget {
                   4.h,
                   AppChipContainer(
                     backgroundColor: scoreColor.withValues(alpha: 0.12),
-                    foregroundColor: scoreColor,
+                    foregroundColor: academicResultScoreForeground(
+                      context,
+                      subject.average,
+                    ),
                     textStyle: textTheme.labelSmall,
                     child: Text(
                       '${academicResultFormatScore(subject.average)}/100',
@@ -428,7 +436,7 @@ class _ResultDetailCard extends StatelessWidget {
                   context,
                   result.nilai.toDouble(),
                 ).withValues(alpha: 0.12),
-                foregroundColor: academicResultScoreColor(
+                foregroundColor: academicResultScoreForeground(
                   context,
                   result.nilai.toDouble(),
                 ),
@@ -536,7 +544,7 @@ class _AverageBadge extends StatelessWidget {
       value:
           '${academicResultGradeLabel(value)}  ${academicResultFormatScore(value)}/100',
       backgroundColor: scoreColor.withValues(alpha: 0.12),
-      foregroundColor: scoreColor,
+      foregroundColor: academicResultScoreForeground(context, value),
     );
   }
 }
