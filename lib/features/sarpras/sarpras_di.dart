@@ -16,6 +16,7 @@ import 'domain/usecases/update_sarpras_use_case.dart';
 import 'presentation/bloc/sarpras_bloc.dart';
 import 'presentation/cubit/detail_sarpras_cubit.dart';
 import 'presentation/cubit/destroy_sarpras_cubit.dart';
+import 'presentation/cubit/sarpras_teacher_candidate_cubit.dart';
 import 'presentation/cubit/store_sarpras_cubit.dart';
 import 'presentation/cubit/update_sarpras_cubit.dart';
 
@@ -59,5 +60,9 @@ void initSarprasDI() {
   );
   di.registerFactory<DetailSarprasCubit>(
     () => DetailSarprasCubit(di<FetchDetailSarprasUseCase>()),
+  );
+  di.registerFactory<SarprasTeacherCandidateCubit>(
+    () =>
+        SarprasTeacherCandidateCubit(di<FetchSarprasTeacherCandidateUseCase>()),
   );
 }
