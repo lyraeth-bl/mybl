@@ -73,6 +73,15 @@ class RouteNames {
   // Privacy Policy
   static const String privacyPolicy = "/settings/privacy-policy";
 
+  // Sarpras
+  static const String sarpras = "/sarpras";
+
   // Sarpras New Request
   static const String sarprasNew = "/sarpras/new";
+
+  // Sarpras Detail
+  static const String sarprasDetail = "/sarpras/:id";
+
+  // Sarpras Edit
+  static const String sarprasEdit = "/sarpras/:id/edit";
 }

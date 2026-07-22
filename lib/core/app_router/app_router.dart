@@ -23,6 +23,7 @@ import '../../features/guardians_detail/presentation/screens/guardians_detail_sc
 import '../../features/notifications/presentation/screens/notification_screen.dart';
 import '../../features/profile/presentation/screens/profile_detail_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
+import '../../features/sarpras/presentation/screens/sarpras_screen.dart';
 import '../../features/sessions/presentation/bloc/session_bloc.dart';
 import '../../features/settings/presentation/screens/help_center_screen.dart';
 import '../../features/settings/presentation/screens/privacy_policy_screen.dart';
@@ -211,6 +212,11 @@ class AppRouter {
       GoRoute(
         path: RouteNames.extracurricular,
         builder: (context, state) => const ExtracurricularScreen(),
+      ),
+
+      GoRoute(
+        path: RouteNames.sarpras,
+        builder: (context, state) => const SarprasScreen(),
       ),
 
       GoRoute(
