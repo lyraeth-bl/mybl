@@ -456,12 +456,13 @@ class _TeacherDropdownField extends StatelessWidget {
         empty: () => Text(l10n.sarprasTeacherEmpty),
         success: (candidates) => DropdownButtonFormField<String>(
           initialValue: selectedNip,
+          isExpanded: true,
           decoration: InputDecoration(labelText: l10n.sarprasFieldTeacher),
           items: candidates
               .map(
                 (candidate) => DropdownMenuItem(
                   value: candidate.nip,
-                  child: Text(candidate.name),
+                  child: Text(candidate.name, overflow: TextOverflow.ellipsis),
                 ),
               )
               .toList(),
