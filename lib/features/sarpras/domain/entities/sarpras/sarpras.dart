@@ -10,6 +10,8 @@ part 'sarpras.freezed.dart';
 
 @freezed
 abstract class Sarpras with _$Sarpras {
+  const Sarpras._();
+
   const factory Sarpras({
     required int id,
     required String unit,
@@ -22,4 +24,10 @@ abstract class Sarpras with _$Sarpras {
     required String status,
     SarprasMetadata? metadata,
   }) = _Sarpras;
+
+  /// Whether the request can still be edited or withdrawn.
+  ///
+  /// The backend rejects changes to processed requests with a 422, so this
+  /// mirrors that rule client-side.
+  bool get isCancelable => status == 'Menunggu';
 }
