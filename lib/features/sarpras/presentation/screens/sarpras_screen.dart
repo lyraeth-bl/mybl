@@ -49,6 +49,12 @@ class _SarprasViewState extends State<_SarprasView> {
     });
   }
 
+  Future<void> _openNew() async {
+    final bloc = context.read<SarprasBloc>();
+    final changed = await context.push<bool>(RouteNames.sarprasNew);
+    if (changed == true) bloc.add(const SarprasEvent.fetchSarpras());
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -56,7 +62,7 @@ class _SarprasViewState extends State<_SarprasView> {
     return Scaffold(
       appBar: AppTopBar(toolbarHeight: 72, title: Text(l10n.izinSarpras)),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.push(RouteNames.sarprasNew),
+        onPressed: _openNew,
         icon: const Icon(Icons.add_rounded),
         label: Text(l10n.sarprasSubmitAction),
       ),
@@ -85,6 +91,12 @@ class _SarprasBodyState extends State<_SarprasBody> {
     empty: (summary) => summary,
     orElse: () => null,
   );
+
+  Future<void> _openDetail(BuildContext context, int id) async {
+    final bloc = context.read<SarprasBloc>();
+    final changed = await context.push<bool>('/sarpras/$id');
+    if (changed == true) bloc.add(const SarprasEvent.fetchSarpras());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -161,7 +173,7 @@ class _SarprasBodyState extends State<_SarprasBody> {
                           itemBuilder: (context, index) => SarprasListItem(
                             sarpras: visible[index],
                             onTap: () =>
-                                context.push('/sarpras/${visible[index].id}'),
+                                _openDetail(context, visible[index].id),
                           ),
                         ),
                 );

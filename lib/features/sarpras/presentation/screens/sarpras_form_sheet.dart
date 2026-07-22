@@ -18,6 +18,7 @@ import '../../../../core/widgets/app_top_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/sarpras/sarpras.dart';
 import '../../domain/entities/sarpras_params/sarpras_params.dart';
+import '../../domain/entities/sarpras_teacher_candidate/sarpras_teacher_candidate.dart';
 import '../../domain/sarpras_rules.dart';
 import '../cubit/detail_sarpras_cubit.dart';
 import '../cubit/sarpras_teacher_candidate_cubit.dart';
@@ -117,14 +118,35 @@ class _SarprasFormBodyState extends State<_SarprasFormBody> {
   void _populateFromDetail(Sarpras sarpras) {
     if (_prefilled) return;
 
+    final nip = sarpras.nipGuruPembimbing;
+    final candidateState = context.read<SarprasTeacherCandidateCubit>().state;
+    final knownCandidates = candidateState.maybeWhen(
+      success: (candidates) => candidates,
+      orElse: () => null,
+    );
+    final isNipStale =
+        knownCandidates != null &&
+        !knownCandidates.any((candidate) => candidate.nip == nip);
+
     setState(() {
       _prefilled = true;
       _nameController.text = sarpras.namaKegiatan;
       _countController.text = sarpras.jumlahSiswaDalamKegiatan;
       _noteController.text = sarpras.metadata?.keterangan ?? '';
-      _date = sarpras.tanggalKegiatan;
-      _nip = sarpras.nipGuruPembimbing;
+      _date = DateUtils.dateOnly(sarpras.tanggalKegiatan.toLocal());
+      _nip = isNipStale ? null : nip;
     });
+  }
+
+  /// Clears a selected/prefilled teacher once it is no longer a candidate.
+  ///
+  /// A [DropdownButtonFormField] asserts that its value matches exactly one
+  /// item, so a NIP that fell out of the candidate list (e.g. the teacher
+  /// left) must be cleared before the dropdown rebuilds with the new list.
+  void _clearStaleNip(List<SarprasTeacherCandidate> candidates) {
+    if (_nip == null) return;
+    if (candidates.any((candidate) => candidate.nip == _nip)) return;
+    setState(() => _nip = null);
   }
 
   Future<void> _pickDate() async {
@@ -178,7 +200,12 @@ class _SarprasFormBodyState extends State<_SarprasFormBody> {
 
     final isFormValid = _formKey.currentState?.validate() ?? false;
 
-    final dateError = _date == null ? l10n.sarprasValidationRequired : null;
+    final today = DateUtils.dateOnly(DateTime.now());
+    final dateError = _date == null
+        ? l10n.sarprasValidationRequired
+        : _date!.isBefore(today)
+        ? l10n.sarprasValidationPastDate
+        : null;
     final startError = _start == null ? l10n.sarprasValidationRequired : null;
     final endError = _end == null ? l10n.sarprasValidationRequired : null;
 
@@ -248,6 +275,13 @@ class _SarprasFormBodyState extends State<_SarprasFormBody> {
             listener: (context, state) =>
                 state.whenOrNull(success: _populateFromDetail),
           ),
+        BlocListener<
+          SarprasTeacherCandidateCubit,
+          SarprasTeacherCandidateState
+        >(
+          listener: (context, state) =>
+              state.whenOrNull(success: _clearStaleNip),
+        ),
         BlocListener<StoreSarprasCubit, StoreSarprasState>(
           listener: (context, state) => state.whenOrNull(
             success: (_) => _handleSuccess(l10n.sarprasCreateSuccess),

@@ -50,6 +50,8 @@ class _SarprasDetailBody extends StatefulWidget {
 }
 
 class _SarprasDetailBodyState extends State<_SarprasDetailBody> {
+  bool _hasChanged = false;
+
   @override
   void initState() {
     super.initState();
@@ -59,6 +61,15 @@ class _SarprasDetailBodyState extends State<_SarprasDetailBody> {
 
   void _fetchDetail() {
     context.read<DetailSarprasCubit>().fetchDetail(sarprasId: widget.sarprasId);
+  }
+
+  Future<void> _openEdit(int id) async {
+    final changed = await context.push<bool>('/sarpras/$id/edit');
+    if (!mounted) return;
+    if (changed == true) {
+      _hasChanged = true;
+      _fetchDetail();
+    }
   }
 
   @override
@@ -82,7 +93,7 @@ class _SarprasDetailBodyState extends State<_SarprasDetailBody> {
           title: Text(l10n.sarprasDetailTitle),
           leading: IconButton(
             icon: const Icon(Icons.close_rounded),
-            onPressed: () => context.pop(),
+            onPressed: () => context.pop(_hasChanged),
           ),
         ),
         body: BlocBuilder<DetailSarprasCubit, DetailSarprasState>(
@@ -96,7 +107,10 @@ class _SarprasDetailBodyState extends State<_SarprasDetailBody> {
                 onRetry: _fetchDetail,
               ),
             ),
-            success: (sarpras) => _SarprasDetailContent(sarpras: sarpras),
+            success: (sarpras) => _SarprasDetailContent(
+              sarpras: sarpras,
+              onEdit: () => _openEdit(sarpras.id),
+            ),
             orElse: () =>
                 const Center(child: CircularProgressIndicator.adaptive()),
           ),
@@ -107,9 +121,10 @@ class _SarprasDetailBodyState extends State<_SarprasDetailBody> {
 }
 
 class _SarprasDetailContent extends StatelessWidget {
-  const _SarprasDetailContent({required this.sarpras});
+  const _SarprasDetailContent({required this.sarpras, required this.onEdit});
 
   final Sarpras sarpras;
+  final VoidCallback onEdit;
 
   @override
   Widget build(BuildContext context) {
@@ -146,7 +161,10 @@ class _SarprasDetailContent extends StatelessWidget {
         children: [
           ...fieldRows.separatedBy(12.h),
           if (showResolution) ...[24.h, _ResolutionBlock(metadata: metadata)],
-          if (sarpras.isCancelable) ...[24.h, _DetailActions(sarpras: sarpras)],
+          if (sarpras.isCancelable) ...[
+            24.h,
+            _DetailActions(sarpras: sarpras, onEdit: onEdit),
+          ],
         ],
       ),
     );
@@ -267,9 +285,10 @@ class _RejectionReasonBox extends StatelessWidget {
 
 /// Edit/withdraw actions, shown only while [sarpras] is still cancelable.
 class _DetailActions extends StatelessWidget {
-  const _DetailActions({required this.sarpras});
+  const _DetailActions({required this.sarpras, required this.onEdit});
 
   final Sarpras sarpras;
+  final VoidCallback onEdit;
 
   @override
   Widget build(BuildContext context) {
@@ -279,7 +298,7 @@ class _DetailActions extends StatelessWidget {
       children: [
         Expanded(
           child: AppButton.outlined(
-            onPressed: () => context.push('/sarpras/${sarpras.id}/edit'),
+            onPressed: onEdit,
             child: Text(l10n.sarprasEditAction),
           ),
         ),
