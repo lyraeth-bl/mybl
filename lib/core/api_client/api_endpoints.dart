@@ -63,6 +63,12 @@ class ApiEndpoints {
 
   static final String parentTodayAttendance = "/parent/absensi-today";
 
+  static final String listSarpras = "/izin-sarpras";
+
+  static final String sarprasGuruPendamping = "/izin-sarpras/guru-pembimbing";
+
+  static String sarpras(int sarprasId) => "/izin-sarpras/$sarprasId";
+
   // --- Internal --- //
 
   static final String timeTable = "$_databaseInternalUrl/jadwal";

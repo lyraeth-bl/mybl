@@ -232,3 +232,25 @@ abstract interface class ParentLocalManager<P, C> {
 
   C? readSelectedChild();
 }
+
+abstract interface class SarprasFetcher<S, T> {
+  Future<Result<(S, List<T>)>> fetchSarpras();
+
+  Future<Result<T>> fetchDetailSarpras({required int sarprasId});
+}
+
+abstract interface class SarprasSubmitter<T, P> {
+  Future<Result<T>> storeSarpras(P params);
+}
+
+abstract interface class SarprasUpdater<T, P> {
+  Future<Result<T>> updateSarpras({required int sarprasId, required P params});
+}
+
+abstract interface class SarprasDeleter {
+  Future<Result<Unit>> destroySarpras({required int sarprasId});
+}
+
+abstract interface class SarprasTeacherCandidateFetcher<T> {
+  Future<Result<List<T>>> fetchSarprasTeacherCandidate();
+}
