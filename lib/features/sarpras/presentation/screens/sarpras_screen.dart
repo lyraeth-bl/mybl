@@ -75,6 +75,17 @@ class _SarprasBody extends StatefulWidget {
 class _SarprasBodyState extends State<_SarprasBody> {
   SarprasFilter _filter = SarprasFilter.all;
 
+  /// The summary carried by [state], or null when the state carries none.
+  ///
+  /// Only `success` and `empty` carry a [SarprasSummary]; chips must be
+  /// hidden for every other state, so this is the single source of truth
+  /// for that decision.
+  static SarprasSummary? _summaryOf(SarprasState state) => state.maybeWhen(
+    success: (summary, _) => summary,
+    empty: (summary) => summary,
+    orElse: () => null,
+  );
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -94,27 +105,23 @@ class _SarprasBodyState extends State<_SarprasBody> {
         physics: const AlwaysScrollableScrollPhysics(),
         slivers: [
           BlocBuilder<SarprasBloc, SarprasState>(
-            builder: (context, state) => state.maybeWhen(
-              failure: (_) => SliverToBoxAdapter(child: 0.h),
-              orElse: () => SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 8),
-                  child: SarprasSummaryChips(
-                    summary: state.maybeWhen(
-                      success: (summary, _) => summary,
-                      empty: (summary) => summary,
-                      orElse: () => const SarprasSummary(
-                        waiting: 0,
-                        accepted: 0,
-                        rejected: 0,
+            builder: (context, state) {
+              final summary = _summaryOf(state);
+
+              return summary == null
+                  ? SliverToBoxAdapter(child: 0.h)
+                  : SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: SarprasSummaryChips(
+                          summary: summary,
+                          selected: _filter,
+                          onSelected: (value) =>
+                              setState(() => _filter = value),
+                        ),
                       ),
-                    ),
-                    selected: _filter,
-                    onSelected: (value) => setState(() => _filter = value),
-                  ),
-                ),
-              ),
-            ),
+                    );
+            },
             buildWhen: (previous, current) => previous != current,
           ),
           BlocBuilder<SarprasBloc, SarprasState>(

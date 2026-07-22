@@ -12,6 +12,7 @@ import 'package:my_bl/features/sarpras/domain/entities/sarpras/sarpras.dart';
 import 'package:my_bl/features/sarpras/domain/entities/sarpras_summary/sarpras_summary.dart';
 import 'package:my_bl/features/sarpras/presentation/bloc/sarpras_bloc.dart';
 import 'package:my_bl/features/sarpras/presentation/screens/sarpras_screen.dart';
+import 'package:my_bl/features/sarpras/presentation/widgets/sarpras_summary_chips.dart';
 import 'package:my_bl/l10n/app_localizations.dart';
 import 'package:my_bl/l10n/app_localizations_en.dart';
 
@@ -126,5 +127,55 @@ void main() {
 
     expect(find.text('Kegiatan 1'), findsNothing);
     expect(find.text('Kegiatan 2'), findsOneWidget);
+  });
+
+  testWidgets('hides the summary chips in the initial state', (tester) async {
+    // The skeleton list shimmer animates indefinitely, so settle a fixed
+    // number of frames instead of pumpAndSettle (which would time out).
+    await tester.pumpWidget(_wrap(_bloc(const SarprasState.initial())));
+    await tester.pump();
+
+    expect(find.byType(SarprasSummaryChips), findsNothing);
+  });
+
+  testWidgets('hides the summary chips in the loading state', (tester) async {
+    await tester.pumpWidget(_wrap(_bloc(const SarprasState.loading())));
+    await tester.pump();
+
+    expect(find.byType(SarprasSummaryChips), findsNothing);
+  });
+
+  testWidgets('hides the summary chips in the failure state', (tester) async {
+    await tester.pumpWidget(
+      _wrap(_bloc(const SarprasState.failure(Failure.unexpected()))),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byType(SarprasSummaryChips), findsNothing);
+  });
+
+  testWidgets('shows the summary chips in the empty state', (tester) async {
+    await tester.pumpWidget(
+      _wrap(_bloc(const SarprasState.empty(summary: _summary))),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byType(SarprasSummaryChips), findsOneWidget);
+  });
+
+  testWidgets('shows the summary chips in the success state', (tester) async {
+    await tester.pumpWidget(
+      _wrap(
+        _bloc(
+          SarprasState.success(
+            summary: _summary,
+            listSarpras: [_sarpras(id: 1, status: 'Menunggu')],
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byType(SarprasSummaryChips), findsOneWidget);
   });
 }
