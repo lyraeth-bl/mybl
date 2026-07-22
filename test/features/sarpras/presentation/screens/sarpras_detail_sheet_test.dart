@@ -93,4 +93,19 @@ void main() {
     expect(find.text(_l10n.sarprasCancelAction), findsNothing);
     expect(find.text('Ruangan dipakai'), findsOneWidget);
   });
+
+  testWidgets('renders waktuKegiatan verbatim without parsing it', (
+    tester,
+  ) async {
+    final sarpras = _sarpras(
+      status: 'Menunggu',
+    ).copyWith(waktuKegiatan: 'Sepanjang hari');
+    await tester.pumpWidget(_wrap(sarpras));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Sepanjang hari'), findsOneWidget);
+    expect(find.text(_l10n.sarprasFieldTime), findsOneWidget);
+    expect(find.text(_l10n.sarprasFieldStartTime), findsNothing);
+    expect(find.text(_l10n.sarprasFieldEndTime), findsNothing);
+  });
 }

@@ -120,14 +120,6 @@ class _SarprasDetailContent extends StatelessWidget {
         (metadata.nameResolver != null ||
             metadata.resolvedAt != null ||
             metadata.alasanTolak != null);
-    final timeParts = sarpras.waktuKegiatan.split(' - ');
-    final startTime = timeParts.isEmpty
-        ? sarpras.waktuKegiatan
-        : timeParts.first.trim();
-    final endTime = timeParts.length > 1
-        ? timeParts.sublist(1).join(' - ').trim()
-        : '';
-
     final fieldRows = <Widget>[
       _DetailRow(
         label: l10n.sarprasFieldDate,
@@ -142,8 +134,7 @@ class _SarprasDetailContent extends StatelessWidget {
         label: l10n.sarprasFieldTeacher,
         value: sarpras.nipGuruPembimbing,
       ),
-      _DetailRow(label: l10n.sarprasFieldStartTime, value: startTime),
-      _DetailRow(label: l10n.sarprasFieldEndTime, value: endTime),
+      _DetailRow(label: l10n.sarprasFieldTime, value: sarpras.waktuKegiatan),
       if ((metadata?.keterangan ?? '').trim().isNotEmpty)
         _DetailRow(label: l10n.sarprasFieldNote, value: metadata!.keterangan!),
     ];
