@@ -55,6 +55,11 @@ class MenuSheetItem {
       routePath: RouteNames.extracurricular,
     ),
     MenuSheetItem(
+      icon: Icons.meeting_room_rounded,
+      label: 'izinSarpras',
+      routePath: RouteNames.sarpras,
+    ),
+    MenuSheetItem(
       icon: Icons.settings_rounded,
       label: 'settings',
       routePath: RouteNames.settings,
@@ -77,6 +82,8 @@ class MenuSheetItem {
         return l10n.academicResult;
       case 'extracurricular':
         return l10n.extracurricularShort;
+      case 'izinSarpras':
+        return l10n.izinSarpras;
       case 'settings':
         return l10n.settings;
       default:
