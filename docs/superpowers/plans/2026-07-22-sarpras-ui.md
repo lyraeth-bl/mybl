@@ -31,15 +31,21 @@ Spec: `docs/superpowers/specs/2026-07-22-sarpras-ui-design.md`
 
 ---
 
-### Task 1: `Sarpras.isCancelable`
+### Task 1: Domain rules
 
 **Files:**
 - Modify: `lib/features/sarpras/domain/entities/sarpras/sarpras.dart`
+- Create: `lib/features/sarpras/domain/sarpras_rules.dart`
 - Test: `test/features/sarpras/domain/sarpras_rules_test.dart` (create)
 
 **Interfaces:**
 - Consumes: nothing.
-- Produces: `bool Sarpras.isCancelable` — true only when `status == 'Menunggu'`.
+- Produces:
+  - `bool Sarpras.isCancelable` — true only when `status == 'Menunggu'`
+  - `bool isSarprasTimeRangeValid({required int startMinutes, required int endMinutes})`
+
+Mirror `lib/features/attendance/domain/attendance_rules.dart`: a pure
+top-level function, no Flutter imports in the domain layer.
 
 - [ ] **Step 1: Write the failing test**
 
@@ -52,6 +58,7 @@ Create `test/features/sarpras/domain/sarpras_rules_test.dart`:
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:my_bl/features/sarpras/domain/entities/sarpras/sarpras.dart';
+import 'package:my_bl/features/sarpras/domain/sarpras_rules.dart';
 
 Sarpras _sarpras({required String status}) => Sarpras(
   id: 1,
@@ -70,6 +77,21 @@ void main() {
     expect(_sarpras(status: 'Menunggu').isCancelable, isTrue);
     expect(_sarpras(status: 'Disetujui').isCancelable, isFalse);
     expect(_sarpras(status: 'Ditolak').isCancelable, isFalse);
+  });
+
+  test('a time range is valid only when the end is strictly later', () {
+    expect(
+      isSarprasTimeRangeValid(startMinutes: 12 * 60, endMinutes: 15 * 60),
+      isTrue,
+    );
+    expect(
+      isSarprasTimeRangeValid(startMinutes: 12 * 60, endMinutes: 12 * 60),
+      isFalse,
+    );
+    expect(
+      isSarprasTimeRangeValid(startMinutes: 15 * 60, endMinutes: 12 * 60),
+      isFalse,
+    );
   });
 }
 ```
@@ -111,19 +133,37 @@ abstract class Sarpras with _$Sarpras {
 }
 ```
 
-- [ ] **Step 4: Regenerate and run the test**
+- [ ] **Step 4: Write the time-range rule**
+
+Create `lib/features/sarpras/domain/sarpras_rules.dart`:
+
+```dart
+// Copyright (c) 2026 Mahsa Nurfarhan Hidayat / Yayasan Pakarti Luhur. All rights reserved.
+// Use of this source code is governed by a MIT License
+// that can be found in the LICENSE file.
+
+/// Whether an activity's end time falls strictly after its start time.
+///
+/// Both values are minutes since midnight so the domain layer stays free
+/// of Flutter's `TimeOfDay`. Presentation converts before calling.
+bool isSarprasTimeRangeValid({
+  required int startMinutes,
+  required int endMinutes,
+}) => endMinutes > startMinutes;
+```
+
+- [ ] **Step 5: Regenerate and run the tests**
 
 Run: `dart run build_runner build --delete-conflicting-outputs`
 Then: `flutter test test/features/sarpras/domain/sarpras_rules_test.dart`
-Expected: PASS, 1 test.
+Expected: PASS, 2 tests.
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 6: Commit**
 
 ```bash
 dart format . && flutter analyze
-git add lib/features/sarpras/domain/entities/sarpras/sarpras.dart \
-        test/features/sarpras/domain/sarpras_rules_test.dart
-git commit -m "feat(sarpras): add isCancelable rule to entity"
+git add lib/features/sarpras/domain test/features/sarpras/domain
+git commit -m "feat(sarpras): add isCancelable and time-range rules"
 ```
 
 ---
@@ -1060,11 +1100,9 @@ first and mirror its Screen → View → AppBar → Body structure.
 - [ ] **Step 1: Write the failing tests**
 
 Create `test/features/sarpras/presentation/screens/sarpras_screen_test.dart`.
-Provide the bloc with `BlocProvider.value` over a mocked `SarprasBloc` so the
-screen's own `di<SarprasBloc>()` is bypassed; test the private view through
-the public `SarprasScreen` only if DI is registered, otherwise export a
-testable body. The simplest approach that avoids DI in tests: make the
-screen's body widget public as `SarprasBody` and test that directly.
+The screen resolves its bloc with `di<SarprasBloc>()`, so the test registers
+a mock into the service locator and mounts the real `SarprasScreen`. Widget
+internals stay private — nothing is made public for testing.
 
 ```dart
 // Copyright (c) 2026 Mahsa Nurfarhan Hidayat / Yayasan Pakarti Luhur. All rights reserved.
@@ -1072,10 +1110,10 @@ screen's body widget public as `SarprasBody` and test that directly.
 // that can be found in the LICENSE file.
 
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:my_bl/core/di/get_it_constant.dart';
 import 'package:my_bl/core/failure/failure.dart';
 import 'package:my_bl/features/sarpras/domain/entities/sarpras/sarpras.dart';
 import 'package:my_bl/features/sarpras/domain/entities/sarpras_summary/sarpras_summary.dart';
@@ -1113,17 +1151,23 @@ SarprasBloc _bloc(SarprasState state) {
   return bloc;
 }
 
-Widget _wrap(SarprasBloc bloc) => MaterialApp(
-  localizationsDelegates: const [
-    AppLocalizations.delegate,
-    GlobalMaterialLocalizations.delegate,
-    GlobalWidgetsLocalizations.delegate,
-  ],
-  supportedLocales: const [Locale('en')],
-  home: BlocProvider<SarprasBloc>.value(value: bloc, child: SarprasBody()),
-);
+Widget _wrap(SarprasBloc bloc) {
+  di.registerFactory<SarprasBloc>(() => bloc);
+
+  return MaterialApp(
+    localizationsDelegates: const [
+      AppLocalizations.delegate,
+      GlobalMaterialLocalizations.delegate,
+      GlobalWidgetsLocalizations.delegate,
+    ],
+    supportedLocales: const [Locale('en')],
+    home: const SarprasScreen(),
+  );
+}
 
 void main() {
+  tearDown(() => di.reset());
+
   testWidgets('shows the empty state when nothing was submitted', (
     tester,
   ) async {
@@ -1202,7 +1246,9 @@ Expected: FAIL — target of URI doesn't exist.
 - [ ] **Step 3: Write the screen**
 
 Create `lib/features/sarpras/presentation/screens/sarpras_screen.dart`.
-`SarprasBody` is public so widget tests can mount it without DI.
+Every widget below the screen stays private. Tests reach them by
+registering a mock `SarprasBloc` into the service locator and mounting
+`SarprasScreen`.
 
 ```dart
 // Copyright (c) 2026 Mahsa Nurfarhan Hidayat / Yayasan Pakarti Luhur. All rights reserved.
@@ -1266,23 +1312,19 @@ class _SarprasViewState extends State<_SarprasView> {
         icon: const Icon(Icons.add_rounded),
         label: Text(l10n.sarprasSubmitAction),
       ),
-      body: const SarprasBody(),
+      body: const _SarprasBody(),
     );
   }
 }
 
-/// The scrollable body of the sarpras screen.
-///
-/// Public so widget tests can mount it with a provided [SarprasBloc]
-/// instead of resolving one through the service locator.
-class SarprasBody extends StatefulWidget {
-  const SarprasBody({super.key});
+class _SarprasBody extends StatefulWidget {
+  const _SarprasBody();
 
   @override
-  State<SarprasBody> createState() => _SarprasBodyState();
+  State<_SarprasBody> createState() => _SarprasBodyState();
 }
 
-class _SarprasBodyState extends State<SarprasBody> {
+class _SarprasBodyState extends State<_SarprasBody> {
   SarprasFilter _filter = SarprasFilter.all;
 
   @override
@@ -1536,8 +1578,9 @@ git commit -m "feat(sarpras): add sheet page and list route"
 **Interfaces:**
 - Consumes: `DetailSarprasCubit` (Task 2), `DestroySarprasCubit`,
   `Sarpras.isCancelable` (Task 1), l10n (Task 4).
-- Produces: `SarprasDetailSheet({required int sarprasId})` and a public
-  `SarprasDetailBody({required int sarprasId})` for testing without DI.
+- Produces: `SarprasDetailSheet({required int sarprasId})`. Its body stays
+  private; tests register mock cubits into the service locator and mount
+  `SarprasDetailSheet` itself.
 
 - [ ] **Step 1: Write the failing tests**
 
@@ -1549,10 +1592,10 @@ Create `test/features/sarpras/presentation/screens/sarpras_detail_sheet_test.dar
 // that can be found in the LICENSE file.
 
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:my_bl/core/di/get_it_constant.dart';
 import 'package:my_bl/features/sarpras/domain/entities/sarpras/sarpras.dart';
 import 'package:my_bl/features/sarpras/domain/entities/sarpras_metadata/sarpras_metadata.dart';
 import 'package:my_bl/features/sarpras/presentation/cubit/destroy_sarpras_cubit.dart';
@@ -1591,6 +1634,9 @@ Widget _wrap(Sarpras sarpras) {
   when(() => destroy.state).thenReturn(const DestroySarprasState.initial());
   when(() => destroy.stream).thenAnswer((_) => const Stream.empty());
 
+  di.registerFactory<DetailSarprasCubit>(() => detail);
+  di.registerFactory<DestroySarprasCubit>(() => destroy);
+
   return MaterialApp(
     localizationsDelegates: const [
       AppLocalizations.delegate,
@@ -1598,17 +1644,13 @@ Widget _wrap(Sarpras sarpras) {
       GlobalWidgetsLocalizations.delegate,
     ],
     supportedLocales: const [Locale('en')],
-    home: MultiBlocProvider(
-      providers: [
-        BlocProvider<DetailSarprasCubit>.value(value: detail),
-        BlocProvider<DestroySarprasCubit>.value(value: destroy),
-      ],
-      child: const SarprasDetailBody(sarprasId: 4),
-    ),
+    home: const SarprasDetailSheet(sarprasId: 4),
   );
 }
 
 void main() {
+  tearDown(() => di.reset());
+
   testWidgets('offers edit and withdraw while pending', (tester) async {
     await tester.pumpWidget(_wrap(_sarpras(status: 'Menunggu')));
     await tester.pumpAndSettle();
@@ -1650,10 +1692,10 @@ Expected: FAIL — target of URI doesn't exist.
 Create `lib/features/sarpras/presentation/screens/sarpras_detail_sheet.dart`.
 
 Structure:
-- `SarprasDetailSheet` — `StatelessWidget`, wraps `SarprasDetailBody` in a
-  `MultiBlocProvider` creating `di<DetailSarprasCubit>()` and
-  `di<DestroySarprasCubit>()`.
-- `SarprasDetailBody` — `StatefulWidget`; in `initState`, post-frame, calls
+- `SarprasDetailSheet({required int sarprasId})` — `StatelessWidget`, wraps
+  a private `_SarprasDetailBody` in a `MultiBlocProvider` creating
+  `di<DetailSarprasCubit>()` and `di<DestroySarprasCubit>()`.
+- `_SarprasDetailBody` — `StatefulWidget`; in `initState`, post-frame, calls
   `context.read<DetailSarprasCubit>().fetchDetail(sarprasId: widget.sarprasId)`.
 - Body is a `Scaffold` with an `AppTopBar` titled `l10n.sarprasDetailTitle`
   and a close `IconButton` (`Icons.close_rounded`) that calls `context.pop()`.
@@ -1731,14 +1773,18 @@ git commit -m "feat(sarpras): add detail sheet with guarded actions"
 - Consumes: `StoreSarprasCubit`, `UpdateSarprasCubit`, `DetailSarprasCubit`,
   `SarprasTeacherCandidateCubit`, `SarprasParams`, l10n (Task 4),
   `CupertinoSheetPage` and `RouteNames.sarpras*` (Task 8).
-- Produces: `SarprasFormSheet({int? sarprasId})` — null id means create.
-  Public `SarprasFormBody({int? sarprasId})` for testing without DI.
+- Produces: `SarprasFormSheet({int? sarprasId})` — null id means create. Its
+  body stays private; tests register mock cubits into the service locator.
+
+The end-after-start rule is `isSarprasTimeRangeValid` from Task 1 and is
+already unit-tested there — this task calls it, and does not re-test it
+through the UI.
 
 - [ ] **Step 1: Write the failing tests**
 
 Create `test/features/sarpras/presentation/screens/sarpras_form_sheet_test.dart`
-covering three behaviours. Mock `SarprasTeacherCandidateCubit`,
-`StoreSarprasCubit`, and `DetailSarprasCubit`; mount `SarprasFormBody`.
+covering two behaviours. Mock the four cubits, register them into the
+service locator, and mount `SarprasFormSheet`.
 
 ```dart
 // Copyright (c) 2026 Mahsa Nurfarhan Hidayat / Yayasan Pakarti Luhur. All rights reserved.
@@ -1811,6 +1857,11 @@ Widget _wrap({
   ).thenReturn(detailState ?? const DetailSarprasState.initial());
   when(() => detail.stream).thenAnswer((_) => const Stream.empty());
 
+  di.registerFactory<SarprasTeacherCandidateCubit>(() => candidates);
+  di.registerFactory<StoreSarprasCubit>(() => store);
+  di.registerFactory<UpdateSarprasCubit>(() => update);
+  di.registerFactory<DetailSarprasCubit>(() => detail);
+
   return MaterialApp(
     localizationsDelegates: const [
       AppLocalizations.delegate,
@@ -1818,19 +1869,13 @@ Widget _wrap({
       GlobalWidgetsLocalizations.delegate,
     ],
     supportedLocales: const [Locale('en')],
-    home: MultiBlocProvider(
-      providers: [
-        BlocProvider<SarprasTeacherCandidateCubit>.value(value: candidates),
-        BlocProvider<StoreSarprasCubit>.value(value: store),
-        BlocProvider<UpdateSarprasCubit>.value(value: update),
-        BlocProvider<DetailSarprasCubit>.value(value: detail),
-      ],
-      child: SarprasFormBody(sarprasId: sarprasId),
-    ),
+    home: SarprasFormSheet(sarprasId: sarprasId),
   );
 }
 
 void main() {
+  tearDown(() => di.reset());
+
   testWidgets('warns and blocks submit when no teachers are available', (
     tester,
   ) async {
@@ -1843,35 +1888,6 @@ void main() {
 
     final button = tester.widget<AppButton>(find.byType(AppButton).last);
     expect(button.onPressed, isNull);
-  });
-
-  testWidgets('rejects an end time that is not after the start time', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      _wrap(
-        candidateState: const SarprasTeacherCandidateState.success(
-          candidates: [_teacher],
-        ),
-      ),
-    );
-    await tester.pumpAndSettle();
-
-    // Drive the form through its public API: set both times to 12:00 via
-    // the widget's exposed test hook, then submit.
-    final state = tester.state<SarprasFormBodyState>(
-      find.byType(SarprasFormBody),
-    );
-    state.debugSetTimes(
-      start: const TimeOfDay(hour: 12, minute: 0),
-      end: const TimeOfDay(hour: 12, minute: 0),
-    );
-    await tester.pumpAndSettle();
-
-    await tester.tap(find.text(_l10n.sarprasSaveAction));
-    await tester.pumpAndSettle();
-
-    expect(find.text(_l10n.sarprasValidationEndBeforeStart), findsOneWidget);
   });
 
   testWidgets('shows the processed state instead of a form when not editable', (
@@ -1906,30 +1922,18 @@ Expected: FAIL — target of URI doesn't exist.
 Create `lib/features/sarpras/presentation/screens/sarpras_form_sheet.dart`.
 
 Structure:
-- `SarprasFormSheet({int? sarprasId})` — `StatelessWidget` wrapping
-  `SarprasFormBody` in a `MultiBlocProvider` creating
+- `SarprasFormSheet({int? sarprasId})` — `StatelessWidget` wrapping a private
+  `_SarprasFormBody` in a `MultiBlocProvider` creating
   `di<SarprasTeacherCandidateCubit>()`, `di<StoreSarprasCubit>()`,
   `di<UpdateSarprasCubit>()`, and `di<DetailSarprasCubit>()`.
-- `SarprasFormBody({int? sarprasId})` — `StatefulWidget` whose state class is
-  named `SarprasFormBodyState` (public, no leading underscore, so tests can
-  reach `debugSetTimes`).
+- `_SarprasFormBody({int? sarprasId})` — `StatefulWidget` with a private
+  state class.
 - `initState` post-frame: always call `fetchCandidates()`; when
   `sarprasId != null` also call `fetchDetail(sarprasId: sarprasId!)`.
 - State fields: `_formKey` (`GlobalKey<FormState>`), `TextEditingController`
   for name, student count, and note; `DateTime? _date`;
   `TimeOfDay? _start`; `TimeOfDay? _end`; `String? _nip`;
   `String? _timeError`. Dispose all controllers.
-- Add the test hook:
-  ```dart
-  @visibleForTesting
-  void debugSetTimes({required TimeOfDay start, required TimeOfDay end}) {
-    setState(() {
-      _start = start;
-      _end = end;
-    });
-  }
-  ```
-  Import `package:flutter/foundation.dart` for `@visibleForTesting`.
 - When `sarprasId != null`, a
   `BlocListener<DetailSarprasCubit, DetailSarprasState>` populates the
   controllers once on `success`. If that `Sarpras` is not `isCancelable`,
@@ -1959,10 +1963,20 @@ Structure:
 - Submit `AppButton` at the bottom. Its `onPressed` is `null` — which is what
   the first test asserts — when the candidate state is not `success`, or
   when the relevant write cubit is in `loading`.
-- `_submit()` validates the form, then checks
-  `_end` is strictly after `_start`; if not, `setState` assigns
-  `_timeError = l10n.sarprasValidationEndBeforeStart` and returns. The error
-  text renders beneath the time row whenever `_timeError != null`.
+- `_submit()` validates the form, then checks the time range with the domain
+  rule from Task 1:
+  ```dart
+  final valid = isSarprasTimeRangeValid(
+    startMinutes: _start!.hour * 60 + _start!.minute,
+    endMinutes: _end!.hour * 60 + _end!.minute,
+  );
+
+  if (!valid) {
+    setState(() => _timeError = l10n.sarprasValidationEndBeforeStart);
+    return;
+  }
+  ```
+  The error text renders beneath the time row whenever `_timeError != null`.
 - On valid input build the params and dispatch:
   ```dart
   final params = SarprasParams(
@@ -2045,7 +2059,7 @@ import 'cupertino_sheet_page.dart';
 - [ ] **Step 5: Run the tests**
 
 Run: `flutter test test/features/sarpras/presentation/screens/sarpras_form_sheet_test.dart`
-Expected: PASS, 3 tests.
+Expected: PASS, 2 tests.
 
 - [ ] **Step 6: Commit**
 
@@ -2135,3 +2149,18 @@ Step 3). Both are long composite widgets where a verbatim dump would be
 less useful than the field-by-field contract given; every widget, l10n key,
 and cubit call they need is named explicitly, and their tests pin the
 behaviour that matters.
+
+### Pre-flight amendments (2026-07-22)
+
+Two things this plan originally mandated were changed before execution,
+because both put test-only affordances into production code:
+
+1. `SarprasBody` / `SarprasDetailBody` / `SarprasFormBody` were to be public
+   so tests could mount them without DI. They are now private. Tests
+   register mock blocs and cubits into the `get_it` locator (`di`) and mount
+   the real screen, with `tearDown(() => di.reset())`.
+2. `debugSetTimes` — a `@visibleForTesting` mutator on a deliberately public
+   state class — is gone. The end-after-start rule is now
+   `isSarprasTimeRangeValid` in `domain/sarpras_rules.dart` (Task 1),
+   unit-tested directly. The form calls it; no UI test drives the time
+   pickers.
