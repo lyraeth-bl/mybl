@@ -121,8 +121,21 @@ Slivers, in order:
    Disetujui, Ditolak. Counts come from the API `ringkasan`; the "Semua"
    count is the sum. A chip whose count is 0 stays visible but disabled, so
    chip positions never shift between refreshes.
-2. **List** — `SliverList.builder`. Each item shows activity name as title,
-   date plus `waktu_kegiatan` beneath, and a status badge trailing.
+2. **List** — an `AppSliverGroup` titled "Riwayat Pengajuan", with a
+   `SliverList.builder` in its `sliver` slot. Each item shows activity name
+   as title, date plus `waktu_kegiatan` beneath, and a status badge trailing.
+
+`AppSliverGroup` composes a `SliverMainAxisGroup` of its header plus
+`SliverPadding(padding: contentPadding, sliver: ...)`, and `contentPadding`
+already defaults to 16 horizontal / 8 vertical. List items must not add their
+own horizontal padding or the content ends up inset twice.
+
+The group's `action` slot stays unused; the chips above already carry the
+counts.
+
+The shimmer, empty, and populated bodies all go in the group's `sliver` slot,
+so the section header stays put while the body swaps. Only `failure` renders
+outside the group — there is no section to head when nothing loaded.
 
 Badge colours come from `AppColors.of(context)`: `warning` for Menunggu,
 `success` for Disetujui, `error` for Ditolak. No hardcoded colours.
@@ -142,10 +155,10 @@ State handling:
 
 | State | Chips | Body |
 | --- | --- | --- |
-| `initial`, `loading` | hidden | Shimmer list via `toShimmer()` |
-| `failure` | hidden | `AppEmptyStateSliver` with retry |
-| `empty` | shown (all zero) | Empty state, "belum ada pengajuan" |
-| `success` | shown | Filtered list |
+| `initial`, `loading` | hidden | Shimmer list via `toShimmer()`, inside the group |
+| `failure` | hidden | `AppEmptyStateSliver` with retry, outside the group |
+| `empty` | shown (all zero) | Empty state inside the group |
+| `success` | shown | Filtered list inside the group |
 
 Chips are hidden in `loading` and `failure` because those states carry no
 summary; only `empty` and `success` do.
