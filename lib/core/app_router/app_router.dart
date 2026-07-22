@@ -245,7 +245,7 @@ class AppRouter {
           final id = int.tryParse(state.pathParameters['id'] ?? '');
 
           return CupertinoSheetPage<void>(
-            child: SarprasFormSheet(sarprasId: id),
+            child: SarprasFormSheet(sarprasId: id ?? -1),
           );
         },
       ),

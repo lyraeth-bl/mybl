@@ -73,6 +73,9 @@ class _SarprasFormBodyState extends State<_SarprasFormBody> {
   TimeOfDay? _end;
   String? _nip;
   String? _timeError;
+  String? _dateError;
+  String? _startError;
+  String? _endError;
   bool _prefilled = false;
 
   bool get _isEditing => widget.sarprasId != null;
@@ -138,7 +141,10 @@ class _SarprasFormBodyState extends State<_SarprasFormBody> {
     );
 
     if (!mounted || picked == null) return;
-    setState(() => _date = picked);
+    setState(() {
+      _date = picked;
+      _dateError = null;
+    });
   }
 
   Future<void> _pickStart() async {
@@ -148,7 +154,10 @@ class _SarprasFormBodyState extends State<_SarprasFormBody> {
     );
 
     if (!mounted || picked == null) return;
-    setState(() => _start = picked);
+    setState(() {
+      _start = picked;
+      _startError = null;
+    });
   }
 
   Future<void> _pickEnd() async {
@@ -158,16 +167,31 @@ class _SarprasFormBodyState extends State<_SarprasFormBody> {
     );
 
     if (!mounted || picked == null) return;
-    setState(() => _end = picked);
+    setState(() {
+      _end = picked;
+      _endError = null;
+    });
   }
 
   void _submit() {
     final l10n = AppLocalizations.of(context)!;
 
-    if (!(_formKey.currentState?.validate() ?? false)) return;
-    if (_date == null || _start == null || _end == null || _nip == null) {
+    final isFormValid = _formKey.currentState?.validate() ?? false;
+
+    final dateError = _date == null ? l10n.sarprasValidationRequired : null;
+    final startError = _start == null ? l10n.sarprasValidationRequired : null;
+    final endError = _end == null ? l10n.sarprasValidationRequired : null;
+
+    if (dateError != null || startError != null || endError != null) {
+      setState(() {
+        _dateError = dateError;
+        _startError = startError;
+        _endError = endError;
+      });
       return;
     }
+
+    if (!isFormValid || _nip == null) return;
 
     final valid = isSarprasTimeRangeValid(
       startMinutes: _start!.hour * 60 + _start!.minute,
@@ -302,6 +326,7 @@ class _SarprasFormBodyState extends State<_SarprasFormBody> {
               icon: Icons.calendar_today_rounded,
               onTap: _pickDate,
             ),
+            if (_dateError != null) ...[8.h, _FieldError(_dateError!)],
             16.h,
             AppTextField(
               controller: _nameController,
@@ -330,35 +355,43 @@ class _SarprasFormBodyState extends State<_SarprasFormBody> {
             ),
             16.h,
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
-                  child: _PickerField(
-                    label: l10n.sarprasFieldStartTime,
-                    value: _start?.format(context),
-                    icon: Icons.access_time_rounded,
-                    onTap: _pickStart,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _PickerField(
+                        label: l10n.sarprasFieldStartTime,
+                        value: _start?.format(context),
+                        icon: Icons.access_time_rounded,
+                        onTap: _pickStart,
+                      ),
+                      if (_startError != null) ...[
+                        8.h,
+                        _FieldError(_startError!),
+                      ],
+                    ],
                   ),
                 ),
                 12.w,
                 Expanded(
-                  child: _PickerField(
-                    label: l10n.sarprasFieldEndTime,
-                    value: _end?.format(context),
-                    icon: Icons.access_time_rounded,
-                    onTap: _pickEnd,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _PickerField(
+                        label: l10n.sarprasFieldEndTime,
+                        value: _end?.format(context),
+                        icon: Icons.access_time_rounded,
+                        onTap: _pickEnd,
+                      ),
+                      if (_endError != null) ...[8.h, _FieldError(_endError!)],
+                    ],
                   ),
                 ),
               ],
             ),
-            if (_timeError != null) ...[
-              8.h,
-              Text(
-                _timeError!,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.error,
-                ),
-              ),
-            ],
+            if (_timeError != null) ...[8.h, _FieldError(_timeError!)],
             16.h,
             AppTextField(
               controller: _noteController,
@@ -398,10 +431,27 @@ class _PickerField extends StatelessWidget {
       onTap: onTap,
       child: InputDecorator(
         decoration: InputDecoration(labelText: label, suffixIcon: Icon(icon)),
-        child: Text(value ?? label),
+        isEmpty: value == null,
+        child: Text(value ?? ''),
       ),
     );
   }
+}
+
+/// Inline error text rendered beneath a field, matching the app's error
+/// style used across this form.
+class _FieldError extends StatelessWidget {
+  const _FieldError(this.message);
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) => Text(
+    message,
+    style: Theme.of(
+      context,
+    ).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.error),
+  );
 }
 
 /// The supervising-teacher dropdown, driven by [SarprasTeacherCandidateCubit].
@@ -445,7 +495,7 @@ class _TeacherDropdownField extends StatelessWidget {
                 color: Theme.of(context).colorScheme.error,
               ),
             ),
-            TextButton(
+            AppButton.text(
               onPressed: () => context
                   .read<SarprasTeacherCandidateCubit>()
                   .fetchCandidates(),
