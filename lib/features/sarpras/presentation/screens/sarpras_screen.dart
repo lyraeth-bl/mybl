@@ -117,6 +117,7 @@ class _SarprasBodyState extends State<_SarprasBody> {
         physics: const AlwaysScrollableScrollPhysics(),
         slivers: [
           BlocBuilder<SarprasBloc, SarprasState>(
+            buildWhen: (previous, current) => previous != current,
             builder: (context, state) {
               final summary = _summaryOf(state);
 
@@ -134,7 +135,6 @@ class _SarprasBodyState extends State<_SarprasBody> {
                       ),
                     );
             },
-            buildWhen: (previous, current) => previous != current,
           ),
           BlocBuilder<SarprasBloc, SarprasState>(
             builder: (context, state) => state.maybeWhen(
@@ -143,9 +143,8 @@ class _SarprasBodyState extends State<_SarprasBody> {
                 title: l10n.sarprasLoadFailedTitle,
                 message: l10n.sarprasLoadFailedMessage,
                 retryLabel: l10n.sarprasRetry,
-                onRetry: () => context.read<SarprasBloc>().add(
-                  const SarprasEvent.fetchSarpras(),
-                ),
+                onRetry: () =>
+                    context.read<SarprasBloc>().add(const .fetchSarpras()),
               ),
               empty: (_) => AppSliverGroup(
                 title: l10n.sarprasHistory,
@@ -168,8 +167,9 @@ class _SarprasBodyState extends State<_SarprasBody> {
                           title: l10n.sarprasFilterEmptyTitle,
                           message: l10n.sarprasFilterEmptyMessage,
                         )
-                      : SliverList.builder(
+                      : SliverList.separated(
                           itemCount: visible.length,
+                          separatorBuilder: (context, index) => 16.h,
                           itemBuilder: (context, index) => SarprasListItem(
                             sarpras: visible[index],
                             onTap: () =>

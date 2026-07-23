@@ -20,6 +20,7 @@ abstract class Sarpras with _$Sarpras {
     required String namaKegiatan,
     required String jumlahSiswaDalamKegiatan,
     required String nipGuruPembimbing,
+    String? namaGuruPembimbing,
     required String waktuKegiatan,
     required String status,
     SarprasMetadata? metadata,

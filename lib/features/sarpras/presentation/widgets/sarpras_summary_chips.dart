@@ -52,7 +52,8 @@ class SarprasSummaryChips extends StatelessWidget {
       child: Row(
         children: entries
             .map(
-              (entry) => FilterChip(
+              (entry) => ChoiceChip(
+                shape: RoundedRectangleBorder(borderRadius: .circular(16)),
                 label: Text('${entry.$2} (${entry.$3})'),
                 selected: selected == entry.$1,
                 onSelected: entry.$3 == 0 && entry.$1 != SarprasFilter.all

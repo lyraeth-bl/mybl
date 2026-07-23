@@ -2,6 +2,7 @@
 // Use of this source code is governed by a MIT License
 // that can be found in the LICENSE file.
 
+import 'package:flutter/cupertino.dart' show showCupertinoSheet;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -77,6 +78,7 @@ class _SarprasFormBodyState extends State<_SarprasFormBody> {
   String? _dateError;
   String? _startError;
   String? _endError;
+  String? _nipError;
   bool _prefilled = false;
 
   bool get _isEditing => widget.sarprasId != null;
@@ -208,17 +210,22 @@ class _SarprasFormBodyState extends State<_SarprasFormBody> {
         : null;
     final startError = _start == null ? l10n.sarprasValidationRequired : null;
     final endError = _end == null ? l10n.sarprasValidationRequired : null;
+    final nipError = _nip == null ? l10n.sarprasValidationRequired : null;
 
-    if (dateError != null || startError != null || endError != null) {
+    if (dateError != null ||
+        startError != null ||
+        endError != null ||
+        nipError != null) {
       setState(() {
         _dateError = dateError;
         _startError = startError;
         _endError = endError;
+        _nipError = nipError;
       });
       return;
     }
 
-    if (!isFormValid || _nip == null) return;
+    if (!isFormValid) return;
 
     final valid = isSarprasTimeRangeValid(
       startMinutes: _start!.hour * 60 + _start!.minute,
@@ -304,6 +311,7 @@ class _SarprasFormBodyState extends State<_SarprasFormBody> {
             icon: const Icon(Icons.close_rounded),
             onPressed: () => context.pop(),
           ),
+          toolbarHeight: 72,
         ),
         body: _isEditing ? _buildEditingBody(l10n) : _buildForm(l10n),
       ),
@@ -350,88 +358,123 @@ class _SarprasFormBodyState extends State<_SarprasFormBody> {
     return Form(
       key: _formKey,
       child: SingleChildScrollView(
-        padding: const .symmetric(horizontal: 16, vertical: 16),
+        padding: const .all(16),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: .start,
           children: [
-            _PickerField(
+            _LabeledField(
               label: l10n.sarprasFieldDate,
-              value: _date?.toDayDateMonthYearFormat(context),
-              icon: Icons.calendar_today_rounded,
-              onTap: _pickDate,
+              child: _PickerField(
+                hint: l10n.sarprasFieldDateHint,
+                value: _date?.toDayDateMonthYearFormat(context),
+                icon: Icons.calendar_today_rounded,
+                onTap: _pickDate,
+              ),
             ),
             if (_dateError != null) ...[8.h, _FieldError(_dateError!)],
             16.h,
-            AppTextField(
-              controller: _nameController,
-              maxLength: 150,
-              decoration: InputDecoration(labelText: l10n.sarprasFieldName),
-              validator: (value) => (value == null || value.trim().isEmpty)
-                  ? l10n.sarprasValidationRequired
-                  : null,
-            ),
-            16.h,
-            AppTextField(
-              controller: _countController,
-              keyboardType: TextInputType.number,
-              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-              decoration: InputDecoration(
-                labelText: l10n.sarprasFieldStudentCount,
+            _LabeledField(
+              label: l10n.sarprasFieldName,
+              child: AppTextField(
+                padding: .zero,
+                controller: _nameController,
+                maxLength: 150,
+                decoration: InputDecoration(
+                  hintText: l10n.sarprasFieldNameHint,
+                ),
+                validator: (value) => (value == null || value.trim().isEmpty)
+                    ? l10n.sarprasValidationRequired
+                    : null,
               ),
-              validator: (value) => (value == null || value.trim().isEmpty)
-                  ? l10n.sarprasValidationRequired
-                  : null,
             ),
             16.h,
-            _TeacherDropdownField(
-              selectedNip: _nip,
-              onChanged: (value) => setState(() => _nip = value),
+            _LabeledField(
+              label: l10n.sarprasFieldStudentCount,
+              child: AppTextField(
+                padding: .zero,
+                controller: _countController,
+                keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                decoration: InputDecoration(
+                  hintText: l10n.sarprasFieldStudentCountHint,
+                ),
+                validator: (value) => (value == null || value.trim().isEmpty)
+                    ? l10n.sarprasValidationRequired
+                    : null,
+              ),
             ),
+            16.h,
+            _LabeledField(
+              label: l10n.sarprasFieldTeacher,
+              child: _TeacherDropdownField(
+                selectedNip: _nip,
+                onChanged: (value) => setState(() {
+                  _nip = value;
+                  _nipError = null;
+                }),
+              ),
+            ),
+            if (_nipError != null) ...[8.h, _FieldError(_nipError!)],
             16.h,
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _PickerField(
-                        label: l10n.sarprasFieldStartTime,
-                        value: _start?.format(context),
-                        icon: Icons.access_time_rounded,
-                        onTap: _pickStart,
-                      ),
-                      if (_startError != null) ...[
-                        8.h,
-                        _FieldError(_startError!),
+                  child: _LabeledField(
+                    label: l10n.sarprasFieldStartTime,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _PickerField(
+                          hint: l10n.sarprasFieldTimeHint,
+                          value: _start?.format(context),
+                          icon: Icons.access_time_rounded,
+                          onTap: _pickStart,
+                        ),
+                        if (_startError != null) ...[
+                          8.h,
+                          _FieldError(_startError!),
+                        ],
                       ],
-                    ],
+                    ),
                   ),
                 ),
                 12.w,
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _PickerField(
-                        label: l10n.sarprasFieldEndTime,
-                        value: _end?.format(context),
-                        icon: Icons.access_time_rounded,
-                        onTap: _pickEnd,
-                      ),
-                      if (_endError != null) ...[8.h, _FieldError(_endError!)],
-                    ],
+                  child: _LabeledField(
+                    label: l10n.sarprasFieldEndTime,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _PickerField(
+                          hint: l10n.sarprasFieldTimeHint,
+                          value: _end?.format(context),
+                          icon: Icons.access_time_rounded,
+                          onTap: _pickEnd,
+                        ),
+                        if (_endError != null) ...[
+                          8.h,
+                          _FieldError(_endError!),
+                        ],
+                      ],
+                    ),
                   ),
                 ),
               ],
             ),
             if (_timeError != null) ...[8.h, _FieldError(_timeError!)],
             16.h,
-            AppTextField(
-              controller: _noteController,
-              maxLines: 4,
-              maxLength: 500,
-              decoration: InputDecoration(labelText: l10n.sarprasFieldNote),
+            _LabeledField(
+              label: l10n.sarprasFieldNote,
+              child: AppTextField(
+                padding: .zero,
+                controller: _noteController,
+                maxLines: 4,
+                maxLength: 500,
+                decoration: InputDecoration(
+                  hintText: l10n.sarprasFieldNoteHint,
+                ),
+              ),
             ),
             24.h,
             _SubmitButton(isEditing: _isEditing, onSubmit: _submit),
@@ -442,31 +485,103 @@ class _SarprasFormBodyState extends State<_SarprasFormBody> {
   }
 }
 
+/// A field label rendered above its input, matching the login form's
+/// separated label/field layout.
+class _LabeledField extends StatelessWidget {
+  const _LabeledField({required this.label, required this.child});
+
+  final String label;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: .start,
+      children: [
+        Text(
+          label,
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
+        ),
+        8.h,
+        child,
+      ],
+    );
+  }
+}
+
+/// The filled, borderless surface shared by the picker and dropdown fields so
+/// they match [AppTextField]'s look.
+InputDecoration _filledDecoration(
+  BuildContext context, {
+  required bool populated,
+  String? hintText,
+  Widget? suffixIcon,
+}) {
+  final colorScheme = Theme.of(context).colorScheme;
+  const border = OutlineInputBorder(
+    borderRadius: .all(Radius.circular(16)),
+    borderSide: .none,
+  );
+
+  return InputDecoration(
+    hintText: hintText,
+    filled: true,
+    fillColor: populated
+        ? colorScheme.surfaceContainerHighest
+        : colorScheme.surfaceContainer,
+    suffixIcon: suffixIcon,
+    contentPadding: const .symmetric(horizontal: 16, vertical: 18),
+    hintStyle: Theme.of(
+      context,
+    ).textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
+    border: border,
+    enabledBorder: border,
+    focusedBorder: border,
+    disabledBorder: border,
+  );
+}
+
 /// A tap target styled like a text field that opens a date or time picker.
 ///
 /// Reused for the activity date and both the start and end time fields.
 class _PickerField extends StatelessWidget {
   const _PickerField({
-    required this.label,
+    required this.hint,
     required this.value,
     required this.icon,
     required this.onTap,
   });
 
-  final String label;
+  final String hint;
   final String? value;
   final IconData icon;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final hasValue = value != null;
+
     return InkWell(
       borderRadius: .circular(16),
       onTap: onTap,
       child: InputDecorator(
-        decoration: InputDecoration(labelText: label, suffixIcon: Icon(icon)),
-        isEmpty: value == null,
-        child: Text(value ?? ''),
+        decoration: _filledDecoration(
+          context,
+          populated: hasValue,
+          suffixIcon: Icon(icon, color: colorScheme.onSurfaceVariant),
+        ),
+        child: Text(
+          hasValue ? value! : hint,
+          style: textTheme.bodyMedium?.copyWith(
+            color: hasValue
+                ? colorScheme.onSurface
+                : colorScheme.onSurfaceVariant,
+          ),
+        ),
       ),
     );
   }
@@ -508,17 +623,23 @@ class _TeacherDropdownField extends StatelessWidget {
     >(
       builder: (context, state) => state.maybeWhen(
         loading: () => InputDecorator(
-          decoration: InputDecoration(
-            labelText: l10n.sarprasFieldTeacher,
+          decoration: _filledDecoration(
+            context,
+            populated: false,
             suffixIcon: const Padding(
-              padding: .all(12),
+              padding: .all(14),
               child: SizedBox.square(
                 dimension: 16,
                 child: CircularProgressIndicator(strokeWidth: 2),
               ),
             ),
           ),
-          child: const SizedBox(height: 20),
+          child: Text(
+            l10n.sarprasFieldTeacherHint,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+          ),
         ),
         failure: (_) => Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -538,23 +659,158 @@ class _TeacherDropdownField extends StatelessWidget {
           ],
         ),
         empty: () => Text(l10n.sarprasTeacherEmpty),
-        success: (candidates) => DropdownButtonFormField<String>(
-          initialValue: selectedNip,
-          isExpanded: true,
-          decoration: InputDecoration(labelText: l10n.sarprasFieldTeacher),
-          items: candidates
-              .map(
-                (candidate) => DropdownMenuItem(
-                  value: candidate.nip,
-                  child: Text(candidate.name, overflow: TextOverflow.ellipsis),
-                ),
-              )
-              .toList(),
-          onChanged: onChanged,
-          validator: (value) =>
-              value == null ? l10n.sarprasValidationRequired : null,
-        ),
+        success: (candidates) {
+          final matches = candidates.where(
+            (candidate) => candidate.nip == selectedNip,
+          );
+          final selectedName = matches.isEmpty ? null : matches.first.name;
+
+          return _PickerField(
+            hint: l10n.sarprasFieldTeacherHint,
+            value: selectedName,
+            icon: Icons.unfold_more_rounded,
+            onTap: () => _openPicker(context, candidates),
+          );
+        },
         orElse: () => const SizedBox.shrink(),
+      ),
+    );
+  }
+
+  Future<void> _openPicker(
+    BuildContext context,
+    List<SarprasTeacherCandidate> candidates,
+  ) async {
+    final nip = await showCupertinoSheet<String>(
+      context: context,
+      builder: (_) => _TeacherPickerSheet(
+        candidates: candidates,
+        selectedNip: selectedNip,
+      ),
+    );
+
+    if (nip != null) onChanged(nip);
+  }
+}
+
+/// A search-and-select sheet for the supervising teacher, presented as an
+/// iOS-style [showCupertinoSheet].
+class _TeacherPickerSheet extends StatefulWidget {
+  const _TeacherPickerSheet({
+    required this.candidates,
+    required this.selectedNip,
+  });
+
+  final List<SarprasTeacherCandidate> candidates;
+  final String? selectedNip;
+
+  @override
+  State<_TeacherPickerSheet> createState() => _TeacherPickerSheetState();
+}
+
+class _TeacherPickerSheetState extends State<_TeacherPickerSheet> {
+  final _searchController = TextEditingController();
+  late List<SarprasTeacherCandidate> _filtered = widget.candidates;
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _onSearch(String value) {
+    final query = value.trim().toLowerCase();
+    setState(() {
+      _filtered = query.isEmpty
+          ? widget.candidates
+          : widget.candidates
+                .where(
+                  (candidate) => candidate.name.toLowerCase().contains(query),
+                )
+                .toList();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    return Material(
+      color: colorScheme.surface,
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: .only(bottom: context.viewInsets.bottom),
+          child: Column(
+            children: [
+              Padding(
+                padding: const .fromLTRB(16, 16, 8, 8),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        l10n.sarprasFieldTeacher,
+                        style: textTheme.titleLarge,
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.close_rounded),
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const .symmetric(horizontal: 16),
+                child: AppTextField(
+                  padding: .zero,
+                  controller: _searchController,
+                  onChanged: _onSearch,
+                  decoration: InputDecoration(
+                    hintText: l10n.sarprasTeacherSearchHint,
+                    prefixIcon: const Icon(Icons.search_rounded),
+                  ),
+                ),
+              ),
+              12.h,
+              Expanded(
+                child: _filtered.isEmpty
+                    ? Center(
+                        child: Text(
+                          l10n.sarprasTeacherSearchEmpty,
+                          style: textTheme.bodyMedium?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      )
+                    : ListView.builder(
+                        padding: const .symmetric(vertical: 8),
+                        itemCount: _filtered.length,
+                        itemBuilder: (context, index) {
+                          final candidate = _filtered[index];
+                          final isSelected =
+                              candidate.nip == widget.selectedNip;
+
+                          return ListTile(
+                            title: Text(candidate.name),
+                            selected: isSelected,
+                            trailing: isSelected
+                                ? Icon(
+                                    Icons.check_rounded,
+                                    color: colorScheme.primary,
+                                  )
+                                : null,
+                            onTap: () =>
+                                Navigator.of(context).pop(candidate.nip),
+                          );
+                        },
+                      ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

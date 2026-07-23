@@ -95,6 +95,7 @@ class _SarprasDetailBodyState extends State<_SarprasDetailBody> {
             icon: const Icon(Icons.close_rounded),
             onPressed: () => context.pop(_hasChanged),
           ),
+          toolbarHeight: 72,
         ),
         body: BlocBuilder<DetailSarprasCubit, DetailSarprasState>(
           builder: (context, state) => state.maybeWhen(
@@ -147,7 +148,7 @@ class _SarprasDetailContent extends StatelessWidget {
       ),
       _DetailRow(
         label: l10n.sarprasFieldTeacher,
-        value: sarpras.nipGuruPembimbing,
+        value: sarpras.namaGuruPembimbing ?? sarpras.nipGuruPembimbing,
       ),
       _DetailRow(label: l10n.sarprasFieldTime, value: sarpras.waktuKegiatan),
       if ((metadata?.keterangan ?? '').trim().isNotEmpty)
@@ -159,10 +160,10 @@ class _SarprasDetailContent extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ...fieldRows.separatedBy(12.h),
-          if (showResolution) ...[24.h, _ResolutionBlock(metadata: metadata)],
+          ...fieldRows.separatedBy(16.h),
+          if (showResolution) ...[16.h, _ResolutionBlock(metadata: metadata)],
           if (sarpras.isCancelable) ...[
-            24.h,
+            16.h,
             _DetailActions(sarpras: sarpras, onEdit: onEdit),
           ],
         ],
@@ -297,19 +298,20 @@ class _DetailActions extends StatelessWidget {
     return Row(
       children: [
         Expanded(
-          child: AppButton.outlined(
+          child: AppButton(
             onPressed: onEdit,
             child: Text(l10n.sarprasEditAction),
           ),
         ),
-        12.w,
         Expanded(
-          child: AppButton.text(
+          child: AppButton(
+            backgroundColor: Theme.of(context).colorScheme.errorContainer,
+            foregroundColor: Theme.of(context).colorScheme.onErrorContainer,
             onPressed: () => _confirmCancel(context, sarpras.id),
             child: Text(l10n.sarprasCancelAction),
           ),
         ),
-      ],
+      ].separatedBy(16.w),
     );
   }
 
@@ -323,6 +325,14 @@ class _DetailActions extends StatelessWidget {
         content: Text(l10n.sarprasCancelConfirmMessage),
         actions: [
           TextButton(
+            style: TextButton.styleFrom(
+              backgroundColor: Theme.of(
+                dialogContext,
+              ).colorScheme.errorContainer,
+              foregroundColor: Theme.of(
+                dialogContext,
+              ).colorScheme.onErrorContainer,
+            ),
             onPressed: () => Navigator.of(dialogContext).pop(),
             child: Text(l10n.cancel),
           ),

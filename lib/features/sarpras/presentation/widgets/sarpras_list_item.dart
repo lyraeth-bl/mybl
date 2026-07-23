@@ -5,6 +5,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/internal/src/extensions/extensions.dart';
+import '../../../../core/widgets/app_container.dart';
 import '../../domain/entities/sarpras/sarpras.dart';
 import 'sarpras_status_badge.dart';
 
@@ -24,39 +25,35 @@ class SarprasListItem extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
     final scheme = Theme.of(context).colorScheme;
 
-    return InkWell(
+    return AppFramedContainer(
+      margin: .zero,
+      gap: .zero,
       onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    sarpras.namaKegiatan,
-                    style: textTheme.titleMedium,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
+      child: Row(
+        crossAxisAlignment: .start,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: .start,
+              children: [
+                Text(
+                  sarpras.namaKegiatan,
+                  style: textTheme.titleMedium,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Text(
+                  '${sarpras.tanggalKegiatan.toDayMonthYearFormat(context)}'
+                  ' • ${sarpras.waktuKegiatan}',
+                  style: textTheme.bodySmall?.copyWith(
+                    color: scheme.onSurfaceVariant,
                   ),
-                  4.h,
-                  Text(
-                    '${sarpras.tanggalKegiatan.toDayMonthYearFormat(context)}'
-                    ' • ${sarpras.waktuKegiatan}',
-                    style: textTheme.bodySmall?.copyWith(
-                      color: scheme.onSurfaceVariant,
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ].separatedBy(4.h),
             ),
-            8.w,
-            SarprasStatusBadge(status: sarpras.status),
-          ],
-        ),
+          ),
+          SarprasStatusBadge(status: sarpras.status),
+        ].separatedBy(8.w),
       ),
     );
   }

@@ -22,6 +22,7 @@ abstract class SarprasModel with _$SarprasModel {
     @JsonKey(name: 'jumlah_siswa_kelas')
     required String jumlahSiswaDalamKegiatan,
     @JsonKey(name: 'NIP_guru_pembimbing') required String nipGuruPembimbing,
+    @JsonKey(name: 'nama_guru') String? namaGuruPembimbing,
     @JsonKey(name: 'waktu_kegiatan') required String waktuKegiatan,
     required String status,
     String? keterangan,
@@ -49,6 +50,7 @@ extension SarprasModelMapper on SarprasModel {
     nipGuruPembimbing: nipGuruPembimbing,
     waktuKegiatan: waktuKegiatan,
     status: status,
+    namaGuruPembimbing: namaGuruPembimbing,
     metadata: SarprasMetadata(
       keterangan: keterangan,
       aksesResolver: aksesResolver,
