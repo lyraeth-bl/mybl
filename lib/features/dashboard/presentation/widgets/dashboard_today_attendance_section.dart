@@ -189,7 +189,7 @@ class _DashboardTodayAttendanceContainer extends StatelessWidget {
                       value ?? "--:--",
                       maxLines: 1,
                       overflow: .ellipsis,
-                      style: textTheme.headlineSmall!.copyWith(
+                      style: textTheme.titleLarge!.copyWith(
                         color: colorScheme.onSurface,
                       ),
                     ).toShimmer(
