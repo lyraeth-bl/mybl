@@ -335,7 +335,8 @@ class _AppTextFieldState extends State<AppTextField> {
     final ThemeData theme = Theme.of(context);
     final ColorScheme colorScheme = theme.colorScheme;
     final TextStyle? effectiveStyle =
-        widget.style ?? theme.textTheme.bodyMedium;
+        widget.style ??
+        theme.textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface);
     final bool hasError = widget.decoration.errorText != null;
     final Color effectiveBackgroundColor = _backgroundColor(
       colorScheme,
