@@ -683,10 +683,8 @@ class _TeacherDropdownField extends StatelessWidget {
   ) async {
     final nip = await showCupertinoSheet<String>(
       context: context,
-      builder: (_) => _TeacherPickerSheet(
-        candidates: candidates,
-        selectedNip: selectedNip,
-      ),
+      builder: (_) =>
+          _TeacherPickerSheet(candidates: candidates, selectedNip: selectedNip),
     );
 
     if (nip != null) onChanged(nip);
