@@ -14,6 +14,7 @@ import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_chip_container.dart';
 import '../../../../core/widgets/app_container.dart';
 import '../../../../core/widgets/app_empty_state.dart';
+import '../../../../core/widgets/app_responsive_container.dart';
 import '../../../../core/widgets/app_toast.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../sessions/presentation/bloc/session_bloc.dart';
@@ -98,11 +99,13 @@ class _AttendanceTodaySectionState extends State<AttendanceTodaySection> {
           orElse: () => SliverPadding(
             padding: const .all(16),
             sliver: SliverToBoxAdapter(
-              child: _AttendanceTodayCard(
-                state: state,
-                now: _now,
-                l10n: l10n,
-                isParent: isParent,
+              child: AppResponsiveContainer(
+                child: _AttendanceTodayCard(
+                  state: state,
+                  now: _now,
+                  l10n: l10n,
+                  isParent: isParent,
+                ),
               ),
             ),
           ),

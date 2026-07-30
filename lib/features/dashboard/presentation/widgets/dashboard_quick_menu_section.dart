@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Mahsa Nurfarhan Hidayat / Yayasan Pakarti Luhur. All rights reserved.
+// Use of this source code is governed by a MIT License
+// that can be found in the LICENSE file.
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -22,18 +26,21 @@ class DashboardQuickMenuSection extends StatelessWidget {
     final menuItems = MenuSheetItem.menuItems
         .where((item) => item.routePath != RouteNames.settings)
         .toList();
+    final int crossAxisCount = (context.screenWidth / 120).floor().clamp(4, 8);
 
     return AppSliverGroup(
       title: l10n.quickMenu,
       titleStyle: textTheme.titleMedium!.copyWith(color: colorScheme.onSurface),
-      sliver: SliverGrid.count(
-        crossAxisCount: 4,
-        crossAxisSpacing: 8,
-        mainAxisSpacing: 8,
-        childAspectRatio: 0.74,
-        children: [
-          for (final item in menuItems) _DashboardQuickMenuItem(item: item),
-        ],
+      sliver: SliverGrid.builder(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: crossAxisCount,
+          crossAxisSpacing: 8,
+          mainAxisSpacing: 8,
+          mainAxisExtent: 116,
+        ),
+        itemCount: menuItems.length,
+        itemBuilder: (context, index) =>
+            _DashboardQuickMenuItem(item: menuItems[index]),
       ),
     );
   }

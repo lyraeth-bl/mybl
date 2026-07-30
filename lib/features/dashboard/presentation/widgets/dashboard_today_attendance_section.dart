@@ -43,59 +43,65 @@ class DashboardTodayAttendanceSection extends StatelessWidget {
       action: AppChipContainer.outlined(
         value: DateFormat.yMMMMEEEEd(locale).format(now),
       ),
-      sliver: SliverGrid.count(
-        crossAxisCount: 2,
-        crossAxisSpacing: 8,
-        mainAxisSpacing: 8,
-        childAspectRatio: 1.5,
-        children: [
-          BlocBuilder<DailyAttendanceBloc, DailyAttendanceState>(
-            builder: (context, state) {
-              final isLoading = state.maybeWhen(
-                loading: () => true,
-                orElse: () => false,
-              );
-              final dailyAttendance = state.whenOrNull(
-                success: (dailyAttendance) => dailyAttendance,
-              );
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: .stretch,
+          children: [
+            Expanded(
+              child: BlocBuilder<DailyAttendanceBloc, DailyAttendanceState>(
+                builder: (context, state) {
+                  final isLoading = state.maybeWhen(
+                    loading: () => true,
+                    orElse: () => false,
+                  );
+                  final dailyAttendance = state.whenOrNull(
+                    success: (dailyAttendance) => dailyAttendance,
+                  );
 
-              return _DashboardTodayAttendanceContainer(
-                title: l10n.checkIn,
-                icon: Icons.call_received,
-                descriptionValue: l10n.westernIndonesiaTime,
-                value: _formatNullableTime(dailyAttendance?.jamCheckIn, locale),
-                isLoading: isLoading,
-                iconBackgroundColor: positiveIconStyle.backgroundColor,
-                iconForegroundColor: positiveIconStyle.foregroundColor,
-              );
-            },
-          ),
-          BlocBuilder<DailyAttendanceBloc, DailyAttendanceState>(
-            builder: (context, state) {
-              final isLoading = state.maybeWhen(
-                loading: () => true,
-                orElse: () => false,
-              );
-              final dailyAttendance = state.whenOrNull(
-                success: (dailyAttendance) => dailyAttendance,
-              );
+                  return _DashboardTodayAttendanceContainer(
+                    title: l10n.checkIn,
+                    icon: Icons.call_received,
+                    descriptionValue: l10n.westernIndonesiaTime,
+                    value: _formatNullableTime(
+                      dailyAttendance?.jamCheckIn,
+                      locale,
+                    ),
+                    isLoading: isLoading,
+                    iconBackgroundColor: positiveIconStyle.backgroundColor,
+                    iconForegroundColor: positiveIconStyle.foregroundColor,
+                  );
+                },
+              ),
+            ),
+            Expanded(
+              child: BlocBuilder<DailyAttendanceBloc, DailyAttendanceState>(
+                builder: (context, state) {
+                  final isLoading = state.maybeWhen(
+                    loading: () => true,
+                    orElse: () => false,
+                  );
+                  final dailyAttendance = state.whenOrNull(
+                    success: (dailyAttendance) => dailyAttendance,
+                  );
 
-              return _DashboardTodayAttendanceContainer(
-                title: l10n.checkOut,
-                icon: Icons.call_made,
-                descriptionValue: l10n.westernIndonesiaTime,
-                value: _formatNullableTime(
-                  dailyAttendance?.jamCheckOut,
-                  locale,
-                ),
-                crossAxisAlignment: .end,
-                isLoading: isLoading,
-                iconBackgroundColor: checkOutIconStyle.backgroundColor,
-                iconForegroundColor: checkOutIconStyle.foregroundColor,
-              );
-            },
-          ),
-        ],
+                  return _DashboardTodayAttendanceContainer(
+                    title: l10n.checkOut,
+                    icon: Icons.call_made,
+                    descriptionValue: l10n.westernIndonesiaTime,
+                    value: _formatNullableTime(
+                      dailyAttendance?.jamCheckOut,
+                      locale,
+                    ),
+                    crossAxisAlignment: .end,
+                    isLoading: isLoading,
+                    iconBackgroundColor: checkOutIconStyle.backgroundColor,
+                    iconForegroundColor: checkOutIconStyle.foregroundColor,
+                  );
+                },
+              ),
+            ),
+          ].separatedBy(8.w),
+        ),
       ),
     );
   }
@@ -143,7 +149,6 @@ class _DashboardTodayAttendanceContainer extends StatelessWidget {
       backgroundColor: colorScheme.surface,
       margin: .zero,
       gap: .zero,
-      aspectRatio: 1.5,
       elevation: 0,
       child: Column(
         crossAxisAlignment: crossAxisAlignment,

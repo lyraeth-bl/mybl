@@ -51,15 +51,6 @@ class AttendanceCalendar extends StatelessWidget {
       headerVisible: false,
 
       calendarStyle: CalendarStyle(
-        todayDecoration: BoxDecoration(
-          color: colorScheme.primaryContainer,
-          shape: BoxShape.rectangle,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        todayTextStyle: textTheme.bodyLarge!.copyWith(
-          color: colorScheme.onPrimaryContainer,
-          fontWeight: FontWeight.bold,
-        ),
         weekendTextStyle: textTheme.bodyLarge!.copyWith(
           color: colorScheme.error,
         ),
@@ -82,12 +73,48 @@ class AttendanceCalendar extends StatelessWidget {
       onDaySelected: (selectedDay, _) =>
           _showAttendanceDetail(context, selectedDay),
       calendarBuilders: CalendarBuilders(
+        todayBuilder: (context, day, focusedDay) =>
+            _AttendanceTodayCell(day: day),
         defaultBuilder: (context, day, focusedDay) {
           final status = attendanceData[DateTime(day.year, day.month, day.day)];
           if (status == null) return null;
 
           return _AttendanceDayCell(day: day, status: status);
         },
+      ),
+    );
+  }
+}
+
+class _AttendanceTodayCell extends StatelessWidget {
+  const _AttendanceTodayCell({required this.day});
+
+  final DateTime day;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    return Center(
+      child: SizedBox.square(
+        dimension: 44,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: colorScheme.primaryContainer,
+            shape: BoxShape.rectangle,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Center(
+            child: Text(
+              '${day.day}',
+              style: textTheme.labelMedium!.copyWith(
+                color: colorScheme.onPrimaryContainer,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
