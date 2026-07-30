@@ -41,3 +41,15 @@ School announcements and attendance updates arrive on the device as notification
 Sign in with a school account over an encrypted connection, with academic data served directly from the school's official system. There are no ads in the app. MyBL does not sell or share your data with third parties, and passwords are never stored on the device. Full details are available in our privacy policy.
 
 MyBL — stay on top of learning, stay connected to school.
+
+## Release notes — 1.0.0 (≤500)
+
+**Bahasa Indonesia:**
+
+Rilis perdana MyBL untuk uji coba tertutup. Aplikasi ini menampilkan absensi harian beserta rekap bulanan, nilai per mata pelajaran, jadwal pelajaran, kalender akademik, poin merit dan demerit, daftar ekstrakurikuler, serta notifikasi pengumuman sekolah. Orang tua dapat memilih dan memantau data setiap anaknya. Tampilan sudah menyesuaikan layar tablet, termasuk mode lanskap. Silakan sampaikan masukan dan kendala yang Anda temukan kepada tim sekolah.
+
+---
+
+**English:**
+
+The first MyBL release for closed testing. The app shows daily attendance with monthly recaps, scores per subject, class schedules, the academic calendar, merit and demerit points, extracurricular activities, and school announcements. Parents can select and monitor each of their children. Layouts now adapt to tablet screens, including landscape mode. Please share any feedback or issues you run into with the school team.
