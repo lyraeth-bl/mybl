@@ -53,7 +53,11 @@ Future<void> initializeApp() async {
     ),
   );
 
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  SystemChrome.setPreferredOrientations([
+    .portraitUp,
+    .landscapeLeft,
+    .landscapeRight,
+  ]);
 
   await initStorageDI();
   initLocalizationDI();
