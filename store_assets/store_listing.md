@@ -14,25 +14,15 @@ Budi Luhur student & parent portal: attendance, grades, schedule, alerts.
 ## Full description (≤4000)
 
 **Bahasa Indonesia:**
+MyBL adalah portal resmi siswa dan orang tua ekosistem sekolah Budi Luhur (Yayasan Pakarti Luhur). Semua informasi akademik yang biasanya tersebar kini berada dalam satu aplikasi yang cepat, aman, dan mudah digunakan.
 
-MyBL adalah portal resmi siswa dan orang tua ekosistem sekolah Budi Luhur (Yayasan Pakarti Luhur). Pantau perkembangan akademik dalam satu aplikasi yang cepat, aman, dan mudah digunakan.
+Lewat MyBL, siswa dapat melihat kehadiran hari ini lengkap dengan jam masuk dan jam pulang, lalu menelusuri rekap bulanan beserta ringkasannya kapan saja. Nilai setiap mata pelajaran dapat dipantau per semester, sementara jadwal pelajaran harian ditampilkan rapi sehingga mudah dibaca sebelum berangkat sekolah.
 
-Fitur utama:
+Kalender akademik mengumpulkan jadwal ujian, hari libur, dan agenda sekolah dalam satu tempat, sehingga tidak ada lagi tanggal penting yang terlewat. Poin merit dan demerit ditampilkan secara transparan agar siswa tahu persis posisi kedisiplinannya, dan daftar ekstrakurikuler yang diikuti bisa dilihat kapan pun.
 
-• Absensi Harian — lihat kehadiran hari ini serta rekap bulanan dan ringkasannya.
-• Nilai / Hasil Akademik — pantau nilai per mata pelajaran dan semester.
-• Jadwal Pelajaran — jadwal harian yang rapi dan mudah dibaca.
-• Kalender Akademik — ujian, hari libur, dan agenda sekolah dalam satu tempat.
-• Merit & Demerit — poin prestasi dan pelanggaran secara transparan.
-• Ekstrakurikuler — daftar kegiatan yang diikuti siswa.
-• Notifikasi Sekolah — pengumuman dan pembaruan kehadiran langsung ke perangkat.
-• Mode Orang Tua — akun orang tua dapat memilih dan memantau data anaknya.
+Pengumuman sekolah dan pembaruan kehadiran dikirim langsung ke perangkat sebagai notifikasi, jadi kabar penting tidak perlu menunggu sampai besok. Orang tua memiliki akses tersendiri: satu akun dapat memilih dan memantau data setiap anaknya.
 
-Dibuat untuk siswa dan orang tua:
-Login aman menggunakan akun sekolah. Data akademik ditampilkan langsung dari sistem resmi sekolah, dengan koneksi terenkripsi dan tanpa iklan.
-
-Privasi:
-MyBL tidak menjual atau membagikan data Anda ke pihak ketiga. Kredensial tidak disimpan di perangkat. Selengkapnya di kebijakan privasi kami.
+Login menggunakan akun sekolah melalui koneksi terenkripsi, dan data akademik ditampilkan langsung dari sistem resmi sekolah. Tidak ada iklan di dalam aplikasi. MyBL juga tidak menjual atau membagikan data Anda kepada pihak ketiga, dan kata sandi tidak pernah disimpan di perangkat. Penjelasan lengkap tersedia di kebijakan privasi kami.
 
 MyBL — belajar makin terpantau, sekolah makin terhubung.
 
@@ -40,23 +30,26 @@ MyBL — belajar makin terpantau, sekolah makin terhubung.
 
 **English:**
 
-MyBL is the official student and parent portal of the Budi Luhur school ecosystem (Yayasan Pakarti Luhur). Track academic progress in one fast, secure, and easy-to-use app.
+MyBL is the official student and parent portal of the Budi Luhur school ecosystem (Yayasan Pakarti Luhur). Academic information that is usually scattered now lives in one app that is fast, secure, and easy to use.
 
-Key features:
+With MyBL, students can see today's attendance along with check-in and check-out times, then browse the monthly recap and its summary at any time. Scores for every subject can be tracked per semester, while the daily class schedule is laid out clearly so it is easy to read before heading to school.
 
-• Daily Attendance — see today's attendance plus monthly recap and summary.
-• Grades / Academic Results — track scores by subject and semester.
-• Class Schedule — a clean, readable daily timetable.
-• Academic Calendar — exams, holidays, and school events in one place.
-• Merit & Demerit — transparent achievement and discipline points.
-• Extracurriculars — activities the student takes part in.
-• School Notifications — announcements and attendance updates on your device.
-• Parent Mode — parent accounts can select and monitor their child's data.
+The academic calendar gathers exam dates, holidays, and school events in one place, so no important date slips by. Merit and demerit points are shown transparently so students know exactly where they stand, and the list of extracurriculars they take part in is always available.
 
-Built for students and parents:
-Sign in securely with your school account. Academic data is shown directly from the school's official system over an encrypted connection, with no ads.
+School announcements and attendance updates arrive on the device as notifications, so important news does not have to wait until tomorrow. Parents get their own access: a single account can select and monitor the data of each of their children.
 
-Privacy:
-MyBL does not sell or share your data with third parties. Credentials are never stored on the device. See our privacy policy for details.
+Sign in with a school account over an encrypted connection, with academic data served directly from the school's official system. There are no ads in the app. MyBL does not sell or share your data with third parties, and passwords are never stored on the device. Full details are available in our privacy policy.
 
 MyBL — stay on top of learning, stay connected to school.
+
+## Release notes — 1.0.0 (≤500)
+
+**Bahasa Indonesia:**
+
+Rilis perdana MyBL untuk uji coba tertutup. Aplikasi ini menampilkan absensi harian beserta rekap bulanan, nilai per mata pelajaran, jadwal pelajaran, kalender akademik, poin merit dan demerit, daftar ekstrakurikuler, serta notifikasi pengumuman sekolah. Orang tua dapat memilih dan memantau data setiap anaknya. Tampilan sudah menyesuaikan layar tablet, termasuk mode lanskap. Silakan sampaikan masukan dan kendala yang Anda temukan kepada tim sekolah.
+
+---
+
+**English:**
+
+The first MyBL release for closed testing. The app shows daily attendance with monthly recaps, scores per subject, class schedules, the academic calendar, merit and demerit points, extracurricular activities, and school announcements. Parents can select and monitor each of their children. Layouts now adapt to tablet screens, including landscape mode. Please share any feedback or issues you run into with the school team.
