@@ -201,7 +201,7 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
             child: Icon(notificationIcon, color: colorScheme.onSurface),
           ),
         ),
-      if (actions != null) ...actions!,
+      ...?actions,
     ];
 
     return AppBar(
