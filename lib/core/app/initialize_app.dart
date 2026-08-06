@@ -19,6 +19,7 @@ import '../../features/device_token/di.dart';
 import '../../features/discipline/di.dart';
 import '../../features/extracurricular/di.dart';
 import '../../features/notifications/notifications_di.dart';
+import '../../features/sarpras/sarpras_di.dart';
 import '../../features/sessions/sessions_di.dart';
 import '../../features/time_table/di.dart';
 import '../../features/user/user_di.dart';
@@ -52,7 +53,11 @@ Future<void> initializeApp() async {
     ),
   );
 
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  SystemChrome.setPreferredOrientations([
+    .portraitUp,
+    .landscapeLeft,
+    .landscapeRight,
+  ]);
 
   await initStorageDI();
   initLocalizationDI();
@@ -75,6 +80,7 @@ Future<void> initializeApp() async {
   initDisciplineDI();
   initAcademicCalendarDI();
   initAcademicResultDI();
+  initSarprasDI();
 
   await di<OpenAllBoxesUseCase>().call();
   await di<FCMService>().initialize();

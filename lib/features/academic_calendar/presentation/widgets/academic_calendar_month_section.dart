@@ -271,15 +271,6 @@ class _CalendarTable extends StatelessWidget {
       lastDay: .utc(2030, 12, 31),
       headerVisible: false,
       calendarStyle: CalendarStyle(
-        todayDecoration: BoxDecoration(
-          color: colorScheme.primaryContainer,
-          shape: .rectangle,
-          borderRadius: .circular(8),
-        ),
-        todayTextStyle: textTheme.bodyLarge!.copyWith(
-          color: colorScheme.onPrimaryContainer,
-          fontWeight: .bold,
-        ),
         weekendTextStyle: textTheme.bodyLarge!.copyWith(
           color: colorScheme.tertiary,
         ),
@@ -303,6 +294,8 @@ class _CalendarTable extends StatelessWidget {
       availableGestures: .none,
       onDaySelected: (selectedDay, _) => _showDayDetail(context, selectedDay),
       calendarBuilders: CalendarBuilders<AcademicCalendarEntity>(
+        todayBuilder: (context, day, focusedDay) =>
+            _AcademicCalendarTodayCell(day: day),
         defaultBuilder: (context, day, focusedDay) {
           final events = eventMap[DateTime(day.year, day.month, day.day)];
           if (events == null || events.isEmpty) return null;
@@ -312,6 +305,40 @@ class _CalendarTable extends StatelessWidget {
             status: academicCalendarStatusFromEvents(events),
           );
         },
+      ),
+    );
+  }
+}
+
+class _AcademicCalendarTodayCell extends StatelessWidget {
+  const _AcademicCalendarTodayCell({required this.day});
+
+  final DateTime day;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    return Center(
+      child: SizedBox.square(
+        dimension: 40,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: colorScheme.primaryContainer,
+            shape: .rectangle,
+            borderRadius: .circular(8),
+          ),
+          child: Center(
+            child: Text(
+              '${day.day}',
+              style: textTheme.labelSmall!.copyWith(
+                color: colorScheme.onPrimaryContainer,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

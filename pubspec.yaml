@@ -1,7 +1,7 @@
 name: my_bl
 description: "A Budi Luhur App."
 publish_to: "none"
-version: 1.0.0+1
+version: 1.0.0+2
 
 environment:
   sdk: ^3.11.5
@@ -68,6 +68,7 @@ flutter_native_splash:
 flutter_launcher_icons:
   android: true
   ios: false
-  image_path: "assets/images/bl_logo.png"
+  image_path: "store_assets/play_store_512.png"
   adaptive_icon_background: "#FFFFFF"
-  adaptive_icon_foreground: "assets/images/bl_logo.png"
+  adaptive_icon_foreground: "store_assets/app_icon_foreground.png"
+  adaptive_icon_monochrome: "store_assets/app_icon_monochrome.png"
