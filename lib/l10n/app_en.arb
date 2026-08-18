@@ -482,5 +482,17 @@
   "sarprasTeacherSearchEmpty": "No teacher found.",
   "sarprasValidationRequired": "This field is required.",
   "sarprasValidationPastDate": "Pick today or a later date.",
-  "sarprasValidationEndBeforeStart": "End time must be after start time."
+  "sarprasValidationEndBeforeStart": "End time must be after start time.",
+  "attendance": "Attendance",
+  "extracurricularAttendance": "Extracurricular attendance",
+  "extracurricularSessionDetail": "Session detail",
+  "noExtracurricularAttendanceData": "No extracurricular attendance yet.",
+  "extracurricularAttendanceLoadFailed": "Could not load the attendance.",
+  "activity": "Activity",
+  "allActivities": "All activities",
+  "material": "Material",
+  "incidentNote": "Incident note",
+  "sick": "Sick",
+  "unexcused": "Unexcused",
+  "totalSession": "Total sessions"
 }

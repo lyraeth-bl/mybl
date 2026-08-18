@@ -482,5 +482,17 @@
   "sarprasTeacherSearchEmpty": "Guru tidak ditemukan.",
   "sarprasValidationRequired": "Wajib diisi.",
   "sarprasValidationPastDate": "Pilih hari ini atau setelahnya.",
-  "sarprasValidationEndBeforeStart": "Jam selesai harus setelah jam mulai."
+  "sarprasValidationEndBeforeStart": "Jam selesai harus setelah jam mulai.",
+  "attendance": "Absensi",
+  "extracurricularAttendance": "Absensi ekstrakurikuler",
+  "extracurricularSessionDetail": "Detail pertemuan",
+  "noExtracurricularAttendanceData": "Belum ada data absensi ekstrakurikuler.",
+  "extracurricularAttendanceLoadFailed": "Gagal memuat data absensi.",
+  "activity": "Kegiatan",
+  "allActivities": "Semua kegiatan",
+  "material": "Materi",
+  "incidentNote": "Catatan kejadian",
+  "sick": "Sakit",
+  "unexcused": "Alfa",
+  "totalSession": "Total pertemuan"
 }
