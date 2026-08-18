@@ -57,6 +57,10 @@ class ApiEndpoints {
 
   static final String extracurricular = "/ekskul";
 
+  static final String extracurricularAttendances = "/absensi-ekstrakurikuler";
+  static String extracurricularAttendanceDetail(int extraSessionId) =>
+      '$extracurricularAttendances/$extraSessionId';
+
   static final String result = "/nilai";
 
   static final String parentAttendance = "/parent/absensi-harian";
