@@ -221,6 +221,11 @@ extension DateAndTimeFormatterExtension on DateTime {
     final locale = Localizations.localeOf(context).languageCode;
     return DateFormat("EEEE, d MMMM yyyy", locale).format(toLocal());
   }
+
+  String toMonthYearFormat(BuildContext context) {
+    final locale = Localizations.localeOf(context).languageCode;
+    return DateFormat("MMMM yyyy", locale).format(toLocal());
+  }
 }
 
 extension StringExtension on String {

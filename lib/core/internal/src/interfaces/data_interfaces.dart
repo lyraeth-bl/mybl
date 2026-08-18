@@ -254,3 +254,11 @@ abstract interface class SarprasDeleter {
 abstract interface class SarprasTeacherCandidateFetcher<T> {
   Future<Result<List<T>>> fetchSarprasTeacherCandidate();
 }
+
+abstract interface class ExtracurricularAttendanceFetcher<T, DT> {
+  Future<Result<List<T>>> fetchExtracurricularAttendances();
+
+  Future<Result<DT>> fetchDetailExtracurricularAttendance({
+    required int extraSessionId,
+  });
+}

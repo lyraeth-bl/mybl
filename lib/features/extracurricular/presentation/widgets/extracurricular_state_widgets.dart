@@ -86,6 +86,57 @@ class ExtracurricularLoadingContent extends StatelessWidget {
   }
 }
 
+class ExtracurricularAttendanceLoadingContent extends StatelessWidget {
+  const ExtracurricularAttendanceLoadingContent({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverMainAxisGroup(
+      slivers: [
+        SliverPadding(
+          padding: const .fromLTRB(16, 24, 16, 16),
+          sliver: SliverToBoxAdapter(
+            child: Text("").toShimmer(
+              context,
+              width: double.infinity,
+              height: 96,
+              borderRadius: .circular(16),
+            ),
+          ),
+        ),
+        SliverPadding(
+          padding: const .symmetric(horizontal: 16, vertical: 8),
+          sliver: SliverToBoxAdapter(
+            child: Row(
+              mainAxisAlignment: .spaceBetween,
+              children: [
+                Text("").toShimmer(
+                  context,
+                  width: 140,
+                  height: 16,
+                  borderRadius: .circular(24),
+                ),
+                Text("").toShimmer(
+                  context,
+                  width: 48,
+                  height: 16,
+                  borderRadius: .circular(24),
+                ),
+              ],
+            ),
+          ),
+        ),
+        SliverPadding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          sliver: SliverList.list(
+            children: const [_LoadingCard(), _LoadingCard(), _LoadingCard()],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 class _LoadingCard extends StatelessWidget {
   const _LoadingCard();
 

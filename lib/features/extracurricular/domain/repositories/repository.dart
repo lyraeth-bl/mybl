@@ -4,6 +4,12 @@
 
 import '../../../../core/internal/src/interfaces/data_interfaces.dart';
 import '../entities/extracurricular.dart';
+import '../entities/extracurricular_attendance/extracurricular_attendance.dart';
 
 abstract class ExtracurricularRepository
-    implements ListFetcher<ExtracurricularEntity> {}
+    implements
+        ListFetcher<ExtracurricularEntity>,
+        ExtracurricularAttendanceFetcher<
+          ExtracurricularAttendance,
+          ExtracurricularAttendanceDetail
+        > {}
