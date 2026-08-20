@@ -4,8 +4,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:my_bl/core/enums/user_role.dart';
 
+import '../../../../core/app_router/app_router.dart';
 import '../../../../core/internal/src/extensions/extensions.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_text_field.dart';
@@ -290,11 +292,29 @@ class _AuthLoginFormState extends State<AuthLoginForm>
 
                               16.h,
 
-                              _RememberMeCheckbox(
-                                accentColor: accentColor,
-                                colorScheme: colorScheme,
-                                textTheme: textTheme,
-                                l10n: l10n,
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: _RememberMeCheckbox(
+                                      accentColor: accentColor,
+                                      colorScheme: colorScheme,
+                                      textTheme: textTheme,
+                                      l10n: l10n,
+                                    ),
+                                  ),
+
+                                  // Reset password memakai NIS, sementara
+                                  // parent masuk dengan username.
+                                  if (widget.role == UserRole.student)
+                                    AppButton.text(
+                                      foregroundColor: accentColor,
+                                      textStyle: textTheme.labelMedium,
+                                      onPressed: () => context.push(
+                                        RouteNames.forgotPassword,
+                                      ),
+                                      child: Text(l10n.forgetPassword),
+                                    ),
+                                ],
                               ),
 
                               const Spacer(),

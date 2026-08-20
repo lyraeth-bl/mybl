@@ -29,6 +29,12 @@ class ApiEndpoints {
 
   static final String logoutParent = "/parent/logout";
 
+  static final String sendForgotPasswordOtp = "/forgot-password/send-otp";
+
+  static final String verifyForgotPasswordOtp = "/forgot-password/verify-otp";
+
+  static final String resetForgotPassword = "/forgot-password/reset-password";
+
   static final String me = "/me";
 
   static final String parentMe = "/parent/me";

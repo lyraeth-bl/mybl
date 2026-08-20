@@ -18,6 +18,7 @@ import '../../features/auth/auth_di.dart';
 import '../../features/device_token/di.dart';
 import '../../features/discipline/di.dart';
 import '../../features/extracurricular/di.dart';
+import '../../features/forgot_password/forgot_password_di.dart';
 import '../../features/notifications/notifications_di.dart';
 import '../../features/sarpras/sarpras_di.dart';
 import '../../features/sessions/sessions_di.dart';
@@ -81,6 +82,7 @@ Future<void> initializeApp() async {
   initAcademicCalendarDI();
   initAcademicResultDI();
   initSarprasDI();
+  initForgotPasswordDI();
 
   await di<OpenAllBoxesUseCase>().call();
   await di<FCMService>().initialize();

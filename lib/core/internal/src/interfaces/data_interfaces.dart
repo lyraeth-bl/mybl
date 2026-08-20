@@ -262,3 +262,18 @@ abstract interface class ExtracurricularAttendanceFetcher<T, DT> {
     required int extraSessionId,
   });
 }
+
+abstract interface class PasswordResetter {
+  Future<Result<Unit>> sendResetOtp({required String nis});
+
+  Future<Result<String>> verifyResetOtp({
+    required String nis,
+    required String otpCode,
+  });
+
+  Future<Result<Unit>> resetPassword({
+    required String resetToken,
+    required String password,
+    required String passwordConfirmation,
+  });
+}
