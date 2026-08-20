@@ -18,7 +18,11 @@ import '../../features/welcome/presentation/screens/welcome_screen.dart';
 import '../../features/dashboard/presentation/screens/dashboard_screen.dart';
 import '../../features/dashboard/presentation/screens/parent_dashboard_screen.dart';
 import '../../features/discipline/presentation/screens/merit_demerit_screen.dart';
+import '../../features/extracurricular/presentation/screens/extracurricular_attendance_detail_sheet.dart';
 import '../../features/extracurricular/presentation/screens/extracurricular_screen.dart';
+import '../../features/forgot_password/presentation/screens/forgot_password_nis_screen.dart';
+import '../../features/forgot_password/presentation/screens/forgot_password_otp_screen.dart';
+import '../../features/forgot_password/presentation/screens/forgot_password_reset_screen.dart';
 import '../../features/guardians_detail/presentation/screens/guardians_detail_screen.dart';
 import '../../features/notifications/presentation/screens/notification_screen.dart';
 import '../../features/profile/presentation/screens/profile_detail_screen.dart';
@@ -83,11 +87,20 @@ class AppRouter {
       final isOnChildSelector =
           state.matchedLocation == RouteNames.parentChildSelector;
 
+      // Reset password dipakai dari dua sisi: layar login (belum login) dan
+      // pengaturan akun (sudah login), jadi tidak diperlakukan sebagai
+      // auth screen yang harus ditinggalkan setelah login.
+      final isOnForgotPassword = state.matchedLocation.startsWith(
+        RouteNames.forgotPassword,
+      );
+
       if (isOnSplashScreen) return null;
 
       // Belum login.
       if (!isLoggedIn) {
-        return isOnAuthScreen ? null : RouteNames.welcome;
+        return (isOnAuthScreen || isOnForgotPassword)
+            ? null
+            : RouteNames.welcome;
       }
 
       // Login sebagai student.
@@ -157,6 +170,27 @@ class AppRouter {
       ),
 
       GoRoute(
+        path: RouteNames.forgotPassword,
+        builder: (context, state) => const ForgotPasswordNisScreen(),
+      ),
+
+      GoRoute(
+        path: RouteNames.forgotPasswordOtp,
+        redirect: (context, state) =>
+            state.extra is String ? null : RouteNames.forgotPassword,
+        builder: (context, state) =>
+            ForgotPasswordOtpScreen(nis: state.extra! as String),
+      ),
+
+      GoRoute(
+        path: RouteNames.forgotPasswordReset,
+        redirect: (context, state) =>
+            state.extra is String ? null : RouteNames.forgotPassword,
+        builder: (context, state) =>
+            ForgotPasswordResetScreen(resetToken: state.extra! as String),
+      ),
+
+      GoRoute(
         path: RouteNames.parentChildSelector,
         builder: (context, state) => const ParentChildSelectorScreen(),
       ),
@@ -215,6 +249,19 @@ class AppRouter {
       GoRoute(
         path: RouteNames.extracurricular,
         builder: (context, state) => const ExtracurricularScreen(),
+      ),
+
+      GoRoute(
+        path: RouteNames.extracurricularAttendanceDetail,
+        pageBuilder: (context, state) {
+          final id = int.tryParse(state.pathParameters['id'] ?? '');
+
+          return CupertinoSheetPage<void>(
+            child: ExtracurricularAttendanceDetailSheet(
+              extraSessionId: id ?? -1,
+            ),
+          );
+        },
       ),
 
       GoRoute(

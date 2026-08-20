@@ -10,8 +10,12 @@ import 'data/datasources/local.dart';
 import 'data/datasources/remote.dart';
 import 'data/repositories/repository_impl.dart';
 import 'domain/repositories/repository.dart';
+import 'domain/usecases/fetch_extracurricular_attendance_detail_use_case.dart';
+import 'domain/usecases/fetch_extracurricular_attendances_use_case.dart';
 import 'domain/usecases/fetch_extracurricular_use_case.dart';
+import 'presentation/bloc/extracurricular_attendance_bloc.dart';
 import 'presentation/bloc/extracurricular_bloc.dart';
+import 'presentation/cubit/detail_extracurricular_attendance_cubit.dart';
 
 void initExtracurricularDI() {
   di.registerLazySingleton<ExtracurricularLocalDataSource>(
@@ -31,8 +35,27 @@ void initExtracurricularDI() {
   di.registerLazySingleton<FetchExtracurricularUseCase>(
     () => FetchExtracurricularUseCase(di<ExtracurricularRepository>()),
   );
+  di.registerLazySingleton<FetchExtracurricularAttendancesUseCase>(
+    () =>
+        FetchExtracurricularAttendancesUseCase(di<ExtracurricularRepository>()),
+  );
+  di.registerLazySingleton<FetchExtracurricularAttendancesDetailUseCase>(
+    () => FetchExtracurricularAttendancesDetailUseCase(
+      di<ExtracurricularRepository>(),
+    ),
+  );
 
   di.registerFactory<ExtracurricularBloc>(
     () => ExtracurricularBloc(di<FetchExtracurricularUseCase>()),
+  );
+  di.registerFactory<ExtracurricularAttendanceBloc>(
+    () => ExtracurricularAttendanceBloc(
+      di<FetchExtracurricularAttendancesUseCase>(),
+    ),
+  );
+  di.registerFactory<DetailExtracurricularAttendanceCubit>(
+    () => DetailExtracurricularAttendanceCubit(
+      di<FetchExtracurricularAttendancesDetailUseCase>(),
+    ),
   );
 }

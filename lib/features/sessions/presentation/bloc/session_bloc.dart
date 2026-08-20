@@ -84,7 +84,16 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
 
     await _saveAccessTokenUseCase(event.accessToken);
 
-    await di<TokenProvider>().saveTokenExpiresAt(event.expiresAt);
+    // Token tanpa masa berlaku (expires_at null) berarti sesi tidak kedaluwarsa.
+    // Expiry lama harus dihapus, bukan sekadar dilewat: nilai sisa dari sesi
+    // sebelumnya bakal bikin user ter-logout di pengecekan awal.
+    final expiresAt = event.expiresAt;
+    if (expiresAt != null) {
+      await di<TokenProvider>().saveTokenExpiresAt(expiresAt);
+    } else {
+      await di<TokenProvider>().clearTokenExpiresAt();
+    }
+
     await di<TokenProvider>().saveRole(event.role);
     di<TokenProvider>().saveAccessToken(event.accessToken);
 
@@ -92,7 +101,12 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
     // interceptor membaca token parent dari sana saat menembak API.
     if (event.role == UserRole.parent) {
       await di<ParentTokenProvider>().saveParentAccessToken(event.accessToken);
-      await di<ParentTokenProvider>().saveParentTokenExpiresAt(event.expiresAt);
+
+      if (expiresAt != null) {
+        await di<ParentTokenProvider>().saveParentTokenExpiresAt(expiresAt);
+      } else {
+        await di<ParentTokenProvider>().clearParentTokenExpiresAt();
+      }
     }
 
     emit(

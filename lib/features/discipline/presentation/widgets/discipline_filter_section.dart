@@ -26,10 +26,10 @@ class DisciplineFilterGroup extends StatelessWidget {
 
   final List<String> schoolSessions;
   final List<String> semesters;
-  final String? selectedSchoolSession;
-  final String? selectedSemester;
-  final ValueChanged<String?> onSchoolSessionChanged;
-  final ValueChanged<String?> onSemesterChanged;
+  final String selectedSchoolSession;
+  final String selectedSemester;
+  final ValueChanged<String> onSchoolSessionChanged;
+  final ValueChanged<String> onSemesterChanged;
   final int activityCount;
   final bool isLoading;
   final Widget sliver;
@@ -55,11 +55,13 @@ class DisciplineFilterGroup extends StatelessWidget {
           children: [
             Expanded(
               child: _FilterChipButton(
-                label: selectedSchoolSession ?? l10n.allSchoolYears,
+                label: selectedSchoolSession.isEmpty
+                    ? l10n.schoolYear
+                    : selectedSchoolSession,
                 onTap: () => _showFilterSheet(
                   context: context,
                   title: l10n.schoolYear,
-                  allLabel: l10n.allSchoolYears,
+                  labelOf: (value) => value,
                   values: schoolSessions,
                   selectedValue: selectedSchoolSession,
                   onChanged: onSchoolSessionChanged,
@@ -70,11 +72,13 @@ class DisciplineFilterGroup extends StatelessWidget {
             ),
             Expanded(
               child: _FilterChipButton(
-                label: selectedSemester ?? l10n.allSemesters,
+                label: selectedSemester.isEmpty
+                    ? l10n.semester
+                    : '${l10n.semester} $selectedSemester',
                 onTap: () => _showFilterSheet(
                   context: context,
                   title: l10n.semester,
-                  allLabel: l10n.allSemesters,
+                  labelOf: (value) => '${l10n.semester} $value',
                   values: semesters,
                   selectedValue: selectedSemester,
                   onChanged: onSemesterChanged,
@@ -114,24 +118,24 @@ class DisciplineFilterGroup extends StatelessWidget {
   Future<void> _showFilterSheet({
     required BuildContext context,
     required String title,
-    required String allLabel,
+    required String Function(String value) labelOf,
     required List<String> values,
-    required String? selectedValue,
-    required ValueChanged<String?> onChanged,
+    required String selectedValue,
+    required ValueChanged<String> onChanged,
   }) async {
     final selected = await showModalBottomSheet<String>(
       context: context,
       showDragHandle: true,
       builder: (context) => _FilterSheet(
         title: title,
-        allLabel: allLabel,
+        labelOf: labelOf,
         values: values,
         selectedValue: selectedValue,
       ),
     );
 
     if (selected == null) return;
-    onChanged(selected == _FilterSheet.allValue ? null : selected);
+    onChanged(selected);
   }
 }
 
@@ -182,17 +186,15 @@ class _FilterChipButton extends StatelessWidget {
 class _FilterSheet extends StatelessWidget {
   const _FilterSheet({
     required this.title,
-    required this.allLabel,
+    required this.labelOf,
     required this.values,
     required this.selectedValue,
   });
 
-  static const String allValue = '__all__';
-
   final String title;
-  final String allLabel;
+  final String Function(String value) labelOf;
   final List<String> values;
-  final String? selectedValue;
+  final String selectedValue;
 
   @override
   Widget build(BuildContext context) {
@@ -218,15 +220,6 @@ class _FilterSheet extends StatelessWidget {
                 ),
               ),
             ),
-            ListTile(
-              leading: Icon(
-                selectedValue == null
-                    ? Icons.radio_button_checked
-                    : Icons.radio_button_unchecked,
-              ),
-              title: Text(allLabel),
-              onTap: () => Navigator.of(context).pop(allValue),
-            ),
             ...values.map(
               (value) => ListTile(
                 leading: Icon(
@@ -234,7 +227,7 @@ class _FilterSheet extends StatelessWidget {
                       ? Icons.radio_button_checked
                       : Icons.radio_button_unchecked,
                 ),
-                title: Text(value),
+                title: Text(labelOf(value)),
                 onTap: () => Navigator.of(context).pop(value),
               ),
             ),

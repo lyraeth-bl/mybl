@@ -5,8 +5,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../l10n/app_localizations.dart';
-import '../../../app_configuration/presentation/bloc/app_configuration_bloc.dart';
+import '../../l10n/app_localizations.dart';
+import '../../features/app_configuration/presentation/bloc/app_configuration_bloc.dart';
 
 class AppUnderMaintenanceContainer extends StatelessWidget {
   const AppUnderMaintenanceContainer({super.key});

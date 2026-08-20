@@ -15,7 +15,7 @@ abstract class ParentResponseEntity with _$ParentResponseEntity {
     required String message,
     required String accessToken,
     required String tokenType,
-    required DateTime expiresAt,
+    DateTime? expiresAt,
     required String nama,
     required List<ChildEntity> children,
   }) = _ParentResponseEntity;

@@ -6,7 +6,7 @@ sealed class SessionEvent with _$SessionEvent {
 
   const factory SessionEvent.loggedIn({
     required String accessToken,
-    required DateTime expiresAt,
+    DateTime? expiresAt,
     required UserRole role,
   }) = _LoggedIn;
 

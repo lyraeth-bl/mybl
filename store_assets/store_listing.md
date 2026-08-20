@@ -53,3 +53,15 @@ Rilis perdana MyBL untuk uji coba tertutup. Aplikasi ini menampilkan absensi har
 **English:**
 
 The first MyBL release for closed testing. The app shows daily attendance with monthly recaps, scores per subject, class schedules, the academic calendar, merit and demerit points, extracurricular activities, and school announcements. Parents can select and monitor each of their children. Layouts now adapt to tablet screens, including landscape mode. Please share any feedback or issues you run into with the school team.
+
+## Release notes — 1.4.0 (≤500)
+
+**Bahasa Indonesia:**
+
+Sekarang kamu bisa atur ulang password sendiri lewat kode verifikasi yang dikirim ke email sekolah terdaftar, baik dari halaman masuk maupun menu Pengaturan. Sesi login juga tidak lagi terputus setiap jam, jadi tidak perlu masuk berulang kali. Rilis ini menambahkan tab kehadiran ekstrakurikuler lengkap dengan detail pertemuan, pengajuan izin sarpras, serta memperbaiki perhitungan poin merit dan demerit agar hanya menghitung semester yang sedang berjalan.
+
+---
+
+**English:**
+
+You can now reset your own password with a verification code sent to your registered school email, either from the sign-in screen or the Settings menu. Login sessions no longer expire every hour, so you stay signed in between visits. This release also adds an extracurricular attendance tab with per-session details, facility request submissions, and fixes merit and demerit points so they count only the current semester.

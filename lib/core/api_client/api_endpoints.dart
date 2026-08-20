@@ -29,6 +29,12 @@ class ApiEndpoints {
 
   static final String logoutParent = "/parent/logout";
 
+  static final String sendForgotPasswordOtp = "/forgot-password/send-otp";
+
+  static final String verifyForgotPasswordOtp = "/forgot-password/verify-otp";
+
+  static final String resetForgotPassword = "/forgot-password/reset-password";
+
   static final String me = "/me";
 
   static final String parentMe = "/parent/me";
@@ -56,6 +62,10 @@ class ApiEndpoints {
   static final String demerit = "/demerit";
 
   static final String extracurricular = "/ekskul";
+
+  static final String extracurricularAttendances = "/absensi-ekstrakurikuler";
+  static String extracurricularAttendanceDetail(int extraSessionId) =>
+      '$extracurricularAttendances/$extraSessionId';
 
   static final String result = "/nilai";
 

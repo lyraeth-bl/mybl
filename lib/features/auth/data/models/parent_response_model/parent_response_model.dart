@@ -14,7 +14,7 @@ abstract class ParentResponseModel with _$ParentResponseModel {
     required String message,
     @JsonKey(name: 'access_token') required String accessToken,
     @JsonKey(name: 'token_type') required String tokenType,
-    @JsonKey(name: "expires_at") required DateTime expiresAt,
+    @JsonKey(name: "expires_at") DateTime? expiresAt,
     required UserRole role,
     required String nama,
     required List<ChildModel> children,

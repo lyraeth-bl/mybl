@@ -19,6 +19,15 @@ class RouteNames {
   // Auth Parent Screen
   static const String authParent = "/auth/parent";
 
+  // Forgot Password — NIS input
+  static const String forgotPassword = "/forgot-password";
+
+  // Forgot Password — OTP input
+  static const String forgotPasswordOtp = "/forgot-password/otp";
+
+  // Forgot Password — new password input
+  static const String forgotPasswordReset = "/forgot-password/reset";
+
   // Parent Child Selector
   static const String parentChildSelector = "/parent/select-child";
 
@@ -51,6 +60,10 @@ class RouteNames {
 
   // Extracurricular
   static const String extracurricular = "/extracurricular";
+
+  // Extracurricular attendance detail
+  static const String extracurricularAttendanceDetail =
+      "/extracurricular/attendance/:id";
 
   // Merit and Demerit.
   static const String meritAndDemerit = "/meritAndDemerit";

@@ -23,7 +23,7 @@ void _initNetworkDI({
 }) async {
   final dio = DioFactory().buildDioClient(
     baseUrl: baseUrl,
-    enablePrettyLogging: !kReleaseMode,
+    enablePrettyLogging: kDebugMode,
     extraInterceptors: [
       InterceptorsWrapper(
         onRequest: (options, handler) async {

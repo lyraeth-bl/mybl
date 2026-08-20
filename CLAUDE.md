@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 MyBL is a Flutter mobile app (student portal) for the Budi Luhur school ecosystem. It connects to backend APIs (SPO + internal) to expose academic data: attendance, grades, schedule, extracurricular, merit/demerit, calendar, and notifications. Users can be students or parents (with child-selection flow).
 
-Flutter version: **3.41.8** (stable channel).
+Flutter version: **3.44.8** (stable channel).
 
 **Stack:**
 

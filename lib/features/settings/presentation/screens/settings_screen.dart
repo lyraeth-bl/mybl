@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/widgets/app_top_bar.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../widgets/settings_account_section.dart';
 import '../widgets/settings_app_version_footer.dart';
 import '../widgets/settings_notification_section.dart';
 import '../widgets/settings_personalization_section.dart';
@@ -35,6 +36,7 @@ class _SettingsView extends StatelessWidget {
         slivers: [
           SettingsNotificationSection(),
           SettingsPersonalizationSection(),
+          SettingsAccountSection(),
           SettingsSupportSection(),
           SettingsAppVersionFooter(),
         ],

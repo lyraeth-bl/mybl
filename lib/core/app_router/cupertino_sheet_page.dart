@@ -24,7 +24,7 @@ class CupertinoSheetPage<T> extends Page<T> {
 
   @override
   Route<T> createRoute(BuildContext context) => CupertinoSheetRoute<T>(
-    builder: (_) => child,
+    scrollableBuilder: (_, _) => child,
     enableDrag: enableDrag,
     settings: this,
   );

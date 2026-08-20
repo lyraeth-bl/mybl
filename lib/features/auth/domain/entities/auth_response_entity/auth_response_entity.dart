@@ -13,6 +13,6 @@ abstract class AuthResponseEntity with _$AuthResponseEntity {
     required String message,
     required String accessToken,
     required String tokenType,
-    required DateTime expiresAt,
+    DateTime? expiresAt,
   }) = _AuthResponseEntity;
 }

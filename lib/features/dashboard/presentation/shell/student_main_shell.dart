@@ -3,15 +3,12 @@
 // that can be found in the LICENSE file.
 
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/di/get_it_constant.dart';
 import '../../../../core/enums/user_role.dart';
 import '../../../../core/notifications/fcm_service.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../../app_configuration/presentation/bloc/app_configuration_bloc.dart';
-import '../widgets/app_under_maintenance_container.dart';
 
 class StudentMainShell extends StatelessWidget {
   const StudentMainShell({super.key, required this.navigationShell});
@@ -20,16 +17,7 @@ class StudentMainShell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<AppConfigurationBloc>(
-      create: (context) => di<AppConfigurationBloc>()
-        ..add(
-          const AppConfigurationEvent.appConfigurationRequested(
-            role: UserRole.student,
-            forceRefresh: true,
-          ),
-        ),
-      child: _StudentMainShellView(navigationShell: navigationShell),
-    );
+    return _StudentMainShellView(navigationShell: navigationShell);
   }
 }
 
@@ -86,24 +74,12 @@ class _StudentMainShellViewState extends State<_StudentMainShellView> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocSelector<AppConfigurationBloc, AppConfigurationState, bool>(
-      selector: (state) => state.maybeWhen(
-        success: (config) => config.appMaintenance,
-        orElse: () => false,
+    return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+      body: widget.navigationShell,
+      bottomNavigationBar: _ShellBottomNavigationBar(
+        navigationShell: widget.navigationShell,
       ),
-      builder: (context, isUnderMaintenance) {
-        return Scaffold(
-          backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
-          body: isUnderMaintenance
-              ? const AppUnderMaintenanceContainer()
-              : widget.navigationShell,
-          bottomNavigationBar: isUnderMaintenance
-              ? null
-              : _ShellBottomNavigationBar(
-                  navigationShell: widget.navigationShell,
-                ),
-        );
-      },
     );
   }
 }
