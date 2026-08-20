@@ -11,6 +11,7 @@ import '../app_router/app_router.dart';
 import '../di/get_it_constant.dart';
 import '../theme/app_theme.dart';
 import 'app_bloc_provider.dart';
+import 'app_force_update_gate.dart';
 import 'app_maintenance_gate.dart';
 import 'bloc/app_bloc.dart';
 
@@ -33,8 +34,11 @@ class MyBLApp extends StatelessWidget {
 
             // Gate maintenance dipasang di atas router supaya menutup semua
             // rute, termasuk yang dibuka lewat deep link notifikasi.
-            builder: (context, child) =>
-                AppMaintenanceGate(child: child ?? const SizedBox.shrink()),
+            builder: (context, child) => AppMaintenanceGate(
+              child: AppForceUpdateGate(
+                child: child ?? const SizedBox.shrink(),
+              ),
+            ),
 
             // Light sama Dark Theme.
             theme: MyBlTheme.lightTheme,
