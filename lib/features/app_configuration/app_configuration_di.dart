@@ -36,7 +36,9 @@ void initAppConfigurationDI() {
     () => FetchAppConfigUseCase(di<AppConfigurationRepository>()),
   );
 
-  di.registerFactory<AppConfigurationBloc>(
+  // Lazy singleton: status maintenance dibaca gate global di atas seluruh
+  // rute, jadi satu instance harus hidup lebih lama dari layar mana pun.
+  di.registerLazySingleton<AppConfigurationBloc>(
     () => AppConfigurationBloc(di<FetchAppConfigUseCase>()),
   );
 }

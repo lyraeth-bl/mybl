@@ -3,15 +3,12 @@
 // that can be found in the LICENSE file.
 
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/di/get_it_constant.dart';
 import '../../../../core/enums/user_role.dart';
 import '../../../../core/notifications/fcm_service.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../../app_configuration/presentation/bloc/app_configuration_bloc.dart';
-import '../widgets/app_under_maintenance_container.dart';
 
 class ParentMainShell extends StatelessWidget {
   const ParentMainShell({super.key, required this.navigationShell});
@@ -20,10 +17,7 @@ class ParentMainShell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<AppConfigurationBloc>.value(
-      value: di<AppConfigurationBloc>(),
-      child: _ParentMainShellView(navigationShell: navigationShell),
-    );
+    return _ParentMainShellView(navigationShell: navigationShell);
   }
 }
 
@@ -41,12 +35,6 @@ class _ParentMainShellViewState extends State<_ParentMainShellView> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<AppConfigurationBloc>().add(
-        const AppConfigurationEvent.appConfigurationRequested(
-          role: UserRole.parent,
-          forceRefresh: true,
-        ),
-      );
       _activateNotifications().ignore();
     });
   }
@@ -83,24 +71,12 @@ class _ParentMainShellViewState extends State<_ParentMainShellView> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocSelector<AppConfigurationBloc, AppConfigurationState, bool>(
-      selector: (state) => state.maybeWhen(
-        success: (config) => config.appMaintenance,
-        orElse: () => false,
+    return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+      body: widget.navigationShell,
+      bottomNavigationBar: _ParentShellBottomNavigationBar(
+        navigationShell: widget.navigationShell,
       ),
-      builder: (context, isUnderMaintenance) {
-        return Scaffold(
-          backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
-          body: isUnderMaintenance
-              ? const AppUnderMaintenanceContainer()
-              : widget.navigationShell,
-          bottomNavigationBar: isUnderMaintenance
-              ? null
-              : _ParentShellBottomNavigationBar(
-                  navigationShell: widget.navigationShell,
-                ),
-        );
-      },
     );
   }
 }

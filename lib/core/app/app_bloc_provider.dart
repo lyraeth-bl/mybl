@@ -5,6 +5,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../features/app_configuration/presentation/bloc/app_configuration_bloc.dart';
 import '../../features/sessions/presentation/bloc/session_bloc.dart';
 import '../../features/user/presentation/bloc/parent_bloc/parent_bloc.dart';
 import '../../features/user/presentation/bloc/user_bloc.dart';
@@ -24,6 +25,9 @@ class AppBlocProvider extends StatelessWidget {
         BlocProvider<SessionBloc>.value(value: di<SessionBloc>()),
         BlocProvider<UserBloc>.value(value: di<UserBloc>()),
         BlocProvider<ParentBloc>.value(value: di<ParentBloc>()),
+        BlocProvider<AppConfigurationBloc>.value(
+          value: di<AppConfigurationBloc>(),
+        ),
       ],
       child: child,
     );
