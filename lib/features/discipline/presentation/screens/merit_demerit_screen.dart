@@ -175,19 +175,24 @@ class _MeritDemeritBodyState extends State<_MeritDemeritBody> {
                     ...merits.map(DisciplineItem.fromMerit),
                     ...demerits.map(DisciplineItem.fromDemerit),
                   ]..sort((a, b) => b.date.compareTo(a.date));
+                  final schoolSessions = _schoolSessions(items);
+                  final schoolSession = _resolveSchoolSession(schoolSessions);
+                  final semesters = _semesters(items, schoolSession);
+                  final semester = _resolveSemester(semesters);
                   final filteredItems = isLoading
                       ? List<DisciplineItem>.generate(
                           3,
                           DisciplineItem.placeholder,
                         )
-                      : _filterItems(items);
+                      : _itemsForPeriod(items, schoolSession, semester);
 
                   return _DisciplineContent(
-                    items: items,
                     filteredItems: filteredItems,
                     isLoading: isLoading,
-                    selectedSchoolSession: _selectedSchoolSession,
-                    selectedSemester: _selectedSemester,
+                    schoolSessions: schoolSessions,
+                    semesters: semesters,
+                    selectedSchoolSession: schoolSession,
+                    selectedSemester: semester,
                     onSchoolSessionChanged: (value) {
                       setState(() => _selectedSchoolSession = value);
                     },
@@ -205,24 +210,68 @@ class _MeritDemeritBodyState extends State<_MeritDemeritBody> {
     );
   }
 
-  List<DisciplineItem> _filterItems(List<DisciplineItem> items) {
-    return items.where((item) {
-      final matchesSchoolSession =
-          _selectedSchoolSession == null ||
-          item.schoolSession == _selectedSchoolSession;
-      final matchesSemester =
-          _selectedSemester == null || item.semester == _selectedSemester;
+  /// Falls back to the newest school year whenever the user has not picked one
+  /// yet, or their pick is no longer present in the freshly fetched data.
+  String _resolveSchoolSession(List<String> schoolSessions) {
+    if (schoolSessions.contains(_selectedSchoolSession)) {
+      return _selectedSchoolSession!;
+    }
 
-      return matchesSchoolSession && matchesSemester;
-    }).toList();
+    return schoolSessions.isEmpty ? '' : schoolSessions.first;
+  }
+
+  /// Falls back to the latest semester available within the selected school
+  /// year, since the discipline point only resets per semester.
+  String _resolveSemester(List<String> semesters) {
+    if (semesters.contains(_selectedSemester)) return _selectedSemester!;
+
+    return semesters.isEmpty ? '' : semesters.last;
+  }
+
+  static List<DisciplineItem> _itemsForPeriod(
+    List<DisciplineItem> items,
+    String schoolSession,
+    String semester,
+  ) {
+    return items
+        .where(
+          (item) =>
+              item.schoolSession == schoolSession && item.semester == semester,
+        )
+        .toList();
+  }
+
+  static List<String> _schoolSessions(List<DisciplineItem> items) {
+    final schoolSessions = items
+        .map((item) => item.schoolSession)
+        .where((value) => value.trim().isNotEmpty)
+        .toSet()
+        .toList();
+    schoolSessions.sort((a, b) => b.compareTo(a));
+    return schoolSessions;
+  }
+
+  static List<String> _semesters(
+    List<DisciplineItem> items,
+    String schoolSession,
+  ) {
+    final semesters = items
+        .where((item) => item.schoolSession == schoolSession)
+        .map((item) => item.semester)
+        .where((value) => value.trim().isNotEmpty)
+        .toSet()
+        .toList();
+    semesters.sort();
+    return semesters;
   }
 }
 
 class _DisciplineContent extends StatelessWidget {
   const _DisciplineContent({
-    required this.items,
     required this.filteredItems,
     required this.isLoading,
+    required this.schoolSessions,
+    required this.semesters,
     required this.selectedSchoolSession,
     required this.selectedSemester,
     required this.onSchoolSessionChanged,
@@ -230,13 +279,14 @@ class _DisciplineContent extends StatelessWidget {
     required this.emptyMessage,
   });
 
-  final List<DisciplineItem> items;
   final List<DisciplineItem> filteredItems;
   final bool isLoading;
-  final String? selectedSchoolSession;
-  final String? selectedSemester;
-  final ValueChanged<String?> onSchoolSessionChanged;
-  final ValueChanged<String?> onSemesterChanged;
+  final List<String> schoolSessions;
+  final List<String> semesters;
+  final String selectedSchoolSession;
+  final String selectedSemester;
+  final ValueChanged<String> onSchoolSessionChanged;
+  final ValueChanged<String> onSemesterChanged;
   final String emptyMessage;
 
   @override
@@ -256,8 +306,8 @@ class _DisciplineContent extends StatelessWidget {
           isLoading: isLoading,
         ),
         DisciplineFilterGroup(
-          schoolSessions: _schoolSessions(items),
-          semesters: _semesters(items),
+          schoolSessions: schoolSessions,
+          semesters: semesters,
           selectedSchoolSession: selectedSchoolSession,
           selectedSemester: selectedSemester,
           onSchoolSessionChanged: onSchoolSessionChanged,
@@ -283,25 +333,5 @@ class _DisciplineContent extends StatelessWidget {
         SliverToBoxAdapter(child: 24.h),
       ],
     );
-  }
-
-  List<String> _schoolSessions(List<DisciplineItem> items) {
-    final schoolSessions = items
-        .map((item) => item.schoolSession)
-        .where((value) => value.trim().isNotEmpty)
-        .toSet()
-        .toList();
-    schoolSessions.sort((a, b) => b.compareTo(a));
-    return schoolSessions;
-  }
-
-  List<String> _semesters(List<DisciplineItem> items) {
-    final semesters = items
-        .map((item) => item.semester)
-        .where((value) => value.trim().isNotEmpty)
-        .toSet()
-        .toList();
-    semesters.sort();
-    return semesters;
   }
 }
