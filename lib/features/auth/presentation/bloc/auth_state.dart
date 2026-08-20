@@ -8,12 +8,12 @@ sealed class AuthState with _$AuthState {
 
   const factory AuthState.successLogin({
     required String accessToken,
-    required DateTime expiresAt,
+    DateTime? expiresAt,
   }) = _SuccessLogin;
 
   const factory AuthState.successParentLogin({
     required String accessToken,
-    required DateTime expiresAt,
+    DateTime? expiresAt,
     required String nama,
     required List<ChildEntity> children,
   }) = _SuccessParentLogin;

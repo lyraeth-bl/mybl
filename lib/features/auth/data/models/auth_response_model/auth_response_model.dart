@@ -16,7 +16,7 @@ abstract class AuthResponseModel with _$AuthResponseModel {
     required String message,
     @JsonKey(name: "access_token") required String accessToken,
     @JsonKey(name: "token_type") required String tokenType,
-    @JsonKey(name: "expires_at") required DateTime expiresAt,
+    @JsonKey(name: "expires_at") DateTime? expiresAt,
   }) = _AuthResponseModel;
 
   factory AuthResponseModel.fromJson(Map<String, dynamic> json) =>
